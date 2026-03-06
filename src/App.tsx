@@ -99,6 +99,8 @@ export default function App() {
   });
   
   const [selectedRoom, setSelectedRoom] = useState<number | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [capturing, setCapturing] = useState<{ roomId: number, itemId: string } | null>(null);
   const [selectedMonth, setSelectedMonth] = useState(new Date().toLocaleDateString('en-GB', { month: 'short' }));
   const [monthlyLogs, setMonthlyLogs] = useState<CleaningLog[]>([]);
   const [roomStates, setRoomStates] = useState<{ [key: number]: RoomChecklist }>(
@@ -115,6 +117,46 @@ export default function App() {
   
   const [logs, setLogs] = useState<CleaningLog[]>([]);
   const [loading, setLoading] = useState(false);
+
+  const calculateStreak = () => {
+    if (logs.length === 0) return 0;
+    
+    // Get unique dates and sort them descending
+    const dates = Array.from(new Set(logs.map(l => l.date))).sort((a, b) => {
+      const dateA = new Date(`${a} ${new Date().getFullYear()}`);
+      const dateB = new Date(`${b} ${new Date().getFullYear()}`);
+      return dateB.getTime() - dateA.getTime();
+    });
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    const latestLogDate = new Date(`${dates[0]} ${new Date().getFullYear()}`);
+    latestLogDate.setHours(0, 0, 0, 0);
+
+    // If the latest log is not today or yesterday, the streak is broken
+    if (latestLogDate < yesterday) return 0;
+
+    let streak = 0;
+    let checkDate = new Date(latestLogDate);
+
+    for (const dateStr of dates) {
+      const logDate = new Date(`${dateStr} ${new Date().getFullYear()}`);
+      logDate.setHours(0, 0, 0, 0);
+
+      if (logDate.getTime() === checkDate.getTime()) {
+        streak++;
+        checkDate.setDate(checkDate.getDate() - 1);
+      } else {
+        break;
+      }
+    }
+
+    return streak;
+  };
 
   useEffect(() => {
     localStorage.setItem('darkMode', darkMode.toString());
@@ -155,17 +197,33 @@ export default function App() {
   }, [view, selectedMonth]);
 
   const handleCapture = (roomId: number, itemId: string) => {
-    // Simulate photo capture (keeping it client-side as requested)
-    const mockPhoto = `https://picsum.photos/seed/${roomId}-${itemId}/400/300`;
-    setRoomStates(prev => {
-      const room = prev[roomId];
-      const newPhotos = { ...room.photos, [itemId]: mockPhoto };
-      const allCaptured = Object.values(newPhotos).every(p => p !== null);
-      return {
-        ...prev,
-        [roomId]: { ...room, photos: newPhotos, completed: allCaptured }
+    setCapturing({ roomId, itemId });
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && capturing) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result as string;
+        setRoomStates(prev => {
+          const room = prev[capturing.roomId];
+          const newPhotos = { ...room.photos, [capturing.itemId]: base64String };
+          const allCaptured = Object.values(newPhotos).every(p => p !== null);
+          return {
+            ...prev,
+            [capturing.roomId]: { ...room, photos: newPhotos, completed: allCaptured }
+          };
+        });
+        setCapturing(null);
+        // Reset the input value so the same file can be picked again if needed
+        if (fileInputRef.current) fileInputRef.current.value = '';
       };
-    });
+      reader.readAsDataURL(file);
+    }
   };
 
   const resetRoom = (roomId: number) => {
@@ -271,6 +329,14 @@ export default function App() {
       "font-sans antialiased min-h-screen max-w-md mx-auto shadow-2xl flex flex-col relative overflow-x-hidden transition-colors duration-300",
       darkMode ? "bg-slate-950 text-slate-100" : "bg-white text-slate-900"
     )}>
+      <input 
+        type="file" 
+        accept="image/*" 
+        capture="environment" 
+        className="hidden" 
+        ref={fileInputRef}
+        onChange={onFileChange}
+      />
       {/* Header */}
       <header className={cn(
         "sticky top-0 z-20 flex items-center p-4 justify-between shadow-md text-white transition-colors",
@@ -473,7 +539,9 @@ export default function App() {
 
             <div className={cn("p-6 rounded-[2rem] shadow-xl", darkMode ? "bg-slate-900" : "bg-white border border-slate-100")}>
               <div className="flex items-center justify-between mb-6">
-                <h3 className="font-bold uppercase tracking-widest text-xs opacity-50">March 2026</h3>
+                <h3 className="font-bold uppercase tracking-widest text-xs opacity-50">
+                  {new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })}
+                </h3>
                 <div className="flex gap-1">
                   <div className="size-2 rounded-full bg-yellow-400"></div>
                   <div className="size-2 rounded-full bg-yellow-400 opacity-30"></div>
@@ -484,10 +552,11 @@ export default function App() {
                 {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((d, i) => (
                   <span key={`${d}-${i}`} className="text-[10px] font-black opacity-30 mb-2">{d}</span>
                 ))}
-                {Array.from({ length: 31 }, (_, i) => {
+                {Array.from({ length: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate() }, (_, i) => {
                   const day = i + 1;
-                  const dateStr = `${day.toString().padStart(2, '0')} Mar`;
-                  const isCompleted = logs.some(l => l.date.includes(dateStr));
+                  const monthStr = new Date().toLocaleDateString('en-GB', { month: 'short' });
+                  const dateStr = `${day.toString().padStart(2, '0')} ${monthStr}`;
+                  const isCompleted = logs.some(l => l.date === dateStr);
                   
                   return (
                     <div key={day} className="aspect-square flex flex-col items-center justify-center relative">
@@ -517,7 +586,7 @@ export default function App() {
               </div>
               <div className={cn("p-5 rounded-3xl", darkMode ? "bg-slate-900" : "bg-slate-50")}>
                 <p className="text-[10px] font-black uppercase tracking-widest opacity-40 mb-1">Current Streak</p>
-                <p className="text-3xl font-black">4 Days</p>
+                <p className="text-3xl font-black">{calculateStreak()} Days</p>
               </div>
             </div>
           </div>
