@@ -20,7 +20,8 @@ import {
   Shield,
   Smartphone,
   ChevronRight,
-  Medal
+  Medal,
+  Upload
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { clsx, type ClassValue } from 'clsx';
@@ -100,6 +101,7 @@ export default function App() {
   
   const [selectedRoom, setSelectedRoom] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const uploadInputRef = useRef<HTMLInputElement>(null);
   const [capturing, setCapturing] = useState<{ roomId: number, itemId: string } | null>(null);
   const [selectedMonth, setSelectedMonth] = useState(new Date().toLocaleDateString('en-GB', { month: 'short' }));
   const [monthlyLogs, setMonthlyLogs] = useState<CleaningLog[]>([]);
@@ -210,10 +212,12 @@ export default function App() {
     }
   }, [view, selectedMonth]);
 
-  const handleCapture = (roomId: number, itemId: string) => {
+  const handleCapture = (roomId: number, itemId: string, mode: 'camera' | 'gallery' = 'camera') => {
     setCapturing({ roomId, itemId });
-    if (fileInputRef.current) {
+    if (mode === 'camera' && fileInputRef.current) {
       fileInputRef.current.click();
+    } else if (mode === 'gallery' && uploadInputRef.current) {
+      uploadInputRef.current.click();
     }
   };
 
@@ -387,6 +391,13 @@ export default function App() {
         capture="environment" 
         className="hidden" 
         ref={fileInputRef}
+        onChange={onFileChange}
+      />
+      <input 
+        type="file" 
+        accept="image/*" 
+        className="hidden" 
+        ref={uploadInputRef}
         onChange={onFileChange}
       />
       {/* Header */}
@@ -762,22 +773,36 @@ export default function App() {
                 {CHECKLIST_ITEMS.map(item => {
                   const photo = roomStates[selectedRoom].photos[item.id];
                   return (
-                    <div key={item.id} className="flex items-center gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                      <button 
-                        onClick={() => handleCapture(selectedRoom, item.id)}
-                        className={cn(
-                          "size-16 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg transition-all active:scale-95",
-                          photo ? "bg-green-500 text-white shadow-green-100" : "bg-[#007BFF] text-white shadow-blue-100"
-                        )}
-                      >
-                        <Camera className="size-8" />
-                      </button>
+                    <div key={item.id} className={cn(
+                      "flex items-center gap-4 p-4 rounded-2xl border transition-colors",
+                      darkMode ? "bg-slate-900 border-slate-800" : "bg-slate-50 border-slate-100"
+                    )}>
+                      <div className="flex flex-col gap-2">
+                        <button 
+                          onClick={() => handleCapture(selectedRoom, item.id, 'camera')}
+                          className={cn(
+                            "size-12 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg transition-all active:scale-95",
+                            photo ? "bg-green-500 text-white shadow-green-100" : "bg-[#007BFF] text-white shadow-blue-100"
+                          )}
+                        >
+                          <Camera className="size-6" />
+                        </button>
+                        <button 
+                          onClick={() => handleCapture(selectedRoom, item.id, 'gallery')}
+                          className={cn(
+                            "size-12 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg transition-all active:scale-95",
+                            photo ? "bg-green-500 text-white shadow-green-100" : "bg-slate-600 text-white shadow-slate-100"
+                          )}
+                        >
+                          <Upload className="size-6" />
+                        </button>
+                      </div>
                       <div className="flex-1">
-                        <p className="font-bold text-slate-800">{item.label}</p>
+                        <p className="font-bold text-slate-800 dark:text-slate-100">{item.label}</p>
                         <p className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Requirement: {item.requirement}</p>
                       </div>
                       {photo && (
-                        <div className="size-12 rounded-lg bg-slate-200 overflow-hidden border border-white shrink-0">
+                        <div className="size-16 rounded-lg bg-slate-200 overflow-hidden border-2 border-white shrink-0 shadow-sm">
                           <img src={photo} alt="Captured" className="w-full h-full object-cover" />
                         </div>
                       )}
