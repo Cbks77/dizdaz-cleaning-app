@@ -38,10 +38,15 @@ interface CleaningLog {
   daily_total: number;
 }
 
+interface PhotoData {
+  file: File;
+  url: string;
+}
+
 interface RoomChecklist {
   id: number;
   name: string;
-  photos: { [key: string]: string | null };
+  photos: { [key: string]: PhotoData | null };
   completed: boolean;
 }
 
@@ -106,16 +111,6 @@ export default function App() {
   const [selectedMonth, setSelectedMonth] = useState(new Date().toLocaleDateString('en-GB', { month: 'short' }));
   const [monthlyLogs, setMonthlyLogs] = useState<CleaningLog[]>([]);
   const [roomStates, setRoomStates] = useState<{ [key: number]: RoomChecklist }>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('dizdaz_daily_progress');
-      if (saved) {
-        try {
-          return JSON.parse(saved);
-        } catch (e) {
-          console.error("Failed to parse saved progress", e);
-        }
-      }
-    }
     return ROOMS.reduce((acc, room) => ({
       ...acc,
       [room.id]: {
@@ -126,13 +121,21 @@ export default function App() {
       }
     }), {});
   });
-  
+
   const [logs, setLogs] = useState<CleaningLog[]>([]);
   const [loading, setLoading] = useState(false);
+  const urlsRef = useRef<Set<string>>(new Set());
 
+  // Cleanup Object URLs to prevent memory leaks
   useEffect(() => {
-    localStorage.setItem('dizdaz_daily_progress', JSON.stringify(roomStates));
-  }, [roomStates]);
+    return () => {
+      urlsRef.current.forEach(url => URL.revokeObjectURL(url));
+      urlsRef.current.clear();
+    };
+  }, []);
+
+  // We no longer persist roomStates to localStorage because it contains File objects
+  // which cannot be stringified.
 
   const calculateStreak = () => {
     if (logs.length === 0) return 0;
@@ -221,15 +224,68 @@ export default function App() {
     }
   };
 
-  const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const compressImage = (file: File): Promise<{ file: File, url: string }> => {
+    return new Promise((resolve, reject) => {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.src = url;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+        const maxDim = 800;
+
+        if (width > height) {
+          if (width > maxDim) {
+            height *= maxDim / width;
+            width = maxDim;
+          }
+        } else {
+          if (height > maxDim) {
+            width *= maxDim / height;
+            height = maxDim;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx?.drawImage(img, 0, 0, width, height);
+        
+        canvas.toBlob((blob) => {
+          if (blob) {
+            const compressedFile = new File([blob], file.name, { type: 'image/jpeg' });
+            const compressedUrl = URL.createObjectURL(compressedFile);
+            urlsRef.current.add(compressedUrl);
+            resolve({ file: compressedFile, url: compressedUrl });
+          } else {
+            reject(new Error('Blob creation failed'));
+          }
+          URL.revokeObjectURL(url); // Clean up the original file URL
+        }, 'image/jpeg', 0.6);
+      };
+      img.onerror = (err) => {
+        URL.revokeObjectURL(url);
+        reject(err);
+      };
+    });
+  };
+
+  const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file && capturing) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64String = reader.result as string;
+      try {
+        setLoading(true);
+        const { file: compressedFile, url: compressedUrl } = await compressImage(file);
         setRoomStates(prev => {
           const room = prev[capturing.roomId];
-          const newPhotos = { ...room.photos, [capturing.itemId]: base64String };
+          // Revoke old URL if it exists
+          if (room.photos[capturing.itemId]?.url) {
+            const oldUrl = room.photos[capturing.itemId]!.url;
+            URL.revokeObjectURL(oldUrl);
+            urlsRef.current.delete(oldUrl);
+          }
+          const newPhotos = { ...room.photos, [capturing.itemId]: { file: compressedFile, url: compressedUrl } };
           const allCaptured = Object.values(newPhotos).every(p => p !== null);
           return {
             ...prev,
@@ -237,18 +293,30 @@ export default function App() {
           };
         });
         setCapturing(null);
-        // Reset the input value so the same file can be picked again if needed
+        // Reset the input values so the same file can be picked again if needed
         if (fileInputRef.current) fileInputRef.current.value = '';
-      };
-      reader.readAsDataURL(file);
+        if (uploadInputRef.current) uploadInputRef.current.value = '';
+      } catch (err) {
+        console.error("Compression failed", err);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
   const resetRoom = (roomId: number) => {
     if (!roomId) return;
     setRoomStates(prev => {
+      const room = prev[roomId];
+      // Revoke all URLs in this room to prevent memory leaks
+      (Object.values(room.photos) as (PhotoData | null)[]).forEach(photo => {
+        if (photo?.url) {
+          URL.revokeObjectURL(photo.url);
+          urlsRef.current.delete(photo.url);
+        }
+      });
       const updatedRoom = {
-        ...prev[roomId],
+        ...room,
         photos: CHECKLIST_ITEMS.reduce((p, item) => ({ ...p, [item.id]: null }), {}),
         completed: false
       };
@@ -284,7 +352,15 @@ export default function App() {
         })
       });
       await fetchLogs();
-      // Reset daily state
+      // Reset daily state and cleanup URLs
+      (Object.values(roomStates) as RoomChecklist[]).forEach(room => {
+        (Object.values(room.photos) as (PhotoData | null)[]).forEach(photo => {
+          if (photo?.url) {
+            URL.revokeObjectURL(photo.url);
+            urlsRef.current.delete(photo.url);
+          }
+        });
+      });
       localStorage.removeItem('dizdaz_daily_progress');
       setRoomStates(ROOMS.reduce((acc, room) => ({
         ...acc,
@@ -321,12 +397,6 @@ export default function App() {
     }
   };
 
-  const base64ToFile = async (base64: string, filename: string): Promise<File> => {
-    const res = await fetch(base64);
-    const blob = await res.blob();
-    return new File([blob], filename, { type: 'image/jpeg' });
-  };
-
   const shareToWhatsApp = async () => {
     const completedRooms = (Object.values(roomStates) as RoomChecklist[]).filter(r => r.completed);
     const total = completedRooms.reduce((sum, r) => {
@@ -341,10 +411,10 @@ export default function App() {
     try {
       for (const room of completedRooms) {
         for (const [itemId, photoData] of Object.entries(room.photos)) {
-          if (photoData) {
-            const filename = `Room-${room.id}-${itemId}.jpg`;
-            const file = await base64ToFile(photoData, filename);
-            imageFiles.push(file);
+          if (photoData?.file) {
+            // Use the stored File object directly, renaming it for the report
+            const renamedFile = new File([photoData.file], `Room-${room.id}-${itemId}.jpg`, { type: 'image/jpeg' });
+            imageFiles.push(renamedFile);
           }
         }
       }
@@ -782,7 +852,7 @@ export default function App() {
                           onClick={() => handleCapture(selectedRoom, item.id, 'camera')}
                           className={cn(
                             "size-12 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg transition-all active:scale-95",
-                            photo ? "bg-green-500 text-white shadow-green-100" : "bg-[#007BFF] text-white shadow-blue-100"
+                            photo?.url ? "bg-green-500 text-white shadow-green-100" : "bg-[#007BFF] text-white shadow-blue-100"
                           )}
                         >
                           <Camera className="size-6" />
@@ -791,7 +861,7 @@ export default function App() {
                           onClick={() => handleCapture(selectedRoom, item.id, 'gallery')}
                           className={cn(
                             "size-12 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg transition-all active:scale-95",
-                            photo ? "bg-green-500 text-white shadow-green-100" : "bg-slate-600 text-white shadow-slate-100"
+                            photo?.url ? "bg-green-500 text-white shadow-green-100" : "bg-slate-600 text-white shadow-slate-100"
                           )}
                         >
                           <Upload className="size-6" />
@@ -801,9 +871,9 @@ export default function App() {
                         <p className="font-bold text-slate-800 dark:text-slate-100">{item.label}</p>
                         <p className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Requirement: {item.requirement}</p>
                       </div>
-                      {photo && (
+                      {photo?.url && (
                         <div className="size-16 rounded-lg bg-slate-200 overflow-hidden border-2 border-white shrink-0 shadow-sm">
-                          <img src={photo} alt="Captured" className="w-full h-full object-cover" />
+                          <img src={photo.url} alt="Captured" className="w-full h-full object-cover" />
                         </div>
                       )}
                     </div>
