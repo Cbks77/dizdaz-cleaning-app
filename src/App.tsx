@@ -103,8 +103,18 @@ export default function App() {
   const [capturing, setCapturing] = useState<{ roomId: number, itemId: string } | null>(null);
   const [selectedMonth, setSelectedMonth] = useState(new Date().toLocaleDateString('en-GB', { month: 'short' }));
   const [monthlyLogs, setMonthlyLogs] = useState<CleaningLog[]>([]);
-  const [roomStates, setRoomStates] = useState<{ [key: number]: RoomChecklist }>(
-    ROOMS.reduce((acc, room) => ({
+  const [roomStates, setRoomStates] = useState<{ [key: number]: RoomChecklist }>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('dizdaz_daily_progress');
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch (e) {
+          console.error("Failed to parse saved progress", e);
+        }
+      }
+    }
+    return ROOMS.reduce((acc, room) => ({
       ...acc,
       [room.id]: {
         id: room.id,
@@ -112,11 +122,15 @@ export default function App() {
         photos: CHECKLIST_ITEMS.reduce((p, item) => ({ ...p, [item.id]: null }), {}),
         completed: false
       }
-    }), {})
-  );
+    }), {});
+  });
   
   const [logs, setLogs] = useState<CleaningLog[]>([]);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    localStorage.setItem('dizdaz_daily_progress', JSON.stringify(roomStates));
+  }, [roomStates]);
 
   const calculateStreak = () => {
     if (logs.length === 0) return 0;
@@ -267,6 +281,7 @@ export default function App() {
       });
       await fetchLogs();
       // Reset daily state
+      localStorage.removeItem('dizdaz_daily_progress');
       setRoomStates(ROOMS.reduce((acc, room) => ({
         ...acc,
         [room.id]: {
@@ -276,6 +291,7 @@ export default function App() {
           completed: false
         }
       }), {}));
+      alert('Work saved successfully!');
     } catch (err) {
       console.error("Failed to save work", err);
     } finally {
