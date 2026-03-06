@@ -1,11 +1,48 @@
-<div align="center">
+# DIZDAZ CLEANING - Production Setup Guide
 
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+This application has been upgraded to a full-stack production-ready web application with a secure back-end and automated PDF invoicing.
 
-  <h1>Built with AI Studio</h2>
+## Features
+- **Secure Persistence**: Uses SQLite (via `better-sqlite3`) for robust data storage.
+- **Automated Invoicing**: Server-side PDF generation using `pdfkit`.
+- **Photo Verification**: Client-side photo capture logic preserved.
+- **WhatsApp Integration**: Web Share API integration for instant reporting.
 
-  <p>The fastest path from prompt to production with Gemini.</p>
+## Installation & Local Development
 
-  <a href="https://aistudio.google.com/apps">Start building</a>
+1. **Install Dependencies**:
+   ```bash
+   npm install
+   ```
 
-</div>
+2. **Run Development Server**:
+   ```bash
+   npm run dev
+   ```
+   The server will start on `http://localhost:3000`.
+
+## Deployment Guide
+
+### Option 1: Render (Recommended for Full-Stack)
+1. Create a new Web Service on [Render](https://render.com).
+2. Connect your GitHub repository.
+3. Set the following:
+   - **Environment**: `Node`
+   - **Build Command**: `npm run build`
+   - **Start Command**: `node server.ts` (Note: Render supports `tsx` or you can compile to JS)
+4. Add Environment Variables:
+   - `NODE_ENV`: `production`
+
+### Option 2: Railway
+1. Create a new project on [Railway](https://railway.app).
+2. Connect your GitHub repository.
+3. Railway will automatically detect the `package.json` and start command.
+
+### Database Note
+This app uses SQLite (`dizdaz.db`). On platforms like Render or Railway, you should use a **Persistent Disk** to ensure your database file isn't deleted when the server restarts. Alternatively, you can easily swap the `better-sqlite3` logic in `server.ts` for a MongoDB or PostgreSQL connection string.
+
+## API Endpoints
+- `GET /api/logs`: Retrieve all cleaning logs.
+- `POST /api/logs`: Save a new daily cleaning entry.
+- `DELETE /api/logs`: Clear all logs (typically after invoicing).
+- `GET /api/invoice/download`: Generates and downloads the professional PDF invoice.
