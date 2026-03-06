@@ -317,7 +317,13 @@ export default function App() {
     }
   };
 
-  const shareToWhatsApp = () => {
+  const base64ToFile = async (base64: string, filename: string): Promise<File> => {
+    const res = await fetch(base64);
+    const blob = await res.blob();
+    return new File([blob], filename, { type: 'image/jpeg' });
+  };
+
+  const shareToWhatsApp = async () => {
     const completedRooms = (Object.values(roomStates) as RoomChecklist[]).filter(r => r.completed);
     const total = completedRooms.reduce((sum, r) => {
       const roomConfig = ROOMS.find(rc => rc.id === r.id);
@@ -326,13 +332,43 @@ export default function App() {
 
     const text = `DIZDAZ CLEANING REPORT\nDate: ${new Date().toLocaleDateString()}\nUnits Cleaned: ${completedRooms.length}\nTotal: £${total.toFixed(2)}`;
     
-    if (navigator.share) {
-      navigator.share({
-        title: 'Daily Cleaning Report',
-        text: text,
-      }).catch(console.error);
-    } else {
-      window.open(`https://wa.me/?text=${encodeURIComponent(text)}`);
+    const imageFiles: File[] = [];
+    setLoading(true);
+    try {
+      for (const room of completedRooms) {
+        for (const [itemId, photoData] of Object.entries(room.photos)) {
+          if (photoData) {
+            const filename = `Room-${room.id}-${itemId}.jpg`;
+            const file = await base64ToFile(photoData, filename);
+            imageFiles.push(file);
+          }
+        }
+      }
+
+      if (navigator.share) {
+        const shareData: ShareData = {
+          title: 'Daily Cleaning Report',
+          text: text,
+        };
+
+        if (imageFiles.length > 0 && navigator.canShare && navigator.canShare({ files: imageFiles })) {
+          shareData.files = imageFiles;
+        }
+
+        await navigator.share(shareData);
+      } else {
+        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`);
+      }
+    } catch (err) {
+      console.error('Error sharing:', err);
+      // Fallback to text-only if file sharing fails
+      if (navigator.share) {
+        navigator.share({ title: 'Daily Cleaning Report', text }).catch(console.error);
+      } else {
+        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`);
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
