@@ -14,9 +14,40 @@ db.exec(`
     date TEXT NOT NULL,
     rooms_cleaned TEXT NOT NULL,
     daily_total REAL NOT NULL,
-    created_at DATETIME DEFAULT CURRENT_VALUE
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE TABLE IF NOT EXISTS room_codes (
+    property_id TEXT NOT NULL,
+    room_id INTEGER NOT NULL,
+    code TEXT NOT NULL,
+    PRIMARY KEY (property_id, room_id)
   );
 `);
+
+// Seed default codes if empty
+const existingCodes = db.prepare("SELECT COUNT(*) as count FROM room_codes").get() as { count: number };
+if (existingCodes.count === 0) {
+  const insert = db.prepare("INSERT INTO room_codes (property_id, room_id, code) VALUES (?, ?, ?)");
+  
+  // Berkley
+  for (let i = 1; i <= 15; i++) {
+    const month = new Date().getMonth() + 1;
+    const year = new Date().getFullYear();
+    const seed = (i * 7 + month * 13 + year * 3) % 10000;
+    const code = seed.toString().padStart(4, '0');
+    insert.run('BERKLEY', i, code);
+  }
+
+  // Brunel
+  for (let i = 1; i <= 3; i++) {
+    const month = new Date().getMonth() + 1;
+    const year = new Date().getFullYear();
+    const seed = (i * 11 + month * 17 + year * 5) % 10000;
+    const code = seed.toString().padStart(4, '0');
+    insert.run('BRUNEL', i, code);
+  }
+}
 
 async function startServer() {
   const app = express();
@@ -25,6 +56,32 @@ async function startServer() {
   app.use(express.json());
 
   // API Routes
+  app.get("/api/room-codes", (req, res) => {
+    const { property_id } = req.query;
+    try {
+      let codes;
+      if (property_id) {
+        codes = db.prepare("SELECT * FROM room_codes WHERE property_id = ?").all(property_id);
+      } else {
+        codes = db.prepare("SELECT * FROM room_codes").all();
+      }
+      res.json(codes);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch room codes" });
+    }
+  });
+
+  app.post("/api/room-codes", (req, res) => {
+    const { property_id, room_id, code } = req.body;
+    try {
+      db.prepare("INSERT OR REPLACE INTO room_codes (property_id, room_id, code) VALUES (?, ?, ?)")
+        .run(property_id, room_id, code);
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update room code" });
+    }
+  });
+
   app.get("/api/logs", (req, res) => {
     try {
       const logs = db.prepare("SELECT * FROM cleaning_logs ORDER BY date DESC").all();
@@ -71,6 +128,7 @@ async function startServer() {
   });
 
   app.get("/api/invoice/download", (req, res) => {
+    const { property_name } = req.query;
     try {
       const logs = db.prepare("SELECT * FROM cleaning_logs ORDER BY date ASC").all();
       const total = logs.reduce((sum, log) => sum + log.daily_total, 0);
@@ -93,12 +151,12 @@ async function startServer() {
       // Billing Info
       const top = doc.y;
       doc.fillColor("#999999").fontSize(10).text("BILLED TO:", 50, top);
-      doc.fillColor("#000000").fontSize(12).text("YourApartments.com", 50, top + 15);
-      doc.fillColor("#666666").fontSize(10).text("123 Hospitality Way\nLondon, UK\nbilling@yourapartments.com", 50, top + 35);
+      doc.fillColor("#000000").fontSize(12).text((property_name as string) || "YOUR APARTMENT", 50, top + 15);
+      doc.fillColor("#666666").fontSize(10).text("26-28 Regent Street\nClifton\nBristol\nBS8 4HG", 50, top + 35);
 
       doc.fillColor("#999999").fontSize(10).text("FROM:", 350, top);
-      doc.fillColor("#000000").fontSize(12).text("Jodie Francis", 350, top + 15);
-      doc.fillColor("#666666").fontSize(10).text("DIZDAZ CLEANING\njodie.f@dizdaz.com", 350, top + 35);
+      doc.fillColor("#000000").fontSize(12).text("DizDaz cleaning", 350, top + 15);
+      doc.fillColor("#666666").fontSize(10).text("Abbotsford Road\nBristol\nBS6 6EF", 350, top + 35);
       
       doc.moveDown(4);
 
@@ -115,7 +173,7 @@ async function startServer() {
       logs.forEach((log, i) => {
         const y = doc.y;
         doc.fillColor("#000000").fontSize(10).text(log.date, 60, y);
-        doc.text(log.rooms_cleaned, 150, y);
+        doc.text(log.rooms_cleaned.replace(/Units/g, 'Rooms'), 150, y);
         doc.text(`£${log.daily_total.toFixed(2)}`, 450, y, { align: "right" });
         doc.moveTo(50, y + 15).lineTo(550, y + 15).strokeColor("#eeeeee").stroke();
         doc.moveDown();
@@ -123,9 +181,11 @@ async function startServer() {
 
       // Total
       doc.moveDown();
-      doc.rect(50, doc.y, 500, 40).fill("#137fec");
-      doc.fillColor("#ffffff").fontSize(14).text("TOTAL DUE FOR MONTH", 70, doc.y + 12);
-      doc.fontSize(20).text(`£${total.toFixed(2)}`, 450, doc.y - 18, { align: "right" });
+      const totalBoxY = doc.y;
+      doc.rect(50, totalBoxY, 500, 40).fill("#137fec");
+      doc.fillColor("#ffffff").fontSize(14).text("TOTAL DUE FOR MONTH", 70, totalBoxY + 12);
+      doc.fontSize(20).text(`£${total.toFixed(2)}`, 50, totalBoxY + 8, { width: 450, align: "right" });
+      doc.moveDown(2);
 
       // Payment Info
       doc.moveDown(3);

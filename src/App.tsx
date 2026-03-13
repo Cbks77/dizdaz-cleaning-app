@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
+import JSZip from 'jszip';
+import { saveAs } from 'file-saver';
 import { 
   Camera, 
   CheckCircle2, 
@@ -21,7 +23,8 @@ import {
   Smartphone,
   ChevronRight,
   Medal,
-  Upload
+  Upload,
+  Key
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { clsx, type ClassValue } from 'clsx';
@@ -54,32 +57,40 @@ interface Room {
   id: number;
   name: string;
   size: 'small' | 'medium' | 'large';
+  price: number;
 }
-
-const ROOMS: Room[] = Array.from({ length: 15 }, (_, i) => {
-  const id = i + 1;
-  let size: 'small' | 'medium' | 'large';
-  
-  if ([6, 9].includes(id)) {
-    size = 'small';
-  } else if ([2, 3, 8, 10, 12, 13, 14, 15].includes(id)) {
-    size = 'medium';
-  } else {
-    size = 'large'; // 1, 4, 5, 7, 11
-  }
-  
-  return {
-    id,
-    name: `Room ${id}`,
-    size
-  };
-});
 
 const PRICES = {
   small: 12.50,
   medium: 15.00,
   large: 22.50
 };
+
+const PROPERTY_CONFIG = {
+  BERKLEY: {
+    id: 'BERKLEY' as const,
+    name: "4 BERKLEY SQUARE",
+    rooms: Array.from({ length: 15 }, (_, i) => {
+      const id = i + 1;
+      let size: 'small' | 'medium' | 'large';
+      if ([6, 9].includes(id)) size = 'small';
+      else if ([2, 3, 8, 10, 12, 13, 14, 15].includes(id)) size = 'medium';
+      else size = 'large';
+      return { id, name: `Room ${id}`, size, price: PRICES[size] };
+    })
+  },
+  BRUNEL: {
+    id: 'BRUNEL' as const,
+    name: "BRUNEL LOFTS",
+    rooms: [
+      { id: 1, name: "Loft 1", size: 'large', price: 25 },
+      { id: 2, name: "Loft 2", size: 'large', price: 25 },
+      { id: 3, name: "Loft 3", size: 'large', price: 25 },
+    ]
+  }
+};
+
+type PropertyType = keyof typeof PROPERTY_CONFIG;
 
 const SIZE_COLORS = {
   small: "border-slate-200 bg-slate-50 text-slate-500",
@@ -96,7 +107,10 @@ const CHECKLIST_ITEMS = [
 ];
 
 export default function App() {
-  const [view, setView] = useState<'daily' | 'invoices' | 'stats' | 'settings' | 'review'>('daily');
+  const [view, setView] = useState<'daily' | 'invoices' | 'codes' | 'settings' | 'review'>('daily');
+  const [property, setProperty] = useState<PropertyType>('BERKLEY');
+  const activeRooms = PROPERTY_CONFIG[property].rooms;
+
   const [darkMode, setDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('darkMode') === 'true';
@@ -111,7 +125,7 @@ export default function App() {
   const [selectedMonth, setSelectedMonth] = useState(new Date().toLocaleDateString('en-GB', { month: 'short' }));
   const [monthlyLogs, setMonthlyLogs] = useState<CleaningLog[]>([]);
   const [roomStates, setRoomStates] = useState<{ [key: number]: RoomChecklist }>(() => {
-    return ROOMS.reduce((acc, room) => ({
+    return PROPERTY_CONFIG.BERKLEY.rooms.reduce((acc, room) => ({
       ...acc,
       [room.id]: {
         id: room.id,
@@ -122,7 +136,24 @@ export default function App() {
     }), {});
   });
 
+  // Reset room states when property changes
+  useEffect(() => {
+    setRoomStates(activeRooms.reduce((acc, room) => ({
+      ...acc,
+      [room.id]: {
+        id: room.id,
+        name: room.name,
+        photos: CHECKLIST_ITEMS.reduce((p, item) => ({ ...p, [item.id]: null }), {}),
+        completed: false
+      }
+    }), {}));
+    setSelectedRoom(null);
+    fetchRoomCodes();
+  }, [property]);
+
   const [logs, setLogs] = useState<CleaningLog[]>([]);
+  const [roomCodes, setRoomCodes] = useState<{ [key: number]: string }>({});
+  const [editingCode, setEditingCode] = useState<{ roomId: number, code: string } | null>(null);
   const [loading, setLoading] = useState(false);
   const urlsRef = useRef<Set<string>>(new Set());
 
@@ -177,6 +208,38 @@ export default function App() {
     return streak;
   };
 
+  const generateRoomCode = (roomId: number) => {
+    return roomCodes[roomId] || '----';
+  };
+
+  const fetchRoomCodes = async () => {
+    try {
+      const res = await fetch(`/api/room-codes?property_id=${property}`);
+      const data = await res.json();
+      const codesMap = data.reduce((acc: any, curr: any) => ({
+        ...acc,
+        [curr.room_id]: curr.code
+      }), {});
+      setRoomCodes(codesMap);
+    } catch (err) {
+      console.error("Failed to fetch room codes", err);
+    }
+  };
+
+  const updateRoomCode = async (roomId: number, code: string) => {
+    try {
+      await fetch('/api/room-codes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ property_id: property, room_id: roomId, code })
+      });
+      setRoomCodes(prev => ({ ...prev, [roomId]: code }));
+      setEditingCode(null);
+    } catch (err) {
+      console.error("Failed to update room code", err);
+    }
+  };
+
   useEffect(() => {
     localStorage.setItem('darkMode', darkMode.toString());
     if (darkMode) {
@@ -208,6 +271,11 @@ export default function App() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchLogs();
+    fetchRoomCodes();
+  }, []);
 
   useEffect(() => {
     if (view === 'review') {
@@ -328,17 +396,13 @@ export default function App() {
   };
 
   const saveDailyWork = async () => {
-    const completedRooms = (Object.values(roomStates) as RoomChecklist[]).filter(r => r.completed);
+    const completedRooms = activeRooms.filter(r => roomStates[r.id]?.completed);
     if (completedRooms.length === 0) return;
 
-    const roomsDescription = completedRooms.map(r => `Room ${r.id}`).join(', ');
-    
-    const total = completedRooms.reduce((sum, r) => {
-      const roomConfig = ROOMS.find(rc => rc.id === r.id);
-      return sum + (roomConfig ? PRICES[roomConfig.size] : 0);
-    }, 0);
-
+    const roomsDescription = completedRooms.map(r => r.name).join(', ');
+    const total = completedRooms.reduce((sum, r) => sum + r.price, 0);
     const date = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+    const propertyName = PROPERTY_CONFIG[property].name;
 
     try {
       setLoading(true);
@@ -347,7 +411,7 @@ export default function App() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           date,
-          rooms_cleaned: `${completedRooms.length} Units (${roomsDescription})`,
+          rooms_cleaned: `${propertyName}: ${completedRooms.length} Rooms (${roomsDescription})`,
           daily_total: total
         })
       });
@@ -362,7 +426,7 @@ export default function App() {
         });
       });
       localStorage.removeItem('dizdaz_daily_progress');
-      setRoomStates(ROOMS.reduce((acc, room) => ({
+      setRoomStates(activeRooms.reduce((acc, room) => ({
         ...acc,
         [room.id]: {
           id: room.id,
@@ -398,22 +462,25 @@ export default function App() {
   };
 
   const shareToWhatsApp = async () => {
-    const completedRooms = (Object.values(roomStates) as RoomChecklist[]).filter(r => r.completed);
-    const total = completedRooms.reduce((sum, r) => {
-      const roomConfig = ROOMS.find(rc => rc.id === r.id);
-      return sum + (roomConfig ? PRICES[roomConfig.size] : 0);
-    }, 0);
+    const completedRoomConfigs = activeRooms.filter(r => roomStates[r.id]?.completed);
+    const total = completedRoomConfigs.reduce((sum, r) => sum + r.price, 0);
 
-    const text = `DIZDAZ CLEANING REPORT\nDate: ${new Date().toLocaleDateString()}\nUnits Cleaned: ${completedRooms.length}\nTotal: £${total.toFixed(2)}`;
+    const roomsDescription = completedRoomConfigs.map(r => r.name).join(', ');
+    const propertyName = PROPERTY_CONFIG[property].name;
+    const text = `DIZDAZ CLEANING REPORT\nProperty: ${propertyName}\nDate: ${new Date().toLocaleDateString()}\nRooms Cleaned: ${completedRoomConfigs.length} (${roomsDescription})\nTotal: £${total.toFixed(2)}`;
     
     const imageFiles: File[] = [];
     setLoading(true);
     try {
-      for (const room of completedRooms) {
-        for (const [itemId, photoData] of Object.entries(room.photos)) {
-          if (photoData?.file) {
+      for (const config of completedRoomConfigs) {
+        const roomState = roomStates[config.id];
+        if (!roomState) continue;
+        
+        for (const [itemId, photoData] of Object.entries(roomState.photos)) {
+          const p = photoData as PhotoData | null;
+          if (p?.file) {
             // Use the stored File object directly, renaming it for the report
-            const renamedFile = new File([photoData.file], `Room-${room.id}-${itemId}.jpg`, { type: 'image/jpeg' });
+            const renamedFile = new File([p.file], `Room-${config.id}-${itemId}.jpg`, { type: 'image/jpeg' });
             imageFiles.push(renamedFile);
           }
         }
@@ -446,8 +513,87 @@ export default function App() {
     }
   };
 
+  const saveToLocalDrive = async () => {
+    const completedRoomConfigs = activeRooms.filter(r => roomStates[r.id]?.completed);
+    if (completedRoomConfigs.length === 0) {
+      alert("No completed rooms to export.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const zip = new JSZip();
+      const rootFolder = zip.folder("DIZDAZ CLEANS");
+      if (!rootFolder) throw new Error("Failed to create root folder");
+
+      const imagesFolder = rootFolder.folder("images");
+      const invoiceFolder = rootFolder.folder("invoice");
+      if (!imagesFolder || !invoiceFolder) throw new Error("Failed to create subfolders");
+
+      const propertyName = PROPERTY_CONFIG[property].name;
+      let invoiceContent = `DIZDAZ CLEANING INVOICE\n`;
+      invoiceContent += `========================\n`;
+      invoiceContent += `PROPERTY: ${propertyName}\n`;
+      invoiceContent += `========================\n`;
+      invoiceContent += `FROM:\n`;
+      invoiceContent += `DizDaz cleaning\n`;
+      invoiceContent += `Abbotsford Road\n`;
+      invoiceContent += `Bristol\n`;
+      invoiceContent += `BS6 6EF\n\n`;
+      invoiceContent += `BILL TO:\n`;
+      invoiceContent += `${propertyName}\n`;
+      invoiceContent += `26-28 Regent Street\n`;
+      invoiceContent += `Clifton\n`;
+      invoiceContent += `Bristol\n`;
+      invoiceContent += `BS8 4HG\n\n`;
+      invoiceContent += `========================\n`;
+      invoiceContent += `Date: ${new Date().toLocaleDateString()}\n`;
+      invoiceContent += `Time: ${new Date().toLocaleTimeString()}\n\n`;
+      invoiceContent += `CLEANING SUMMARY:\n`;
+
+      let total = 0;
+
+      for (const config of completedRoomConfigs) {
+        const roomState = roomStates[config.id];
+        if (!roomState) continue;
+
+        const price = config.price;
+        total += price;
+
+        invoiceContent += `- ${config.name} (${config.size}): £${price.toFixed(2)}\n`;
+
+        // Add images for this room
+        for (const [itemId, photoData] of Object.entries(roomState.photos)) {
+          const p = photoData as PhotoData | null;
+          if (p?.file) {
+            const fileName = `Room-${config.id}-${itemId}.jpg`;
+            imagesFolder.file(fileName, p.file);
+          }
+        }
+      }
+
+      invoiceContent += `\n------------------------\n`;
+      invoiceContent += `TOTAL ROOMS: ${completedRoomConfigs.length}\n`;
+      invoiceContent += `TOTAL AMOUNT: £${total.toFixed(2)}\n`;
+      invoiceContent += `========================\n`;
+
+      invoiceFolder.file(`Invoice_${new Date().toISOString().split('T')[0]}.txt`, invoiceContent);
+
+      const content = await zip.generateAsync({ type: "blob" });
+      saveAs(content, `DIZDAZ_CLEANS_${new Date().toISOString().split('T')[0]}.zip`);
+      
+      alert("Work exported successfully to local drive (as ZIP archive).");
+    } catch (error) {
+      console.error("Export failed:", error);
+      alert("Failed to export work. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const downloadInvoice = () => {
-    window.location.href = '/api/invoice/download';
+    const propertyName = encodeURIComponent(PROPERTY_CONFIG[property].name);
+    window.location.href = `/api/invoice/download?property_name=${propertyName}`;
   };
 
   return (
@@ -488,28 +634,40 @@ export default function App() {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 px-4 py-6 pb-48">
+      <main className="flex-1 px-4 py-6 pb-80">
         {view === 'daily' && (
           <>
-            <div className="mb-6">
-              <h2 className="text-xl font-bold">Units Overview</h2>
-              <p className={cn("text-sm", darkMode ? "text-slate-400" : "text-slate-500")}>Select a room to complete the photo checklist.</p>
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <button 
+                  onClick={() => setProperty(property === 'BERKLEY' ? 'BRUNEL' : 'BERKLEY')}
+                  className="group flex flex-col items-start"
+                >
+                  <h2 className="text-xl font-bold flex items-center gap-2 group-hover:text-[#007BFF] transition-colors">
+                    {PROPERTY_CONFIG[property].name}
+                    <Smartphone className="size-4 opacity-30 group-hover:opacity-100 transition-opacity" />
+                  </h2>
+                  <p className={cn("text-xs uppercase font-black tracking-widest opacity-40", darkMode ? "text-slate-400" : "text-slate-500")}>
+                    Tap to switch property
+                  </p>
+                </button>
+              </div>
             </div>
             <div className="grid grid-cols-3 gap-3">
-              {ROOMS.map(room => (
+              {activeRooms.map(room => (
                 <button
                   key={room.id}
                   onClick={() => setSelectedRoom(room.id)}
                   className={cn(
                     "aspect-square flex flex-col items-center justify-center rounded-2xl transition-all active:scale-95 border-2",
-                    roomStates[room.id].completed 
+                    roomStates[room.id]?.completed 
                       ? "bg-green-500 text-white border-green-500 shadow-lg" 
                       : darkMode ? "bg-slate-900 border-slate-800 text-slate-500" : SIZE_COLORS[room.size]
                   )}
                 >
                   <span className="text-2xl font-black">{room.id}</span>
                   <span className="text-[10px] font-bold uppercase opacity-60">{room.size}</span>
-                  {roomStates[room.id].completed && <CheckCircle2 className="size-4 mt-1" />}
+                  {roomStates[room.id]?.completed && <CheckCircle2 className="size-4 mt-1" />}
                 </button>
               ))}
             </div>
@@ -521,7 +679,7 @@ export default function App() {
             <div className="flex justify-between items-start mb-8">
               <div>
                 <h1 className="text-[#137fec] tracking-tight text-2xl font-black uppercase mb-1">INVOICE PREVIEW</h1>
-                <p className="text-slate-500 text-sm font-medium">Billed To: YourApartments.com</p>
+                <p className="text-slate-500 text-sm font-medium">Billed To: YOUR APARTMENT</p>
               </div>
               <button 
                 onClick={() => setView('review')}
@@ -545,7 +703,10 @@ export default function App() {
                   {logs.map((log, i) => (
                     <tr key={i}>
                       <td className="px-4 py-3 font-medium">{log.date}</td>
-                      <td className="px-4 py-3">{log.rooms_cleaned.split('(')[0]}</td>
+                      <td className="px-4 py-3">
+                        <div className="font-bold">{log.rooms_cleaned.split('(')[0]}</div>
+                        <div className="text-[10px] text-slate-400">{log.rooms_cleaned.match(/\(([^)]+)\)/)?.[1] || ''}</div>
+                      </td>
                       <td className="px-4 py-3 text-right font-semibold">£{log.daily_total.toFixed(2)}</td>
                     </tr>
                   ))}
@@ -634,7 +795,10 @@ export default function App() {
                     monthlyLogs.map((log, i) => (
                       <tr key={i}>
                         <td className="px-4 py-3 font-medium">{log.date}</td>
-                        <td className="px-4 py-3 text-xs">{log.rooms_cleaned.split('(')[0]}</td>
+                        <td className="px-4 py-3">
+                          <div className="font-bold text-xs">{log.rooms_cleaned.split('(')[0]}</div>
+                          <div className="text-[10px] text-slate-400">{log.rooms_cleaned.match(/\(([^)]+)\)/)?.[1] || ''}</div>
+                        </td>
                         <td className="px-4 py-3 text-right font-semibold">£{log.daily_total.toFixed(2)}</td>
                       </tr>
                     ))
@@ -658,69 +822,104 @@ export default function App() {
           </div>
         )}
 
-        {view === 'stats' && (
+        {view === 'codes' && (
           <div className="space-y-8">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-2xl font-black tracking-tight">ACHIEVEMENTS</h2>
-                <p className={cn("text-sm", darkMode ? "text-slate-400" : "text-slate-500")}>Your cleaning streak & medals</p>
+                <button 
+                  onClick={() => setProperty(property === 'BERKLEY' ? 'BRUNEL' : 'BERKLEY')}
+                  className="group flex flex-col items-start"
+                >
+                  <h2 className="text-2xl font-black tracking-tight uppercase flex items-center gap-2 group-hover:text-[#007BFF] transition-colors">
+                    {PROPERTY_CONFIG[property].name}
+                    <Smartphone className="size-5 opacity-30 group-hover:opacity-100 transition-opacity" />
+                  </h2>
+                  <p className={cn("text-sm uppercase font-black tracking-widest opacity-40", darkMode ? "text-slate-400" : "text-slate-500")}>
+                    Tap to switch property
+                  </p>
+                </button>
               </div>
-              <div className="bg-yellow-400/20 p-3 rounded-2xl">
-                <Trophy className="size-8 text-yellow-500" />
+              <div className="bg-blue-500/20 p-3 rounded-2xl">
+                <Key className="size-8 text-blue-500" />
               </div>
             </div>
 
-            <div className={cn("p-6 rounded-[2rem] shadow-xl", darkMode ? "bg-slate-900" : "bg-white border border-slate-100")}>
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="font-bold uppercase tracking-widest text-xs opacity-50">
-                  {new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })}
-                </h3>
-                <div className="flex gap-1">
-                  <div className="size-2 rounded-full bg-yellow-400"></div>
-                  <div className="size-2 rounded-full bg-yellow-400 opacity-30"></div>
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-7 gap-2 text-center">
-                {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((d, i) => (
-                  <span key={`${d}-${i}`} className="text-[10px] font-black opacity-30 mb-2">{d}</span>
-                ))}
-                {Array.from({ length: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate() }, (_, i) => {
-                  const day = i + 1;
-                  const monthStr = new Date().toLocaleDateString('en-GB', { month: 'short' });
-                  const dateStr = `${day.toString().padStart(2, '0')} ${monthStr}`;
-                  const isCompleted = logs.some(l => l.date === dateStr);
-                  
-                  return (
-                    <div key={day} className="aspect-square flex flex-col items-center justify-center relative">
-                      <span className={cn(
-                        "text-xs font-bold",
-                        isCompleted ? "opacity-20" : "opacity-100"
-                      )}>{day}</span>
-                      {isCompleted && (
-                        <motion.div 
-                          initial={{ scale: 0, rotate: -20 }}
-                          animate={{ scale: 1, rotate: 0 }}
-                          className="absolute inset-0 flex items-center justify-center"
-                        >
-                          <Medal className="size-6 text-yellow-500 drop-shadow-[0_2px_8px_rgba(234,179,8,0.4)]" />
-                        </motion.div>
-                      )}
+            <div className="grid grid-cols-1 gap-4">
+              {activeRooms.map(room => (
+                <div 
+                  key={room.id} 
+                  className={cn(
+                    "p-5 rounded-[2rem] shadow-lg flex items-center justify-between transition-all",
+                    darkMode ? "bg-slate-900 border border-slate-800" : "bg-white border border-slate-100"
+                  )}
+                >
+                  <div className="flex items-center gap-4">
+                    <div className={cn(
+                      "size-12 rounded-2xl flex items-center justify-center font-black text-xl",
+                      darkMode ? "bg-slate-800 text-white" : "bg-slate-100 text-slate-900"
+                    )}>
+                      {room.id}
                     </div>
-                  );
-                })}
-              </div>
+                    <div>
+                      <p className="font-bold text-lg">{room.name}</p>
+                      <p className="text-[10px] font-black uppercase tracking-widest opacity-40">{room.size}</p>
+                    </div>
+                  </div>
+                  <div className="text-right flex flex-col items-end">
+                    <p className="text-[10px] font-black uppercase tracking-widest opacity-40 mb-1">Lock Combo</p>
+                    {editingCode?.roomId === room.id ? (
+                      <div className="flex items-center gap-2">
+                        <input 
+                          type="text"
+                          value={editingCode.code}
+                          onChange={(e) => setEditingCode({ ...editingCode, code: e.target.value })}
+                          className={cn(
+                            "w-24 text-center font-mono font-black text-xl p-1 rounded-lg border-2 border-[#007BFF]",
+                            darkMode ? "bg-slate-800 text-white" : "bg-white text-slate-900"
+                          )}
+                          autoFocus
+                        />
+                        <div className="flex flex-col gap-1">
+                          <button 
+                            onClick={() => updateRoomCode(room.id, editingCode.code)}
+                            className="bg-green-500 text-white p-1 rounded-md"
+                          >
+                            <CheckCircle2 className="size-4" />
+                          </button>
+                          <button 
+                            onClick={() => setEditingCode(null)}
+                            className="bg-slate-400 text-white p-1 rounded-md"
+                          >
+                            <X className="size-4" />
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-3">
+                        <p className="text-2xl font-black font-mono tracking-[0.2em] text-[#007BFF]">
+                          {generateRoomCode(room.id)}
+                        </p>
+                        <button 
+                          onClick={() => setEditingCode({ roomId: room.id, code: roomCodes[room.id] || '' })}
+                          className={cn(
+                            "p-2 rounded-xl transition-colors",
+                            darkMode ? "hover:bg-slate-800 text-slate-500" : "hover:bg-slate-100 text-slate-400"
+                          )}
+                        >
+                          <SettingsIcon className="size-4" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className={cn("p-5 rounded-3xl", darkMode ? "bg-slate-900" : "bg-slate-50")}>
-                <p className="text-[10px] font-black uppercase tracking-widest opacity-40 mb-1">Total Medals</p>
-                <p className="text-3xl font-black">{logs.length}</p>
-              </div>
-              <div className={cn("p-5 rounded-3xl", darkMode ? "bg-slate-900" : "bg-slate-50")}>
-                <p className="text-[10px] font-black uppercase tracking-widest opacity-40 mb-1">Current Streak</p>
-                <p className="text-3xl font-black">{calculateStreak()} Days</p>
-              </div>
+            <div className={cn("p-6 rounded-[2rem] border-2 border-dashed", darkMode ? "border-slate-800 text-slate-500" : "border-slate-200 text-slate-400")}>
+              <p className="text-center text-xs font-medium">
+                Security Note: Codes are automatically rotated on the 1st of every month. 
+                Please ensure all lockboxes are scrambled after use.
+              </p>
             </div>
           </div>
         )}
@@ -912,20 +1111,30 @@ export default function App() {
               <div>
                 <p className="text-slate-500 text-[10px] font-bold uppercase tracking-wider">Estimated Invoice</p>
                 <p className="text-[#007BFF] text-xl font-black">
-                  £{((Object.values(roomStates) as RoomChecklist[]).reduce((sum, r) => {
-                    if (!r.completed) return sum;
-                    const roomConfig = ROOMS.find(rc => rc.id === r.id);
-                    return sum + (roomConfig ? PRICES[roomConfig.size] : 0);
+                  £{(activeRooms.reduce((sum, r) => {
+                    if (!roomStates[r.id]?.completed) return sum;
+                    return sum + r.price;
                   }, 0)).toFixed(2)} 
                   <span className="text-slate-400 text-xs font-medium"> total</span>
                 </p>
               </div>
               <div className="text-right">
                 <p className="text-slate-500 text-[10px] font-bold uppercase tracking-wider">Daily Progress</p>
-                <p className={cn("text-lg font-black", darkMode ? "text-white" : "text-slate-900")}>{(Object.values(roomStates) as RoomChecklist[]).filter(r => r.completed).length} <span className="text-xs font-medium text-slate-400">/ 15 units</span></p>
+                <p className={cn("text-lg font-black", darkMode ? "text-white" : "text-slate-900")}>
+                  {activeRooms.filter(r => roomStates[r.id]?.completed).length} 
+                  <span className="text-xs font-medium text-slate-400"> / {activeRooms.length} rooms</span>
+                </p>
               </div>
             </div>
             <div className="px-4 py-4 space-y-2">
+              <button 
+                onClick={saveToLocalDrive}
+                disabled={loading || (Object.values(roomStates) as RoomChecklist[]).filter(r => r.completed).length === 0}
+                className="w-full flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-900 disabled:opacity-50 text-white font-bold py-4 rounded-2xl transition-all shadow-lg active:scale-[0.98]"
+              >
+                <Download className="size-5" />
+                <span>Export to Local Drive</span>
+              </button>
               <div className="flex gap-2">
                 <button 
                   onClick={saveDailyWork}
@@ -962,11 +1171,11 @@ export default function App() {
             <p className="text-[10px] font-bold uppercase tracking-wider">Invoices</p>
           </button>
           <button 
-            onClick={() => setView('stats')}
-            className={cn("flex flex-1 flex-col items-center justify-center gap-1", view === 'stats' ? "text-[#007BFF]" : "text-slate-300")}
+            onClick={() => setView('codes')}
+            className={cn("flex flex-1 flex-col items-center justify-center gap-1", view === 'codes' ? "text-[#007BFF]" : "text-slate-300")}
           >
-            <BarChart3 className={cn("size-6", view === 'stats' && "fill-current")} />
-            <p className="text-[10px] font-bold uppercase tracking-wider">Stats</p>
+            <Key className={cn("size-6", view === 'codes' && "fill-current")} />
+            <p className="text-[10px] font-bold uppercase tracking-wider">Codes</p>
           </button>
           <button 
             onClick={() => setView('settings')}
