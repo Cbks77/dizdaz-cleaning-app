@@ -2,7 +2,8 @@
 
 ## Business Overview
 - **Name:** DizDaz Cleaning (operating as DizDaz)
-- **Owner:** Curtis Brooks (CB)
+- **Owner:** Jodie Francis (Miss Jodz)
+- **Developer:** Curtis Brooks (CB)
 - **Type:** Professional cleaning service, B2B focus
 - **Primary client:** YourApartment (serviced apartment company)
 - **Properties serviced:**

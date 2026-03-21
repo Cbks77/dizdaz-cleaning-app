@@ -1,0 +1,4 @@
+{"type":"server-started","port":61212,"host":"127.0.0.1","url_host":"localhost","url":"http://localhost:61212","screen_dir":"/Users/curtisbrooks/Developer/dizdaz-brand/.superpowers/brainstorm/23931-1774106434"}
+{"type":"screen-added","file":"/Users/curtisbrooks/Developer/dizdaz-brand/.superpowers/brainstorm/23931-1774106434/email-signature-mockup.html"}
+{"source":"user-event","type":"click","text":"CURTIS BROOKS\n            Owner · DizDaz Cleaning\n            📞 +44 7XXX XXXXXX  |  🌐 dizdaz-invoice.vercel.app\n          \n        \n        \n          \n            \n            PROFESSIONAL CLEANING · BRISTOL\n          \n        \n      \n    \n    \n      B — Bold Dark\n      Dark background, electric blue accents. Stands out in any inbox.","choice":"bold","id":null,"timestamp":1774107115903}
+{"type":"server-stopped","reason":"owner process exited"}

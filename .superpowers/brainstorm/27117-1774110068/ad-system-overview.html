@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>DizDaz Brand Asset System</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #030810; font-family: 'Arial', sans-serif; color: white; padding: 30px; }
+  h1 { font-size: 22px; font-weight: 900; letter-spacing: 2px; color: #00C6FF; margin-bottom: 6px; text-transform: uppercase; }
+  .sub { font-size: 12px; color: #475569; letter-spacing: 1px; margin-bottom: 30px; text-transform: uppercase; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .card { background: #0d1629; border: 1px solid #1e3a5f; border-radius: 12px; padding: 20px; }
+  .card h2 { font-size: 13px; font-weight: 800; color: #00C6FF; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 14px; border-bottom: 1px solid #1e3a5f; padding-bottom: 8px; }
+  .item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid #0f1f38; }
+  .item:last-child { border-bottom: none; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: linear-gradient(135deg, #0072FF, #00C6FF); flex-shrink: 0; }
+  .item-name { font-size: 12px; color: #cbd5e1; font-weight: 600; }
+  .item-desc { font-size: 10px; color: #475569; margin-top: 2px; }
+  .badge { font-size: 9px; background: #0072FF22; color: #00C6FF; border: 1px solid #0072FF44; border-radius: 20px; padding: 2px 8px; margin-left: auto; white-space: nowrap; }
+  .badge.done { background: #00ff8822; color: #00ff88; border-color: #00ff8844; }
+  .section-label { font-size: 10px; color: #0072FF; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin: 20px 0 10px; }
+</style>
+</head>
+<body>
+
+<h1>DizDaz Brand Asset System</h1>
+<div class="sub">Everything we're building — one glance</div>
+
+<div class="grid">
+
+  <div class="card">
+    <h2>✅ Done</h2>
+    <div class="item"><div class="dot"></div><div><div class="item-name">Email Signature</div><div class="item-desc">Gmail-ready HTML with logo, contact & Instagram</div></div><div class="badge done">Live</div></div>
+    <div class="item"><div class="dot"></div><div><div class="item-name">Brand Profile</div><div class="item-desc">Owner, pricing, ops, brand colours documented</div></div><div class="badge done">Saved</div></div>
+    <div class="item"><div class="dot"></div><div><div class="item-name">Invoice App</div><div class="item-desc">Deployed at dizdaz-invoice.vercel.app</div></div><div class="badge done">Live</div></div>
+  </div>
+
+  <div class="card">
+    <h2>🔨 Building Now</h2>
+    <div class="item"><div class="dot"></div><div><div class="item-name">Worker Recruitment Ad</div><div class="item-desc">Instagram sq/story, LinkedIn, Indeed, Flyer, WhatsApp</div></div><div class="badge">Next</div></div>
+    <div class="item"><div class="dot"></div><div><div class="item-name">Service Promotion Ad</div><div class="item-desc">Instagram sq/story, LinkedIn, Flyer, WhatsApp</div></div><div class="badge">Next</div></div>
+    <div class="item"><div class="dot"></div><div><div class="item-name">Brand Guidelines</div><div class="item-desc">Colours, type, logo rules, voice & tone</div></div><div class="badge">Next</div></div>
+  </div>
+
+  <div class="card">
+    <h2>📦 Deliverables Per Ad</h2>
+    <div class="item"><div class="dot"></div><div><div class="item-name">Instagram Square</div><div class="item-desc">1080×1080 — feed post</div></div></div>
+    <div class="item"><div class="dot"></div><div><div class="item-name">Instagram Story</div><div class="item-desc">1080×1920 — story / reel cover</div></div></div>
+    <div class="item"><div class="dot"></div><div><div class="item-name">LinkedIn Banner</div><div class="item-desc">1200×627 — professional post format</div></div></div>
+    <div class="item"><div class="dot"></div><div><div class="item-name">Indeed / Job Board</div><div class="item-desc">Plain text version — copy-paste ready</div></div></div>
+    <div class="item"><div class="dot"></div><div><div class="item-name">A5 Flyer</div><div class="item-desc">Print-ready landscape / portrait</div></div></div>
+    <div class="item"><div class="dot"></div><div><div class="item-name">WhatsApp Card</div><div class="item-desc">Shareable image — simple & punchy</div></div></div>
+  </div>
+
+  <div class="card">
+    <h2>🎨 Brand System</h2>
+    <div class="item"><div class="dot"></div><div><div class="item-name">Primary Blue</div><div class="item-desc">#0072FF — buttons, highlights</div></div></div>
+    <div class="item"><div class="dot"></div><div><div class="item-name">Cyan Accent</div><div class="item-desc">#00C6FF — glow, text accents</div></div></div>
+    <div class="item"><div class="dot"></div><div><div class="item-name">Dark Navy</div><div class="item-desc">#030810 — backgrounds</div></div></div>
+    <div class="item"><div class="dot"></div><div><div class="item-name">White</div><div class="item-desc">#FFFFFF — body text, clean panels</div></div></div>
+    <div class="item"><div class="dot"></div><div><div class="item-name">Logo</div><div class="item-desc">Circular badge — locked, never alter</div></div></div>
+    <div class="item"><div class="dot"></div><div><div class="item-name">Tone</div><div class="item-desc">Friendly & confident — warm but professional</div></div></div>
+  </div>
+
+</div>
+
+</body>
+</html>
