@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DizDaz — 12-Month Growth Roadmap</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+  :root {
+    --navy:#030810; --blue:#0072FF; --cyan:#00C6FF;
+    --white:#FFFFFF; --grad:linear-gradient(90deg,#0072FF,#00C6FF);
+    --border:rgba(0,114,255,0.15);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Inter',Arial,sans-serif; background:#F0F4FF; color:#1a2035; }
+
+  /* Header */
+  .header { background:var(--navy); padding:40px 48px; position:relative; overflow:hidden; }
+  .header::before { content:''; position:absolute; top:-100px; right:-80px; width:400px; height:400px; background:radial-gradient(ellipse,rgba(0,114,255,0.25) 0%,transparent 65%); }
+  .top-bar { position:absolute; top:0; left:0; right:0; height:4px; background:var(--grad); }
+  .header-inner { position:relative; z-index:2; display:flex; align-items:center; justify-content:space-between; }
+  .h-brand { display:flex; align-items:center; gap:16px; }
+  .logo-wrap { width:64px; height:64px; border-radius:50%; overflow:hidden; border:2px solid rgba(0,198,255,0.4); box-shadow:0 0 30px rgba(0,114,255,0.6); }
+  .logo-wrap img { width:100%; height:100%; object-fit:cover; }
+  .h-text h1 { font-size:22px; font-weight:900; color:var(--white); }
+  .h-text p { font-size:12px; color:rgba(255,255,255,0.45); margin-top:2px; }
+  .h-metrics { display:flex; gap:12px; }
+  .metric { background:rgba(0,114,255,0.12); border:1px solid rgba(0,198,255,0.25); border-radius:8px; padding:10px 16px; text-align:center; }
+  .metric .n { font-size:20px; font-weight:900; background:var(--grad); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+  .metric .l { font-size:10px; color:rgba(255,255,255,0.4); margin-top:2px; }
+
+  /* Doc */
+  .doc { max-width:1000px; margin:0 auto; padding:40px 24px; }
+
+  /* Goals summary */
+  .goals { background:var(--white); border:1px solid var(--border); border-radius:14px; padding:30px 32px; margin-bottom:32px; }
+  .goals-title { font-size:10px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:var(--blue); margin-bottom:18px; }
+  .goals-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px; }
+  .goal-item { }
+  .goal-num { font-size:40px; font-weight:900; background:var(--grad); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; line-height:1; margin-bottom:6px; }
+  .goal-label { font-size:14px; font-weight:700; color:#0c1630; margin-bottom:3px; }
+  .goal-note { font-size:12px; color:#8a9bb8; line-height:1.5; }
+
+  /* Revenue projection */
+  .revenue { background:var(--navy); border-radius:14px; padding:28px 32px; margin-bottom:32px; }
+  .revenue-title { font-size:10px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:var(--cyan); margin-bottom:18px; }
+  .rev-grid { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:16px; }
+  .rev-item { background:rgba(255,255,255,0.04); border:1px solid rgba(0,114,255,0.2); border-radius:10px; padding:16px 18px; }
+  .rev-label { font-size:11px; color:rgba(255,255,255,0.4); margin-bottom:6px; }
+  .rev-amount { font-size:24px; font-weight:900; background:var(--grad); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; line-height:1; margin-bottom:4px; }
+  .rev-note { font-size:11px; color:rgba(255,255,255,0.35); }
+
+  /* Roadmap timeline */
+  .timeline-title { font-size:10px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:var(--blue); margin-bottom:20px; }
+
+  .phase { background:var(--white); border:1px solid var(--border); border-radius:12px; margin-bottom:16px; overflow:hidden; }
+  .phase-header { padding:18px 24px; display:flex; align-items:center; gap:16px; border-bottom:1px solid var(--border); }
+  .phase-months {
+    min-width:80px; height:36px;
+    background:var(--grad); border-radius:8px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:12px; font-weight:800; color:var(--white);
+    flex-shrink:0;
+  }
+  .phase-info h3 { font-size:15px; font-weight:800; color:#0c1630; margin-bottom:2px; }
+  .phase-info p { font-size:12px; color:#8a9bb8; }
+  .phase-status { margin-left:auto; }
+  .status-tag { padding:4px 12px; border-radius:20px; font-size:11px; font-weight:700; }
+  .status-tag.now { background:#e6f4ea; color:#2a7a2a; }
+  .status-tag.next { background:#fff0e6; color:#c06020; }
+  .status-tag.later { background:#f0f4ff; color:#4a6aaa; }
+
+  .phase-tasks { padding:20px 24px; }
+  .task-list { list-style:none; display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .task-item { display:flex; gap:10px; align-items:flex-start; padding:8px 12px; background:#f7f9ff; border-radius:8px; border:1px solid var(--border); }
+  .task-check { width:18px; height:18px; border:2px solid #ccd8f0; border-radius:4px; flex-shrink:0; margin-top:1px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:10px; transition:all 0.2s; }
+  .task-check:hover { border-color:var(--blue); }
+  .task-check.done { background:var(--blue); border-color:var(--blue); color:white; }
+  .task-text { font-size:13px; color:#2c3e60; line-height:1.4; }
+  .task-text strong { color:#0c1630; display:block; font-size:12px; font-weight:700; margin-bottom:2px; }
+
+  /* Prospect list */
+  .prospects { background:var(--white); border:1px solid var(--border); border-radius:12px; padding:24px 28px; margin-top:8px; margin-bottom:32px; }
+  .prospects-title { font-size:10px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:var(--blue); margin-bottom:16px; }
+  .prospect-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .prospect-item { display:flex; align-items:flex-start; gap:12px; padding:12px 14px; background:#f5f8ff; border-radius:8px; border:1px solid var(--border); }
+  .prospect-icon { width:32px; height:32px; background:var(--grad); border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0; }
+  .prospect-text h4 { font-size:13px; font-weight:700; color:#0c1630; margin-bottom:2px; }
+  .prospect-text p { font-size:11px; color:#8a9bb8; line-height:1.4; }
+
+  /* Success criteria */
+  .success { background:var(--navy); border-radius:14px; padding:28px 32px; margin-bottom:32px; }
+  .success-title { font-size:10px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:var(--cyan); margin-bottom:18px; }
+  .success-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .sc-item { display:flex; gap:12px; align-items:flex-start; padding:12px 14px; background:rgba(255,255,255,0.04); border-radius:8px; border:1px solid rgba(0,114,255,0.15); cursor:pointer; }
+  .sc-box { width:18px; height:18px; border:2px solid rgba(0,198,255,0.4); border-radius:4px; flex-shrink:0; margin-top:1px; display:flex; align-items:center; justify-content:center; font-size:10px; }
+  .sc-box.checked { background:var(--blue); border-color:var(--blue); color:white; }
+  .sc-text { font-size:13px; color:rgba(255,255,255,0.7); line-height:1.4; }
+
+  /* Print */
+  .print-bar { text-align:center; padding:24px; }
+  .btn-print { background:var(--grad); border:none; border-radius:40px; padding:11px 28px; font-size:13px; font-weight:700; color:var(--white); cursor:pointer; font-family:'Inter',Arial,sans-serif; }
+  @media print { body { background:white; } .print-bar { display:none; } }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="top-bar"></div>
+  <div class="header-inner">
+    <div class="h-brand">
+      <div class="logo-wrap">
+        <img src="../assets/DizDaz.png" onerror="this.style.background='linear-gradient(135deg,#0072FF,#00C6FF)'" alt="DizDaz">
+      </div>
+      <div class="h-text">
+        <h1>12-Month Growth Roadmap</h1>
+        <p>DizDaz Cleaning · April 2026 — March 2027</p>
+      </div>
+    </div>
+    <div class="h-metrics">
+      <div class="metric">
+        <div class="n">3–5</div>
+        <div class="l">New contracts<br>target</div>
+      </div>
+      <div class="metric">
+        <div class="n">£7k+</div>
+        <div class="l">Monthly revenue<br>goal</div>
+      </div>
+      <div class="metric">
+        <div class="n">12</div>
+        <div class="l">Months to<br>achieve</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="doc">
+
+  <!-- Goals -->
+  <div class="goals">
+    <div class="goals-title">Strategic Goals</div>
+    <div class="goals-grid">
+      <div class="goal-item">
+        <div class="goal-num">01</div>
+        <div class="goal-label">Reprice</div>
+        <div class="goal-note">Move from 2020 rates to 2025/26 market rates in one clean announcement. Effective within 30 days of letter send.</div>
+      </div>
+      <div class="goal-item">
+        <div class="goal-num">02</div>
+        <div class="goal-label">Grow</div>
+        <div class="goal-note">Win 3–5 new B2B contracts with property managers, Airbnb operators, and short-let hosts in Bristol within 12 months.</div>
+      </div>
+      <div class="goal-item">
+        <div class="goal-num">03</div>
+        <div class="goal-label">Professionalise</div>
+        <div class="goal-note">All 6 brand touchpoints live and consistent. Website, Instagram, service sheet, and letter all signed off within 3 weeks.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Revenue Projection -->
+  <div class="revenue">
+    <div class="revenue-title">Revenue Projection</div>
+    <div class="rev-grid">
+      <div class="rev-item">
+        <div class="rev-label">Current monthly</div>
+        <div class="rev-amount">~£3,960</div>
+        <div class="rev-note">YourApartment at 2020 rates</div>
+      </div>
+      <div class="rev-item">
+        <div class="rev-label">After repricing</div>
+        <div class="rev-amount">~£5,500</div>
+        <div class="rev-note">+£1,540/month from rate increase alone</div>
+      </div>
+      <div class="rev-item">
+        <div class="rev-label">+1 new contract</div>
+        <div class="rev-amount">~£7,500</div>
+        <div class="rev-note">Similar volume to YourApartment</div>
+      </div>
+      <div class="rev-item">
+        <div class="rev-label">+3 new contracts</div>
+        <div class="rev-amount">£11,500+</div>
+        <div class="rev-note">12-month target achieved</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Timeline -->
+  <div class="timeline-title">Phase-by-Phase Plan</div>
+
+  <!-- Phase 1 -->
+  <div class="phase">
+    <div class="phase-header">
+      <div class="phase-months">M1</div>
+      <div class="phase-info">
+        <h3>Launch Month — Reprice, Rebrand, Go Live</h3>
+        <p>April 2026 · This is the big bang. Everything goes out together.</p>
+      </div>
+      <div class="phase-status"><span class="status-tag now">▶ Now</span></div>
+    </div>
+    <div class="phase-tasks">
+      <ul class="task-list">
+        <li class="task-item"><div class="task-check" onclick="this.classList.toggle('done');this.textContent=this.classList.contains('done')?'✓':''"></div><div class="task-text"><strong>Jodie sign-off</strong>Review and approve all 6 deliverables before anything goes live</div></li>
+        <li class="task-item"><div class="task-check" onclick="this.classList.toggle('done');this.textContent=this.classList.contains('done')?'✓':''"></div><div class="task-text"><strong>Send price increase letter</strong>To Attila &amp; Jorge at YourApartment. 30-day notice starts now</div></li>
+        <li class="task-item"><div class="task-check" onclick="this.classList.toggle('done');this.textContent=this.classList.contains('done')?'✓':''"></div><div class="task-text"><strong>Deploy website</strong>CB deploys index.html to dizdaz-cleaning.vercel.app</div></li>
+        <li class="task-item"><div class="task-check" onclick="this.classList.toggle('done');this.textContent=this.classList.contains('done')?'✓':''"></div><div class="task-text"><strong>Activate Instagram</strong>First post live. 4× per week rhythm starts</div></li>
+        <li class="task-item"><div class="task-check" onclick="this.classList.toggle('done');this.textContent=this.classList.contains('done')?'✓':''"></div><div class="task-text"><strong>New rates active</strong>YourApartment invoices at new rates after 30 days</div></li>
+        <li class="task-item"><div class="task-check" onclick="this.classList.toggle('done');this.textContent=this.classList.contains('done')?'✓':''"></div><div class="task-text"><strong>Update invoice app</strong>CB updates room rates in the invoice app to 2025/26 rates</div></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Phase 2 -->
+  <div class="phase">
+    <div class="phase-header">
+      <div class="phase-months">M2–3</div>
+      <div class="phase-info">
+        <h3>Outreach Phase — First 10 Prospects</h3>
+        <p>May–June 2026 · CB builds lead list. Jodie sends personalised service sheet emails.</p>
+      </div>
+      <div class="phase-status"><span class="status-tag next">⏭ Next</span></div>
+    </div>
+    <div class="phase-tasks">
+      <ul class="task-list">
+        <li class="task-item"><div class="task-check" onclick="this.classList.toggle('done');this.textContent=this.classList.contains('done')?'✓':''"></div><div class="task-text"><strong>CB builds prospect list</strong>20 Bristol targets: Pass the Keys, Airbnb superhosts, estate agents with short-let arms</div></li>
+        <li class="task-item"><div class="task-check" onclick="this.classList.toggle('done');this.textContent=this.classList.contains('done')?'✓':''"></div><div class="task-text"><strong>Jodie emails prospects 1–10</strong>Personalised email with service sheet attached. Warm, direct, no pressure</div></li>
+        <li class="task-item"><div class="task-check" onclick="this.classList.toggle('done');this.textContent=this.classList.contains('done')?'✓':''"></div><div class="task-text"><strong>7-day follow-up</strong>One follow-up email if no response after 7 days</div></li>
+        <li class="task-item"><div class="task-check" onclick="this.classList.toggle('done');this.textContent=this.classList.contains('done')?'✓':''"></div><div class="task-text"><strong>Referral ask to YourApartment</strong>Ask Attila/Jorge if they can refer other operators they know in Bristol</div></li>
+        <li class="task-item"><div class="task-check" onclick="this.classList.toggle('done');this.textContent=this.classList.contains('done')?'✓':''"></div><div class="task-text"><strong>Continue Instagram</strong>4× per week. Before/afters, tips, team shots. Build local following</div></li>
+        <li class="task-item"><div class="task-check" onclick="this.classList.toggle('done');this.textContent=this.classList.contains('done')?'✓':''"></div><div class="task-text"><strong>Jodie emails prospects 11–20</strong>Second wave of outreach with any learnings from first 10</div></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Phase 3 -->
+  <div class="phase">
+    <div class="phase-header">
+      <div class="phase-months">M4–6</div>
+      <div class="phase-info">
+        <h3>Conversion Phase — First New Contract</h3>
+        <p>July–September 2026 · Target: sign first new client. Follow-up and network.</p>
+      </div>
+      <div class="phase-status"><span class="status-tag later">◷ Later</span></div>
+    </div>
+    <div class="phase-tasks">
+      <ul class="task-list">
+        <li class="task-item"><div class="task-check" onclick="this.classList.toggle('done');this.textContent=this.classList.contains('done')?'✓':''"></div><div class="task-text"><strong>Follow-up all warm leads</strong>Chase anyone who opened/engaged but didn't respond from earlier outreach</div></li>
+        <li class="task-item"><div class="task-check" onclick="this.classList.toggle('done');this.textContent=this.classList.contains('done')?'✓':''"></div><div class="task-text"><strong>Bristol property networking</strong>Attend 1–2 Bristol property manager events or Airbnb host meetups</div></li>
+        <li class="task-item"><div class="task-check" onclick="this.classList.toggle('done');this.textContent=this.classList.contains('done')?'✓':''"></div><div class="task-text"><strong>Sign first new contract 🎯</strong>Target: at least 1 new B2B cleaning contract by end of Month 6</div></li>
+        <li class="task-item"><div class="task-check" onclick="this.classList.toggle('done');this.textContent=this.classList.contains('done')?'✓':''"></div><div class="task-text"><strong>Review Instagram performance</strong>Which content types drive the most engagement and DMs? Double down on those</div></li>
+        <li class="task-item"><div class="task-check" onclick="this.classList.toggle('done');this.textContent=this.classList.contains('done')?'✓':''"></div><div class="task-text"><strong>Consider Google Business Profile</strong>Set up DizDaz on Google Maps for local search visibility</div></li>
+        <li class="task-item"><div class="task-check" onclick="this.classList.toggle('done');this.textContent=this.classList.contains('done')?'✓':''"></div><div class="task-text"><strong>Referral programme</strong>Ask any new client for referrals immediately after their first month</div></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Phase 4 -->
+  <div class="phase">
+    <div class="phase-header">
+      <div class="phase-months">M7–9</div>
+      <div class="phase-info">
+        <h3>Scale Phase — Hire &amp; Win Contracts 2 &amp; 3</h3>
+        <p>October–December 2026 · If volume grows, hire 1 additional cleaner. Target 3 contracts total.</p>
+      </div>
+      <div class="phase-status"><span class="status-tag later">◷ Later</span></div>
+    </div>
+    <div class="phase-tasks">
+      <ul class="task-list">
+        <li class="task-item"><div class="task-check" onclick="this.classList.toggle('done');this.textContent=this.classList.contains('done')?'✓':''"></div><div class="task-text"><strong>Hire 1 additional cleaner</strong>If workload justifies it. Use existing recruitment ads. Vet thoroughly</div></li>
+        <li class="task-item"><div class="task-check" onclick="this.classList.toggle('done')?'✓':''"></div><div class="task-text"><strong>Win contract #2 🎯</strong>Continue outreach and referral chain. Second contract adds ~£2,000+/month</div></li>
+        <li class="task-item"><div class="task-check" onclick="this.classList.toggle('done');this.textContent=this.classList.contains('done')?'✓':''"></div><div class="task-text"><strong>Win contract #3 🎯</strong>Third contract brings monthly revenue above £9,000</div></li>
+        <li class="task-item"><div class="task-check" onclick="this.classList.toggle('done');this.textContent=this.classList.contains('done')?'✓':''"></div><div class="task-text"><strong>Update invoice app for new clients</strong>CB adds new property rooms and rates to the invoice app</div></li>
+        <li class="task-item"><div class="task-check" onclick="this.classList.toggle('done');this.textContent=this.classList.contains('done')?'✓':''"></div><div class="task-text"><strong>Review brand consistency</strong>Are all new client communications matching the brand standards?</div></li>
+        <li class="task-item"><div class="task-check" onclick="this.classList.toggle('done');this.textContent=this.classList.contains('done')?'✓':''"></div><div class="task-text"><strong>Christmas push</strong>Short-let bookings spike in Dec/Jan. Promote availability on Instagram</div></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Phase 5 -->
+  <div class="phase">
+    <div class="phase-header">
+      <div class="phase-months">M10–12</div>
+      <div class="phase-info">
+        <h3>Review &amp; Optimise — Contracts 4 &amp; 5</h3>
+        <p>January–March 2027 · Year-end review, fourth and fifth contracts, consider domain and branding upgrades.</p>
+      </div>
+      <div class="phase-status"><span class="status-tag later">◷ Later</span></div>
+    </div>
+    <div class="phase-tasks">
+      <ul class="task-list">
+        <li class="task-item"><div class="task-check" onclick="this.classList.toggle('done');this.textContent=this.classList.contains('done')?'✓':''"></div><div class="task-text"><strong>Annual pricing review</strong>Are current rates still competitive? Adjust if needed</div></li>
+        <li class="task-item"><div class="task-check" onclick="this.classList.toggle('done');this.textContent=this.classList.contains('done')?'✓':''"></div><div class="task-text"><strong>Target contracts 4 &amp; 5 🎯</strong>Push to hit the 3–5 contract goal by end of Month 12</div></li>
+        <li class="task-item"><div class="task-check" onclick="this.classList.toggle('done');this.textContent=this.classList.contains('done')?'✓':''"></div><div class="task-text"><strong>Consider custom domain</strong>dizdazcleaning.co.uk or similar — ~£12/year. CB migrates from Vercel subdomain</div></li>
+        <li class="task-item"><div class="task-check" onclick="this.classList.toggle('done');this.textContent=this.classList.contains('done')?'✓':''"></div><div class="task-text"><strong>Consider branded uniform</strong>DizDaz-branded t-shirts/hoodies for team. Professionalism signal for B2B clients</div></li>
+        <li class="task-item"><div class="task-check" onclick="this.classList.toggle('done');this.textContent=this.classList.contains('done')?'✓':''"></div><div class="task-text"><strong>12-month retrospective</strong>Jodie and CB review what worked, what didn't. Set Year 2 plan</div></li>
+        <li class="task-item"><div class="task-check" onclick="this.classList.toggle('done');this.textContent=this.classList.contains('done')?'✓':''"></div><div class="task-text"><strong>Monthly revenue £7,000+ ✅</strong>Primary financial goal achieved</div></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Target prospects -->
+  <div class="prospects">
+    <div class="prospects-title">Priority Prospect Targets — Bristol</div>
+    <div class="prospect-grid">
+      <div class="prospect-item">
+        <div class="prospect-icon">🔑</div>
+        <div class="prospect-text">
+          <h4>Pass the Keys Bristol</h4>
+          <p>Airbnb management franchise. High volume. Multiple properties. Perfect fit for DizDaz's model.</p>
+        </div>
+      </div>
+      <div class="prospect-item">
+        <div class="prospect-icon">🏠</div>
+        <div class="prospect-text">
+          <h4>Bristol Airbnb Superhosts</h4>
+          <p>Identifiable via Airbnb search. Hosts managing 3+ properties are ideal targets for a B2B cleaning contract.</p>
+        </div>
+      </div>
+      <div class="prospect-item">
+        <div class="prospect-icon">🏢</div>
+        <div class="prospect-text">
+          <h4>Estate Agents with Short-Let Arms</h4>
+          <p>Local Bristol agents offering property management services. They need reliable cleaning partners for their landlord clients.</p>
+        </div>
+      </div>
+      <div class="prospect-item">
+        <div class="prospect-icon">🏨</div>
+        <div class="prospect-text">
+          <h4>Serviced Apartment Operators</h4>
+          <p>Companies similar to YourApartment managing multiple serviced apartments in Bristol city centre or Clifton.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success criteria -->
+  <div class="success">
+    <div class="success-title">Success Criteria — 12 Months</div>
+    <div class="success-grid">
+      <div class="sc-item" onclick="let b=this.querySelector('.sc-box');b.classList.toggle('checked');b.textContent=b.classList.contains('checked')?'✓':''">
+        <div class="sc-box"></div>
+        <div class="sc-text">Price increase letter sent to YourApartment within 1 week of sign-off</div>
+      </div>
+      <div class="sc-item" onclick="let b=this.querySelector('.sc-box');b.classList.toggle('checked');b.textContent=b.classList.contains('checked')?'✓':''">
+        <div class="sc-box"></div>
+        <div class="sc-text">New 2025/26 rates active with YourApartment within 30 days</div>
+      </div>
+      <div class="sc-item" onclick="let b=this.querySelector('.sc-box');b.classList.toggle('checked');b.textContent=b.classList.contains('checked')?'✓':''">
+        <div class="sc-box"></div>
+        <div class="sc-text">Website live at dizdaz-cleaning.vercel.app</div>
+      </div>
+      <div class="sc-item" onclick="let b=this.querySelector('.sc-box');b.classList.toggle('checked');b.textContent=b.classList.contains('checked')?'✓':''">
+        <div class="sc-box"></div>
+        <div class="sc-text">Service sheet ready to send to first prospect by end of Month 1</div>
+      </div>
+      <div class="sc-item" onclick="let b=this.querySelector('.sc-box');b.classList.toggle('checked');b.textContent=b.classList.contains('checked')?'✓':''">
+        <div class="sc-box"></div>
+        <div class="sc-text">Instagram posting consistently 4× per week</div>
+      </div>
+      <div class="sc-item" onclick="let b=this.querySelector('.sc-box');b.classList.toggle('checked');b.textContent=b.classList.contains('checked')?'✓':''">
+        <div class="sc-box"></div>
+        <div class="sc-text">First new client contract signed within 4–6 months</div>
+      </div>
+      <div class="sc-item" onclick="let b=this.querySelector('.sc-box');b.classList.toggle('checked');b.textContent=b.classList.contains('checked')?'✓':''">
+        <div class="sc-box"></div>
+        <div class="sc-text">3 new contracts total within 12 months</div>
+      </div>
+      <div class="sc-item" onclick="let b=this.querySelector('.sc-box');b.classList.toggle('checked');b.textContent=b.classList.contains('checked')?'✓':''">
+        <div class="sc-box"></div>
+        <div class="sc-text">Monthly revenue above £7,000 within 12 months</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="print-bar">
+  <button class="btn-print" onclick="window.print()">🖨 Print / Save as PDF</button>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DizDaz Cleaning — Rate Review Letter to YourApartment</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+  :root {
+    --navy:  #030810;
+    --blue:  #0072FF;
+    --cyan:  #00C6FF;
+    --white: #FFFFFF;
+    --border: rgba(0,114,255,0.18);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', Arial, sans-serif;
+    background: #F7F9FC;
+    color: #1a2035;
+  }
+
+  .page {
+    max-width: 760px;
+    margin: 40px auto;
+    background: var(--white);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.10);
+  }
+
+  /* ── LETTERHEAD ── */
+  .letterhead {
+    background: var(--navy);
+    padding: 36px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+  }
+  .letterhead::before {
+    content: '';
+    position: absolute;
+    top: -100px; right: -80px;
+    width: 350px; height: 350px;
+    background: radial-gradient(ellipse, rgba(0,114,255,0.25) 0%, transparent 65%);
+  }
+  .top-bar {
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--blue), var(--cyan), var(--blue));
+  }
+  .lh-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    position: relative; z-index: 1;
+  }
+  .logo-wrap {
+    width: 72px; height: 72px;
+    border-radius: 50%; overflow: hidden;
+    box-shadow: 0 0 30px rgba(0,114,255,0.6);
+    border: 2px solid rgba(0,198,255,0.4);
+    flex-shrink: 0;
+  }
+  .logo-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .lh-brand h1 {
+    font-size: 22px; font-weight: 900; color: var(--white);
+    letter-spacing: -0.3px;
+  }
+  .lh-brand p {
+    font-size: 12px; color: rgba(255,255,255,0.5);
+    margin-top: 2px;
+  }
+  .lh-right {
+    text-align: right;
+    position: relative; z-index: 1;
+  }
+  .lh-right p { font-size: 12px; color: rgba(255,255,255,0.55); line-height: 1.7; }
+  .lh-right strong { color: rgba(255,255,255,0.85); }
+
+  /* ── LETTER BODY ── */
+  .letter {
+    padding: 48px 56px;
+  }
+  .date-block {
+    font-size: 13px;
+    color: #8a9bb8;
+    margin-bottom: 32px;
+  }
+  .recipient {
+    margin-bottom: 32px;
+  }
+  .recipient p {
+    font-size: 14px;
+    color: #2c3e60;
+    line-height: 1.8;
+  }
+  .recipient strong { color: #0c1630; font-weight: 700; }
+
+  .subject-line {
+    background: linear-gradient(135deg, #f0f5ff, #e8f0fe);
+    border-left: 4px solid var(--blue);
+    border-radius: 0 8px 8px 0;
+    padding: 14px 20px;
+    margin-bottom: 32px;
+  }
+  .subject-line p {
+    font-size: 14px;
+    font-weight: 700;
+    color: #0c1630;
+  }
+
+  .body-text {
+    font-size: 15px;
+    color: #2c3e60;
+    line-height: 1.85;
+    margin-bottom: 22px;
+  }
+  .body-text strong { color: #0c1630; }
+
+  /* ── PRICING TABLE ── */
+  .rate-section {
+    margin: 36px 0;
+  }
+  .rate-section-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin-bottom: 14px;
+  }
+  .rate-table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #dde6f8;
+    margin-bottom: 16px;
+  }
+  .rate-table thead tr {
+    background: var(--navy);
+  }
+  .rate-table thead th {
+    padding: 12px 18px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--cyan);
+    text-align: left;
+  }
+  .rate-table thead th:not(:first-child) { text-align: center; }
+  .rate-table tbody tr {
+    border-bottom: 1px solid #eef2fb;
+  }
+  .rate-table tbody tr:last-child { border-bottom: none; }
+  .rate-table tbody td {
+    padding: 13px 18px;
+    font-size: 13px;
+    color: #2c3e60;
+  }
+  .rate-table tbody td:not(:first-child) { text-align: center; }
+  .rate-table .old { color: #aab; text-decoration: line-through; }
+  .rate-table .new { font-weight: 700; color: var(--blue); }
+  .rate-table .note { font-size: 11px; color: #8a9bb8; font-style: italic; }
+  .rate-table tbody tr:nth-child(even) { background: #f9fbff; }
+
+  .effective-date-box {
+    background: linear-gradient(135deg, var(--navy), #0a1428);
+    border-radius: 10px;
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 8px;
+  }
+  .edb-icon {
+    width: 40px; height: 40px;
+    background: linear-gradient(135deg, var(--blue), var(--cyan));
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .edb-text p { font-size: 12px; color: rgba(255,255,255,0.55); }
+  .edb-text strong { font-size: 14px; color: var(--white); display: block; margin-top: 2px; }
+
+  /* ── SIGN-OFF ── */
+  .signoff {
+    margin-top: 40px;
+  }
+  .signoff p {
+    font-size: 15px;
+    color: #2c3e60;
+    line-height: 1.85;
+    margin-bottom: 22px;
+  }
+  .signature-block {
+    margin-top: 36px;
+    padding-top: 28px;
+    border-top: 1px solid #eef2fb;
+  }
+  .sig-name {
+    font-size: 22px;
+    font-weight: 800;
+    color: #0c1630;
+    font-style: italic;
+    margin-bottom: 4px;
+  }
+  .sig-title {
+    font-size: 13px;
+    color: #8a9bb8;
+    margin-bottom: 2px;
+  }
+  .sig-contact {
+    font-size: 13px;
+    color: var(--blue);
+    margin-top: 8px;
+  }
+
+  /* ── FOOTER ── */
+  .letter-footer {
+    background: #f7f9fc;
+    border-top: 1px solid #dde6f8;
+    padding: 18px 56px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    color: #aab;
+  }
+
+  /* ── PRINT BUTTON ── */
+  .print-bar {
+    text-align: center;
+    padding: 24px;
+    background: #f0f4ff;
+  }
+  .btn-print {
+    background: linear-gradient(90deg, var(--blue), var(--cyan));
+    border: none;
+    border-radius: 40px;
+    padding: 12px 32px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--white);
+    cursor: pointer;
+    font-family: 'Inter', Arial, sans-serif;
+    letter-spacing: 0.5px;
+  }
+  .btn-print:hover { opacity: 0.9; }
+
+  .review-note {
+    display: block;
+    background: #fff8e6;
+    border: 1px solid #f0c040;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 12px;
+    color: #7a5c00;
+    margin: 0 56px 24px;
+    text-align: center;
+  }
+
+  @media print {
+    body { background: white; }
+    .page { box-shadow: none; border-radius: 0; margin: 0; }
+    .print-bar, .review-note { display: none !important; }
+    .letter { padding: 32px 40px; }
+    .letterhead { padding: 24px 40px; }
+    .letter-footer { padding: 14px 40px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- Letterhead -->
+  <div class="letterhead">
+    <div class="top-bar"></div>
+    <div class="lh-left">
+      <div class="logo-wrap">
+        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAAsTAAALEwEAmpwYAAADsElEQVR4nO2ZW0hUQRjHf2tWSpaVlZWWZVlWlmVZWZZlWZZlWZZlWZZlWZZlWZZlWZZlWe////8/Z87szO7Mzp7dXdNE8qFAMB+EFCqQHqQHqQfpQXqQHqQHqQfpQXqQHqQHqUF6kB6kB+lBepAepAfpQXqQHqQH6UF6kB6kB+lBepAepAepAekBekAekAekAekAekAekAekAekAekAekAekAekAekAekAekAekAekAekAekAekAekAekAekAekAekAekAekAekAekAekAekAekAekAekAekAekAekAekAekAekAekAekAekAekAekAekAekAekAekAekAekAekAekAekAekAekAekAekAekAekAekAekAekA" alt="DizDaz">
+      </div>
+      <div class="lh-brand">
+        <h1>DizDaz Cleaning</h1>
+        <p>Bristol's Short-Let Specialist</p>
+      </div>
+    </div>
+    <div class="lh-right">
+      <p><strong>Jodie Francis</strong><br>
+      Abbottsford Road<br>
+      Bristol BS6 6EF<br>
+      07914 101113<br>
+      dizdazcleaning@gmail.com</p>
+    </div>
+  </div>
+
+  <!-- Review Note (hidden on print) -->
+  <span class="review-note">
+    ⚠️ <strong>Jodie — please review before sending.</strong> Check the effective date below and confirm the wording before this letter is sent to YourApartment.
+  </span>
+
+  <!-- Letter Body -->
+  <div class="letter">
+
+    <div class="date-block">
+      <span id="letterDate"></span>
+    </div>
+
+    <div class="recipient">
+      <p>
+        <strong>Attila &amp; Jorge</strong><br>
+        YourApartment<br>
+        24-26 Regent Street, Clifton<br>
+        Bristol BS8 4HG
+      </p>
+    </div>
+
+    <div class="subject-line">
+      <p>Re: DizDaz Cleaning — 2025/26 Rate Review</p>
+    </div>
+
+    <p class="body-text">Dear Attila and Jorge,</p>
+
+    <p class="body-text">
+      I hope this finds you both well. I'm writing to give you advance notice of a change to DizDaz's cleaning rates, effective 30 days from the date of this letter.
+    </p>
+
+    <p class="body-text">
+      First, I want to say how much we value the working relationship we've built with YourApartment over the past five years. The team has been a pleasure to work with, and we're proud of the standard we've maintained across Berkeley Square and Brunel Loft. That continuity and reliability is something we intend to keep delivering, and we're genuinely looking forward to continuing the partnership.
+    </p>
+
+    <p class="body-text">
+      That said, our operating costs have risen significantly since we set our current rates in 2020 — costs for materials, transport, and fair pay for our team have all increased in line with the broader rise in prices across the UK. After five years without a review, we need to bring our rates in line with the current market to continue operating sustainably and maintaining the service quality you expect from us.
+    </p>
+
+    <p class="body-text">
+      The new rates across both properties are set out below. For Berkeley Square, the new rates reflect the three existing room tiers. For Brunel Loft, we're also formally establishing a per-room rate for the first time — this is simply a formalisation of the ongoing service rather than a new charge.
+    </p>
+
+    <!-- Pricing Table -->
+    <div class="rate-section">
+      <div class="rate-section-title">4 Berkeley Square — Room Rates</div>
+      <table class="rate-table">
+        <thead>
+          <tr>
+            <th>Room Tier</th>
+            <th>Rooms</th>
+            <th>Current Rate</th>
+            <th>New Rate (2025/26)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Small</td>
+            <td>6, 9</td>
+            <td class="old">£12.50</td>
+            <td class="new">£18.00</td>
+          </tr>
+          <tr>
+            <td>Mid</td>
+            <td>2, 3, 8, 10, 12–15</td>
+            <td class="old">£15.00</td>
+            <td class="new">£22.00</td>
+          </tr>
+          <tr>
+            <td>Large</td>
+            <td>1, 4, 5, 7, 11</td>
+            <td class="old">£22.50</td>
+            <td class="new">£32.00</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="rate-section-title">Brunel Loft — Room Rates</div>
+      <table class="rate-table">
+        <thead>
+          <tr>
+            <th>Property</th>
+            <th>Rooms</th>
+            <th>Previous Rate</th>
+            <th>New Rate (2025/26)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Brunel Loft</td>
+            <td>1, 2, 3</td>
+            <td class="note">Not formally priced</td>
+            <td class="new">£25.00</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="effective-date-box">
+        <div class="edb-icon">📅</div>
+        <div class="edb-text">
+          <p>New rates take effect</p>
+          <strong id="effectiveDate">30 days from the date of this letter</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="signoff">
+      <p class="body-text">
+        I understand that any change to costs needs to be planned for, which is why I'm giving you 30 days' notice before the new rates come into effect. If you have any questions about the rates or would like to talk them through, please don't hesitate to call or message me directly.
+      </p>
+
+      <p class="body-text">
+        We truly appreciate the trust you've placed in DizDaz, and we're committed to continuing to deliver the consistent, reliable service your properties and guests deserve. Thank you for your understanding, and for five great years of working together.
+      </p>
+
+      <p class="body-text">Warm regards,</p>
+
+      <div class="signature-block">
+        <div class="sig-name">Jodie Francis</div>
+        <div class="sig-title">Owner — DizDaz Cleaning</div>
+        <div class="sig-contact">07914 101113 &nbsp;·&nbsp; dizdazcleaning@gmail.com</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <div class="letter-footer">
+    <span>DizDaz Cleaning · Abbottsford Road, Bristol BS6 6EF</span>
+    <span>dizdazcleaning@gmail.com · 07914 101113</span>
+  </div>
+
+  <!-- Print Button -->
+  <div class="print-bar">
+    <button class="btn-print" onclick="window.print()">🖨 Print / Save as PDF</button>
+  </div>
+
+</div>
+
+<script>
+  // Auto-populate the date
+  const today = new Date();
+  const opts = { day: 'numeric', month: 'long', year: 'numeric' };
+  document.getElementById('letterDate').textContent = today.toLocaleDateString('en-GB', opts);
+
+  const eff = new Date(today);
+  eff.setDate(eff.getDate() + 30);
+  document.getElementById('effectiveDate').textContent = eff.toLocaleDateString('en-GB', opts);
+</script>
+</body>
+</html>

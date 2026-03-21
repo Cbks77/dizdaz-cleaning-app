@@ -1,13 +1,793 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My Google AI Studio App</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
-</html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="DizDaz Cleaning — Bristol's specialist cleaning company for Airbnb hosts and short-let property operators. Guest-ready standards, every time.">
+<meta name="keywords" content="cleaning Bristol, Airbnb cleaning Bristol, short let cleaning, serviced apartment cleaning Bristol, DizDaz">
+<title>DizDaz Cleaning — Bristol's Short-Let Specialist</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
+  :root {
+    --navy:  #030810;
+    --blue:  #0072FF;
+    --cyan:  #00C6FF;
+    --white: #FFFFFF;
+    --grey:  #8A9BB8;
+    --light: #F0F4FF;
+    --grad:  linear-gradient(90deg, #0072FF, #00C6FF);
+    --border: rgba(0,114,255,0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', Arial, sans-serif;
+    background: var(--white);
+    color: #1a2035;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(3,8,16,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(0,114,255,0.15);
+    padding: 0 5%;
+  }
+  .nav-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 68px;
+  }
+  .nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+  }
+  .nav-logo {
+    width: 40px; height: 40px;
+    border-radius: 50%; overflow: hidden;
+    box-shadow: 0 0 16px rgba(0,114,255,0.5);
+    border: 1.5px solid rgba(0,198,255,0.4);
+  }
+  .nav-logo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .nav-wordmark {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--white);
+  }
+  .nav-links {
+    display: flex;
+    gap: 32px;
+    list-style: none;
+  }
+  .nav-links a {
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.6);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--cyan); }
+  .nav-cta {
+    background: var(--grad);
+    border: none;
+    border-radius: 40px;
+    padding: 9px 22px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--white);
+    cursor: pointer;
+    text-decoration: none;
+    font-family: 'Inter', Arial, sans-serif;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    background: var(--navy);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    padding: 120px 5% 80px;
+  }
+  .hero-glow-1 {
+    position: absolute;
+    top: -150px; left: 50%;
+    transform: translateX(-20%);
+    width: 900px; height: 600px;
+    background: radial-gradient(ellipse, rgba(0,114,255,0.28) 0%, transparent 65%);
+    pointer-events: none;
+  }
+  .hero-glow-2 {
+    position: absolute;
+    bottom: -100px; left: -100px;
+    width: 500px; height: 500px;
+    background: radial-gradient(ellipse, rgba(0,198,255,0.12) 0%, transparent 65%);
+    pointer-events: none;
+  }
+  .hero-top-bar {
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 4px;
+    background: var(--grad);
+  }
+  .hero-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: 80px;
+    position: relative; z-index: 2;
+  }
+  .hero-eyebrow {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 18px;
+  }
+  .hero h1 {
+    font-size: 58px;
+    font-weight: 900;
+    color: var(--white);
+    line-height: 1.05;
+    margin-bottom: 20px;
+  }
+  .hero h1 span {
+    background: var(--grad);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero-sub {
+    font-size: 18px;
+    color: rgba(255,255,255,0.6);
+    line-height: 1.65;
+    margin-bottom: 36px;
+    max-width: 440px;
+  }
+  .hero-actions {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .btn-primary {
+    background: var(--grad);
+    border: none; border-radius: 50px;
+    padding: 14px 32px;
+    font-size: 15px; font-weight: 700;
+    color: var(--white); cursor: pointer;
+    text-decoration: none;
+    box-shadow: 0 8px 32px rgba(0,114,255,0.4);
+    transition: transform 0.2s, box-shadow 0.2s;
+    font-family: 'Inter', Arial, sans-serif;
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(0,114,255,0.5); }
+  .btn-secondary {
+    font-size: 15px; font-weight: 600;
+    color: rgba(255,255,255,0.7);
+    text-decoration: none;
+    display: flex; align-items: center; gap: 6px;
+    transition: color 0.2s;
+  }
+  .btn-secondary:hover { color: var(--cyan); }
+
+  .hero-right {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .stat-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(0,114,255,0.2);
+    border-radius: 12px;
+    padding: 22px 24px;
+    backdrop-filter: blur(8px);
+  }
+  .stat-card .num {
+    font-size: 36px;
+    font-weight: 900;
+    background: var(--grad);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .stat-card .label { font-size: 14px; color: rgba(255,255,255,0.55); }
+
+  /* ── SECTION SHARED ── */
+  .section {
+    padding: 96px 5%;
+  }
+  .section-inner { max-width: 1100px; margin: 0 auto; }
+  .section-eyebrow {
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 4px; text-transform: uppercase;
+    color: var(--blue); margin-bottom: 10px;
+  }
+  .section-title {
+    font-size: 38px; font-weight: 900;
+    color: #0c1630; line-height: 1.1;
+    margin-bottom: 14px;
+  }
+  .section-sub {
+    font-size: 17px; color: #6a7a99;
+    max-width: 560px; line-height: 1.65;
+    margin-bottom: 48px;
+  }
+  .section-rule {
+    width: 48px; height: 3px;
+    background: var(--grad); border-radius: 2px;
+    margin-bottom: 18px;
+  }
+
+  /* ── WHAT WE DO ── */
+  .what-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+  .what-text { }
+  .service-list { list-style: none; }
+  .service-list li {
+    display: flex;
+    gap: 16px;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .service-list li:last-child { border-bottom: none; }
+  .s-icon {
+    width: 44px; height: 44px;
+    background: linear-gradient(135deg, var(--blue), var(--cyan));
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+  }
+  .s-text h3 { font-size: 15px; font-weight: 700; color: #0c1630; margin-bottom: 4px; }
+  .s-text p { font-size: 13px; color: #6a7a99; line-height: 1.5; }
+  .what-image {
+    background: var(--navy);
+    border-radius: 16px;
+    padding: 32px;
+    border: 1px solid var(--border);
+    position: sticky;
+    top: 88px;
+  }
+  .wi-stat { margin-bottom: 20px; }
+  .wi-stat .n { font-size: 48px; font-weight: 900; background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1; }
+  .wi-stat .l { font-size: 13px; color: rgba(255,255,255,0.5); margin-top: 4px; }
+  .wi-divider { height: 1px; background: rgba(0,114,255,0.2); margin: 20px 0; }
+  .wi-quote { font-size: 14px; color: rgba(255,255,255,0.6); font-style: italic; line-height: 1.65; }
+  .wi-quote-author { font-size: 12px; color: rgba(255,255,255,0.35); margin-top: 10px; }
+
+  /* ── WHY DIZDAZ ── */
+  .why-section { background: var(--light); }
+  .adv-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  .adv-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px 24px;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .adv-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,114,255,0.1); }
+  .adv-icon {
+    width: 48px; height: 48px;
+    background: var(--grad);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    margin-bottom: 16px;
+  }
+  .adv-card h3 { font-size: 15px; font-weight: 700; color: #0c1630; margin-bottom: 8px; }
+  .adv-card p { font-size: 13px; color: #6a7a99; line-height: 1.6; }
+
+  /* ── PRICING ── */
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  .pricing-card {
+    background: var(--navy);
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid rgba(0,114,255,0.2);
+  }
+  .pc-header {
+    padding: 22px 28px;
+    background: rgba(0,114,255,0.1);
+    border-bottom: 1px solid rgba(0,114,255,0.15);
+  }
+  .pc-header h3 { font-size: 17px; font-weight: 800; color: var(--white); }
+  .pc-header p { font-size: 12px; color: rgba(255,255,255,0.45); margin-top: 3px; }
+  .pc-rates { padding: 20px 28px; }
+  .pc-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .pc-row:last-child { border-bottom: none; }
+  .pc-label { font-size: 13px; color: rgba(255,255,255,0.6); }
+  .pc-label span { font-size: 11px; color: rgba(255,255,255,0.3); display: block; margin-top: 1px; }
+  .pc-price { font-size: 20px; font-weight: 800; background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .pricing-note {
+    grid-column: 1 / -1;
+    background: var(--light);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 22px;
+    font-size: 13px;
+    color: #6a7a99;
+    text-align: center;
+  }
+
+  /* ── TESTIMONIAL ── */
+  .testimonial-section { background: var(--navy); position: relative; overflow: hidden; }
+  .testimonial-section::before {
+    content: ''; position: absolute;
+    top: -200px; left: 50%; transform: translateX(-50%);
+    width: 800px; height: 500px;
+    background: radial-gradient(ellipse, rgba(0,114,255,0.2) 0%, transparent 65%);
+  }
+  .testimonial-section .section-title { color: var(--white); }
+  .testimonial-section .section-sub { color: rgba(255,255,255,0.5); }
+  .test-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(0,114,255,0.2);
+    border-radius: 14px;
+    padding: 36px 40px;
+    position: relative; z-index: 1;
+    max-width: 720px;
+  }
+  .test-quote {
+    font-size: 20px; font-weight: 500;
+    color: var(--white); line-height: 1.65;
+    font-style: italic;
+    margin-bottom: 24px;
+  }
+  .test-attr {
+    font-size: 13px; color: rgba(255,255,255,0.45);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .test-attr::before { content: '—'; }
+
+  /* ── CONTACT ── */
+  .contact-inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: start;
+  }
+  .contact-info p { font-size: 15px; color: #2c3e60; line-height: 1.8; margin-bottom: 28px; }
+  .contact-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .contact-item:last-child { border-bottom: none; }
+  .ci-icon {
+    width: 40px; height: 40px;
+    background: var(--grad);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+  }
+  .ci-text { }
+  .ci-text p { font-size: 12px; color: var(--grey); }
+  .ci-text a, .ci-text strong { font-size: 15px; font-weight: 600; color: #0c1630; text-decoration: none; }
+  .ci-text a:hover { color: var(--blue); }
+
+  .contact-form-area {
+    background: var(--light);
+    border-radius: 14px;
+    padding: 32px;
+    border: 1px solid var(--border);
+  }
+  .form-title { font-size: 18px; font-weight: 800; color: #0c1630; margin-bottom: 6px; }
+  .form-sub { font-size: 13px; color: #6a7a99; margin-bottom: 24px; }
+  .form-group { margin-bottom: 16px; }
+  .form-group label { font-size: 12px; font-weight: 600; color: #2c3e60; display: block; margin-bottom: 6px; }
+  .form-group input, .form-group textarea, .form-group select {
+    width: 100%;
+    background: var(--white);
+    border: 1px solid #ccd8f0;
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 14px;
+    color: #1a2035;
+    font-family: 'Inter', Arial, sans-serif;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: var(--blue); }
+  .form-group textarea { resize: vertical; min-height: 100px; }
+  .btn-form {
+    width: 100%;
+    background: var(--grad);
+    border: none; border-radius: 50px;
+    padding: 14px;
+    font-size: 15px; font-weight: 700;
+    color: var(--white); cursor: pointer;
+    font-family: 'Inter', Arial, sans-serif;
+    margin-top: 4px;
+  }
+  .btn-form:hover { opacity: 0.9; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--navy);
+    border-top: 1px solid rgba(0,114,255,0.15);
+    padding: 36px 5%;
+  }
+  .footer-inner {
+    max-width: 1100px; margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .footer-brand { display: flex; align-items: center; gap: 10px; }
+  .footer-logo {
+    width: 32px; height: 32px;
+    border-radius: 50%; overflow: hidden;
+    border: 1.5px solid rgba(0,198,255,0.3);
+  }
+  .footer-logo img { width: 100%; height: 100%; object-fit: cover; }
+  .footer-wordmark { font-size: 14px; font-weight: 800; color: var(--white); }
+  .footer-links { display: flex; gap: 24px; }
+  .footer-links a { font-size: 13px; color: rgba(255,255,255,0.4); text-decoration: none; }
+  .footer-links a:hover { color: var(--cyan); }
+  .footer-copy { font-size: 12px; color: rgba(255,255,255,0.25); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    .nav-links { display: none; }
+    .hero-inner { grid-template-columns: 1fr; gap: 40px; }
+    .hero h1 { font-size: 40px; }
+    .hero-right { flex-direction: row; flex-wrap: wrap; }
+    .stat-card { flex: 1; min-width: 140px; }
+    .what-grid { grid-template-columns: 1fr; }
+    .adv-grid { grid-template-columns: 1fr 1fr; }
+    .pricing-grid { grid-template-columns: 1fr; }
+    .contact-inner { grid-template-columns: 1fr; }
+    .section-title { font-size: 28px; }
+    .footer-inner { flex-direction: column; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="nav-brand">
+      <div class="nav-logo">
+        <img src="assets/DizDaz.png" onerror="this.style.background='linear-gradient(135deg,#0072FF,#00C6FF)'" alt="DizDaz">
+      </div>
+      <span class="nav-wordmark">DizDaz</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#services">Services</a></li>
+      <li><a href="#why">Why DizDaz</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <a href="#contact" class="nav-cta">Get a Quote</a>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="hero-glow-1"></div>
+  <div class="hero-glow-2"></div>
+  <div class="hero-top-bar"></div>
+  <div class="hero-inner">
+    <div class="hero-left">
+      <div class="hero-eyebrow">Bristol's Short-Let Specialist</div>
+      <h1>Guest-Ready.<br>Every <span>Single</span> Time.</h1>
+      <p class="hero-sub">Professional cleaning for Airbnb hosts, short-let operators, and serviced apartment managers across Bristol. Reliable, consistent, and built around your schedule.</p>
+      <div class="hero-actions">
+        <a href="#contact" class="btn-primary">Get a Quote →</a>
+        <a href="#services" class="btn-secondary">See what we do ↓</a>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="stat-card">
+        <div class="num">5+</div>
+        <div class="label">Years serving Bristol's short-let sector</div>
+      </div>
+      <div class="stat-card">
+        <div class="num">18</div>
+        <div class="label">Rooms cleaned across multiple properties</div>
+      </div>
+      <div class="stat-card">
+        <div class="num">100%</div>
+        <div class="label">Guest-ready standard, every clean</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── WHAT WE DO ── -->
+<section class="section" id="services">
+  <div class="section-inner">
+    <div class="what-grid">
+      <div class="what-text">
+        <div class="section-eyebrow">What We Do</div>
+        <div class="section-rule"></div>
+        <h2 class="section-title">Cleaning Built for the Short-Let Sector</h2>
+        <p class="section-sub">We work exclusively with Airbnb hosts and short-let property managers. Everything we do is designed around guest turnovers — not domestic weekly cleans.</p>
+        <ul class="service-list">
+          <li>
+            <div class="s-icon">🏠</div>
+            <div class="s-text">
+              <h3>Airbnb Turnovers</h3>
+              <p>Full guest-ready clean between checkout and check-in. Linen, surfaces, bathrooms, kitchen — all done to hotel standard.</p>
+            </div>
+          </li>
+          <li>
+            <div class="s-icon">🏢</div>
+            <div class="s-text">
+              <h3>Serviced Apartments</h3>
+              <p>Ongoing cleaning contracts for serviced apartment operators. Daily or per-stay, invoiced monthly for easy management.</p>
+            </div>
+          </li>
+          <li>
+            <div class="s-icon">📦</div>
+            <div class="s-text">
+              <h3>Short-Let Portfolios</h3>
+              <p>Managing multiple properties? We handle the cleaning across your whole portfolio with consistent standards and simple invoicing.</p>
+            </div>
+          </li>
+          <li>
+            <div class="s-icon">⏰</div>
+            <div class="s-text">
+              <h3>Checkout Window Timing</h3>
+              <p>We operate 10am–3pm — perfectly timed for the standard checkout/check-in window. Guests never overlap with cleaners.</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="what-image">
+        <div class="wi-stat">
+          <div class="n">5 yrs</div>
+          <div class="l">Uninterrupted service for YourApartment Bristol</div>
+        </div>
+        <div class="wi-divider"></div>
+        <div class="wi-stat">
+          <div class="n">10am–3pm</div>
+          <div class="l">Operating window — fits every checkout/check-in</div>
+        </div>
+        <div class="wi-divider"></div>
+        <div class="wi-quote">"The team show up, they know what to do, and every room is guest-ready when they leave. That's all we need."</div>
+        <div class="wi-quote-author">— YourApartment, Bristol</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── WHY DIZDAZ ── -->
+<section class="section why-section" id="why">
+  <div class="section-inner">
+    <div class="section-eyebrow">Why DizDaz</div>
+    <div class="section-rule"></div>
+    <h2 class="section-title">Six Reasons to Choose Us</h2>
+    <p class="section-sub">We're not a general cleaning company that dabbles in Airbnbs. Short-let cleaning is all we do — and we do it very well.</p>
+    <div class="adv-grid">
+      <div class="adv-card">
+        <div class="adv-icon">🏠</div>
+        <h3>Short-Let Specialist</h3>
+        <p>Built specifically for Airbnb and serviced apartment turnovers. We know exactly what a guest-ready room looks like.</p>
+      </div>
+      <div class="adv-card">
+        <div class="adv-icon">✅</div>
+        <h3>Same Team, Every Time</h3>
+        <p>Consistent staff means consistent results. No re-briefing, no surprises — just the same high standard, every clean.</p>
+      </div>
+      <div class="adv-card">
+        <div class="adv-icon">⏰</div>
+        <h3>Flexible Hours</h3>
+        <p>10am–3pm, timed around your checkout/check-in window. Guests and cleaners never collide.</p>
+      </div>
+      <div class="adv-card">
+        <div class="adv-icon">📍</div>
+        <h3>Bristol-Based</h3>
+        <p>We're local. Fast response times, local knowledge, no long-distance logistics. If you're in Bristol, we're nearby.</p>
+      </div>
+      <div class="adv-card">
+        <div class="adv-icon">🤝</div>
+        <h3>Proven Track Record</h3>
+        <p>Five years of uninterrupted service for a Bristol serviced apartment operator. We don't just promise reliability — we've delivered it.</p>
+      </div>
+      <div class="adv-card">
+        <div class="adv-icon">📲</div>
+        <h3>Tech-Enabled</h3>
+        <p>Custom invoicing app, AI room tracking, Google Drive backups. Professionally run and easy to work with operationally.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PRICING ── -->
+<section class="section" id="pricing">
+  <div class="section-inner">
+    <div class="section-eyebrow">Pricing</div>
+    <div class="section-rule"></div>
+    <h2 class="section-title">2025/26 Rates</h2>
+    <p class="section-sub">Per-room rates for short-let cleans. Invoiced monthly. No hidden fees, no minimum contract.</p>
+    <div class="pricing-grid">
+      <div class="pricing-card">
+        <div class="pc-header">
+          <h3>Standard Rooms</h3>
+          <p>Small to mid-size short-let rooms</p>
+        </div>
+        <div class="pc-rates">
+          <div class="pc-row">
+            <div class="pc-label">Small Room</div>
+            <div class="pc-price">£18.00</div>
+          </div>
+          <div class="pc-row">
+            <div class="pc-label">Mid Room</div>
+            <div class="pc-price">£22.00</div>
+          </div>
+        </div>
+      </div>
+      <div class="pricing-card">
+        <div class="pc-header">
+          <h3>Large &amp; Loft Rooms</h3>
+          <p>Larger rooms and loft-style spaces</p>
+        </div>
+        <div class="pc-rates">
+          <div class="pc-row">
+            <div class="pc-label">Large Room</div>
+            <div class="pc-price">£32.00</div>
+          </div>
+          <div class="pc-row">
+            <div class="pc-label">Loft Room</div>
+            <div class="pc-price">£25.00</div>
+          </div>
+        </div>
+      </div>
+      <div class="pricing-note">
+        💡 Rates are per clean. Monthly invoicing available. Contact Jodie for a tailored quote for your property portfolio.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── TESTIMONIAL ── -->
+<section class="section testimonial-section">
+  <div class="section-inner">
+    <div class="section-eyebrow" style="color: var(--cyan);">Client Trust</div>
+    <div class="section-rule"></div>
+    <h2 class="section-title">Trusted by Bristol's Property Managers</h2>
+    <p class="section-sub" style="margin-bottom: 36px;">We let the work speak for itself.</p>
+    <div class="test-card">
+      <div class="test-quote">"DizDaz has been managing the cleaning across our Bristol properties for five years. The team is reliable, the standard is consistent, and rooms are always guest-ready when they're done. They're an integral part of our operations and we wouldn't hesitate to recommend them to any short-let operator."</div>
+      <div class="test-attr">YourApartment — Bristol's Serviced Apartment Operator</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CONTACT ── -->
+<section class="section" id="contact">
+  <div class="section-inner">
+    <div class="section-eyebrow">Get in Touch</div>
+    <div class="section-rule"></div>
+    <h2 class="section-title">Let's Talk About Your Properties</h2>
+    <p class="section-sub">Whether you're managing one property or a whole portfolio, we'd love to hear from you. Jodie will get back to you within 24 hours.</p>
+    <div class="contact-inner">
+      <div class="contact-info">
+        <p>We work with property managers, Airbnb hosts, and serviced apartment operators across Bristol. Reach out directly to discuss your cleaning needs and get a tailored quote.</p>
+        <div class="contact-item">
+          <div class="ci-icon">📞</div>
+          <div class="ci-text">
+            <p>Phone / WhatsApp</p>
+            <a href="tel:07914101113">07914 101113</a>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="ci-icon">✉️</div>
+          <div class="ci-text">
+            <p>Email</p>
+            <a href="mailto:dizdazcleaning@gmail.com">dizdazcleaning@gmail.com</a>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="ci-icon">📸</div>
+          <div class="ci-text">
+            <p>Instagram</p>
+            <a href="https://instagram.com/dizdazcleaning" target="_blank">@dizdazcleaning</a>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="ci-icon">📍</div>
+          <div class="ci-text">
+            <p>Based in</p>
+            <strong>Bristol, UK</strong>
+          </div>
+        </div>
+      </div>
+      <div class="contact-form-area">
+        <div class="form-title">Send a Message</div>
+        <div class="form-sub">Tell us about your properties and we'll be in touch.</div>
+        <div class="form-group">
+          <label>Your Name</label>
+          <input type="text" placeholder="e.g. Sarah Johnson">
+        </div>
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" placeholder="sarah@yourcompany.com">
+        </div>
+        <div class="form-group">
+          <label>Property Type</label>
+          <select>
+            <option value="">Select...</option>
+            <option>Serviced Apartment Operator</option>
+            <option>Airbnb Management Company</option>
+            <option>Individual Airbnb Host (2+ properties)</option>
+            <option>Short-Let Portfolio Manager</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Message</label>
+          <textarea placeholder="Tell us about your properties, number of rooms, cleaning frequency, etc."></textarea>
+        </div>
+        <button class="btn-form" onclick="alert('Thanks! Jodie will be in touch within 24 hours. For faster response, WhatsApp 07914 101113.')">
+          Send Message →
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="footer-logo">
+        <img src="assets/DizDaz.png" onerror="this.style.background='linear-gradient(135deg,#0072FF,#00C6FF)'" alt="DizDaz">
+      </div>
+      <span class="footer-wordmark">DizDaz Cleaning</span>
+    </div>
+    <div class="footer-links">
+      <a href="#services">Services</a>
+      <a href="#why">Why Us</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#contact">Contact</a>
+    </div>
+    <div class="footer-copy">© 2026 DizDaz Cleaning · Bristol, UK</div>
+  </div>
+</footer>
+
+</body>
+</html>
