@@ -5,18 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DizDaz Cleaning — Invoice App</title>
 
-
-  <!-- Password Gateway -->
-  <div id="password-gateway" style="position:fixed; top:0; left:0; width:100%; height:100%; background:var(--b900); z-index:9999; display:flex; align-items:center; justify-content:center; color:#fff; font-family:'Inter',sans-serif;">
-    <div style="text-align:center; max-width:320px; padding:24px;">
-      <div style="font-size:24px; font-weight:800; margin-bottom:16px;">Admin Access</div>
-      <div style="font-size:13px; opacity:.6; margin-bottom:24px;">Please enter the admin password to continue.</div>
-      <input type="password" id="gateway-pw" style="width:100%; padding:12px; border-radius:8px; border:none; margin-bottom:16px; text-align:center; font-size:16px;" placeholder="Password">
-      <button id="gateway-btn" style="width:100%; padding:12px; background:var(--b500); color:#fff; border:none; border-radius:8px; font-weight:700; cursor:pointer;">Unlock App</button>
-      <div id="gateway-error" style="color:var(--red); font-size:12px; margin-top:12px; display:none;">Incorrect password. Please try again.</div>
-    </div>
-  </div>
-
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#1e3a5f">
   <meta name="mobile-web-app-capable" content="yes">
@@ -522,10 +510,11 @@
 </head>
 <body>
 
+
 <!-- ═══ PWA INSTALL BANNER ═══ -->
 <div id="installBanner">
   <div class="ib-left">
-    <img src="icon.png" class="ib-icon" alt="DizDaz logo">
+    <img src="assets/DizDaz.png" class="ib-icon" alt="DizDaz logo">
     <div class="ib-text"><strong>Install DizDaz Invoice</strong> — works offline, lives in your Dock</div>
   </div>
   <div class="ib-actions">
@@ -539,7 +528,7 @@
   <div class="hdr-brand">
     <div class="logo-mark">
       <div class="logo-emblem">
-        <img src="icon.png" alt="DizDaz Cleaning logo" style="width:44px;height:44px;object-fit:contain;border-radius:50%;">
+        <img src="assets/DizDaz.png" alt="DizDaz Cleaning logo" style="width:44px;height:44px;object-fit:contain;border-radius:50%;">
       </div>
       <div class="logo-wordmark">
         <div class="logo-name">Diz<em>Daz</em></div>
@@ -748,7 +737,7 @@
           <div>
             <div class="inv-logo-mark">
               <div class="inv-logo-emblem">
-                <img src="icon.png" alt="DizDaz Cleaning logo" style="width:70px;height:70px;object-fit:contain;border-radius:50%;background:rgba(255,255,255,.08);padding:2px;">
+                <img src="assets/DizDaz.png" alt="DizDaz Cleaning logo" style="width:70px;height:70px;object-fit:contain;border-radius:50%;background:rgba(255,255,255,.08);padding:2px;">
               </div>
               <div>
                 <div class="inv-logo-name">Diz<em>Daz</em></div>
@@ -842,6 +831,35 @@
 <div id="fixedToast"></div>
 
 <script>
+// ══════════════════════════════════════════════
+//  LOGO (base64 so it works in iframes & PDF)
+// ══════════════════════════════════════════════
+const LOGO_SRC = 'assets/DizDaz.png';
+
+// Apply logo to all logo images on load, with fallback
+(function() {
+  function applyLogos() {
+    document.querySelectorAll('img[alt*="DizDaz"]').forEach(img => {
+      if (!img.src.includes('DizDaz.png')) return;
+      img.onerror = function() {
+        // Fallback: try absolute path from root
+        if (!this.dataset.retried) {
+          this.dataset.retried = '1';
+          this.src = '/dizdaz-invoice/assets/DizDaz.png';
+        } else if (this.dataset.retried === '1') {
+          this.dataset.retried = '2';
+          this.src = '/assets/DizDaz.png';
+        }
+      };
+    });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', applyLogos);
+  } else {
+    applyLogos();
+  }
+})();
+
 // ══════════════════════════════════════════════
 //  ROOM DATA
 // ══════════════════════════════════════════════
@@ -1977,39 +1995,6 @@ async function _autoSavePDF() {
 }
 
 
-// ══════════════════════════════════════════════
-//  PASSWORD GATEWAY
-// ════════════════════════════════════════════════
-const ADMIN_PASSWORD = 'dizdaz2026'; // Replace with secure password if needed
-
-document.addEventListener('DOMContentLoaded', () => {
-  const gateway = document.getElementById('password-gateway');
-  const pwInput = document.getElementById('gateway-pw');
-  const btn = document.getElementById('gateway-btn');
-  const error = document.getElementById('gateway-error');
-
-  if (!gateway) return;
-
-  // Check if session already unlocked
-  if (sessionStorage.getItem('dizdaz_unlocked') === 'true') {
-    gateway.style.display = 'none';
-  }
-
-  btn.addEventListener('click', () => {
-    if (pwInput.value === ADMIN_PASSWORD) {
-      sessionStorage.setItem('dizdaz_unlocked', 'true');
-      gateway.style.display = 'none';
-      error.style.display = 'none';
-    } else {
-      error.style.display = 'block';
-      pwInput.value = '';
-    }
-  });
-
-  pwInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') btn.click();
-  });
-});
 
 // ══════════════════════════════════════════════
 

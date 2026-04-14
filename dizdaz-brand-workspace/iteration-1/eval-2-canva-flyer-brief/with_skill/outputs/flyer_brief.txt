@@ -1,0 +1,259 @@
+================================================================================
+DIZDAZ CLEANING - CANVA FLYER BRIEF FOR PROPERTY MANAGERS
+Generated: 2026-03-21
+================================================================================
+
+PROJECT OVERVIEW
+This brief provides complete specifications for creating a DizDaz Cleaning flyer
+targeting property managers, Airbnb hosts, and short-let operators. The flyer
+positions DizDaz as a specialist cleaning service with reliability, flexibility,
+and local expertise.
+
+================================================================================
+CANVA DESIGN SETTINGS
+================================================================================
+
+Design Type: FLYER
+Format: A4 Portrait (210 x 297mm) - standard print flyer
+Colours: Exact hex values (no substitutions)
+
+PRIMARY COLOUR PALETTE:
+  Navy (dark background):        #030810
+  Electric Blue (primary):       #0072FF
+  Cyan (accent/highlights):      #00C6FF
+  White (text/contrast):         #FFFFFF
+  Grey (secondary text):         #8A9BB8
+  Light Background:              #F0F4FF
+
+GRADIENT ASSETS:
+  Primary CTA Gradient:          linear-gradient(135deg, #0072FF, #00C6FF)
+  Gradient Bar (top/bottom):     linear-gradient(90deg, #0072FF, #00C6FF→#0072FF)
+                                 Height: 4-6px on TOP and BOTTOM of flyer
+
+LOGO ASSET:
+  Canva Asset ID:                MAHEnPqTn4g
+  Placement:                     Centre of header section
+  Effect:                         Apply glow effect (cyan/electric blue)
+
+================================================================================
+TYPOGRAPHY SPECIFICATIONS
+================================================================================
+
+Font Family: Inter (Google Fonts) - REQUIRED for all text
+
+DISPLAY/HERO TEXT
+  Font Weight:                   900 (Black)
+  Size:                          52-64px
+  Colour:                        #FFFFFF or #0072FF (on dark bg)
+  Usage:                         Main headline (e.g., "Airbnb Cleaning Specialist")
+
+SECTION HEADINGS
+  Font Weight:                   700-800 (Bold to Extra-Bold)
+  Size:                          28-36px
+  Colour:                        #FFFFFF or #00C6FF
+  Usage:                         Section dividers, feature headers
+
+EYEBROW LABELS
+  Font Weight:                   700 (Bold)
+  Case:                          ALL CAPS
+  Letter Spacing:                4px
+  Colour:                        #00C6FF (Cyan - ALWAYS)
+  Usage:                         Small intro text above headings
+
+BODY TEXT
+  Font Weight:                   400 (Regular)
+  Size:                          16-18px
+  Colour:                        #FFFFFF (on dark bg) or #030810 (on light bg)
+  Line Height:                   1.5-1.6
+  Usage:                         Feature descriptions, copy, contact info
+
+================================================================================
+DESIGN PATTERNS & STRUCTURAL ELEMENTS
+================================================================================
+
+GRADIENT BARS (MANDATORY):
+  Position:                      Top and Bottom edges of flyer
+  Height:                        4-6px
+  Gradient:                      linear-gradient(90deg, #0072FF, #00C6FF, #0072FF)
+  Purpose:                       Visual frame, brand identity reinforcement
+
+DARK BACKGROUND SECTIONS:
+  Background Colour:             #030810 (Navy - primary)
+  Card Styling:                  rgba(255,255,255,0.04) with 1px border
+                                 Border colour: rgba(0,114,255,0.2)
+  Effect:                        Frosted glass effect, subtle transparency
+
+RADIAL GLOW OVERLAYS:
+  Placement:                     Behind cards, behind CTA buttons
+  Colour:                        #0072FF or #00C6FF (20-30% opacity)
+  Purpose:                       Visual depth, highlight key sections
+
+CTA BUTTON STYLING:
+  Background:                    linear-gradient(135deg, #0072FF, #00C6FF)
+  Text:                          #FFFFFF, Bold, 16-18px
+  Padding:                        12-16px vertical, 24-32px horizontal
+  Border Radius:                 6-8px
+  Effect:                        Subtle shadow or glow
+
+LOGO PLACEMENT:
+  Position:                      Header centre (top 80-100px)
+  Asset ID:                      MAHEnPqTn4g
+  Effect:                        Glow effect using cyan/electric blue
+  Size:                          Proportional to header height
+
+================================================================================
+LAYOUT STRUCTURE (RECOMMENDED FLOW)
+================================================================================
+
+SECTION 1: HEADER (Top 80-100px)
+  - Gradient bar (top 4-6px)
+  - Logo centred with glow effect
+  - Background: #030810 or #F0F4FF
+
+SECTION 2: HERO HEADLINE (100-150px)
+  - Eyebrow: "PROPERTY CLEANING SPECIALIST" (7px, ALL CAPS, #00C6FF)
+  - Hero text: "Airbnb Cleaning That Works" or similar (52-64px, #FFFFFF/900w)
+  - Subheading: "Reliable, flexible, trusted." (28-36px, #00C6FF/700w)
+  - Background: #030810
+
+SECTION 3: KEY BENEFITS (120-150px) - USE CARDS
+  - 3 benefit cards with frosted glass effect:
+    Card 1: "Specialist Service"
+           Copy: Airbnb & short-let expertise, not general cleaning
+    Card 2: "Flexible Hours"
+           Copy: 10am-3pm slots, works around your checkout/check-in
+    Card 3: "Consistent Team"
+           Copy: Same team, same high standard every time
+  - Each card: rgba(255,255,255,0.04) border, radial glow behind
+  - Text: #FFFFFF, 16-18px body weight
+  - Background: #030810
+
+SECTION 4: TRUST SIGNAL (60-80px)
+  - Eyebrow: "TRUSTED BY PROPERTY MANAGERS" (#00C6FF)
+  - Copy: "Proven track record with YourApartment & local Bristol hosts"
+  - Text: #FFFFFF, 18px
+  - Background: #030810 or gradient accent
+
+SECTION 5: CALL-TO-ACTION (80-100px)
+  - Eyebrow: "GET STARTED" (#00C6FF)
+  - Button: "Contact Us Today"
+  - Gradient button: linear-gradient(135deg, #0072FF, #00C6FF)
+  - Button text: #FFFFFF, 16-18px, bold
+  - Radial glow behind button
+  - Background: #030810
+
+SECTION 6: CONTACT DETAILS (60-80px)
+  - Email: dizdazcleaning@gmail.com (16-18px, #FFFFFF)
+  - Website: dizdaz-cleaning.vercel.app (16-18px, #FFFFFF)
+  - Location: "Bristol, UK" (16px, #8A9BB8)
+  - Background: #030810
+  - Gradient bar (bottom 4-6px)
+
+================================================================================
+KEY MESSAGING FOR PROPERTY MANAGERS (CONTENT POINTS)
+================================================================================
+
+PRIMARY VALUE PROPOSITIONS:
+1. Airbnb & short-let specialist (NOT general cleaning service)
+2. Reliable & consistent — same team, same standard every time
+3. Flexible hours — 10am-3pm, works within checkout/check-in window
+4. Trusted track record — existing YourApartment contract, local references
+5. Local Bristol team — knows the area, responsive
+6. Tech-enabled operations — professional, trackable, reliable
+
+MESSAGING TONE:
+- Professional & trustworthy
+- Focused on property manager pain points (reliability, flexibility)
+- Authoritative but approachable
+- Solution-oriented
+
+MESSAGING EXAMPLES FOR COPY:
+  "Airbnb cleaning specialists with a proven track record. Flexible scheduling,
+   consistent quality, and a local Bristol team you can trust."
+
+  "We understand the demands of short-let property management. Same team, same
+   standard, every time. Flexible hours that work around your guests."
+
+  "Trusted by property managers across Bristol. YourApartment contract holders
+   and short-let operators rely on us for professional, reliable cleaning."
+
+WHAT NOT TO INCLUDE:
+  - Mobile number (use email/website only)
+  - Personal references (use "trusted track record" instead)
+  - General cleaning language (stay focused on Airbnb/short-let)
+  - Overly casual tone
+
+================================================================================
+CANVA GENERATION QUERY STRING
+================================================================================
+
+USE THIS QUERY WITH CANVA'S GENERATE-DESIGN TOOL:
+
+"Create a professional Canva flyer for DizDaz Cleaning, a Bristol-based Airbnb
+and short-let property cleaning specialist. Target property managers and Airbnb
+hosts. Layout: header with logo (Canva asset MAHEnPqTn4g, centred with glow),
+hero headline about specialist cleaning service, three benefit cards (Specialist
+Service, Flexible Hours, Consistent Team), trust signal about YourApartment
+track record, CTA button (Contact Us), and footer with contact details.
+
+Colour scheme: Navy background #030810, Electric Blue #0072FF primary, Cyan
+#00C6FF accents, White #FFFFFF text, Grey #8A9BB8 secondary. Use Inter font:
+display 900w 52-64px, headings 700-800w 28-36px, eyebrows 700w ALL CAPS 4px
+letter-spacing in #00C6FF, body 400w 16-18px. Include gradient bars (4-6px
+#0072FF→#00C6FF→#0072FF) at top and bottom edges. Frosted glass cards with
+rgba(255,255,255,0.04) fill and rgba(0,114,255,0.2) borders. Radial glow
+overlays behind cards. CTA button with gradient(135deg, #0072FF, #00C6FF).
+
+Key messaging: Airbnb specialist, flexible 10am-3pm hours, reliable consistent
+team, trusted by property managers. Contact: dizdazcleaning@gmail.com /
+dizdaz-cleaning.vercel.app. Design type: flyer. Include design patterns:
+gradient bars, logo with glow, card styling with transparency effects, radial
+glows, professional yet modern aesthetic."
+
+================================================================================
+CANVA ASSET IDS & REFERENCES
+================================================================================
+
+Logo Asset ID:                  MAHEnPqTn4g
+Design Type:                    Flyer
+Company:                        DizDaz Cleaning
+Owner:                          Jodie Francis
+Location:                       Bristol, UK
+Website:                        https://dizdaz-cleaning.vercel.app
+Email:                          dizdazcleaning@gmail.com
+
+================================================================================
+IMPLEMENTATION CHECKLIST
+================================================================================
+
+BEFORE GENERATING IN CANVA:
+  ☐ Confirm design type set to "FLYER"
+  ☐ Set all colours using EXACT hex values (no RGB conversions)
+  ☐ Request "Inter" font from Google Fonts for all text
+  ☐ Logo asset ID MAHEnPqTn4g ready for insertion
+  ☐ Gradient specifications copied correctly
+  ☐ Brand colours palette available for quick selection
+
+DURING DESIGN CREATION:
+  ☐ Top gradient bar (4-6px, exact gradient) applied
+  ☐ Bottom gradient bar (4-6px, exact gradient) applied
+  ☐ Logo centred in header with glow effect
+  ☐ All text uses Inter font with specified weights
+  ☐ Background sections use #030810 navy
+  ☐ Benefit cards use frosted glass styling
+  ☐ CTA button uses gradient fill & glow
+  ☐ All colours match hex values exactly
+
+FINAL QA:
+  ☐ All eyebrow labels in #00C6FF (Cyan)
+  ☐ All body text readable on dark background
+  ☐ Cards have subtle transparency effect (not opaque)
+  ☐ Gradient bars visible and properly positioned
+  ☐ Logo appears crisp with glow effect
+  ☐ CTA button stands out as primary action
+  ☐ Contact information clear and accurate
+  ☐ Message focused on Airbnb/short-let specialist positioning
+
+================================================================================
+END OF BRIEF
+================================================================================

@@ -503,12 +503,13 @@
       <li><a href="#why">Why DizDaz</a></li>
       <li><a href="#pricing">Pricing</a></li>
       <li><a href="#contact">Contact</a></li>
-      <li><a href="javascript:void(0)" onclick="showAdminPage()">Admin App</a></li>
+      <li style="list-style:none;"><a href="javascript:void(0)" onclick="showAdminPage(); return false;">Admin App</a></li>
     </ul>
     <a href="#contact" class="nav-cta">Get a Quote</a>
   </div>
 </nav>
 
+<div id="main-site-content">
 <!-- ── HERO ── -->
 <section class="hero">
   <div class="hero-glow-1"></div>
@@ -781,10 +782,12 @@
     </div>
   </div>
 </section>
+</div><!-- /main-site-content -->
 
   <div id="admin-page" class="page" style="display:none;">
     <div class="section" style="padding-top: 80px; min-height: 100vh;">
       <div class="section-inner">
+        <button onclick="hideAdminPage()" style="display:inline-flex;align-items:center;gap:6px;background:none;border:1px solid rgba(0,114,255,0.3);color:var(--blue);padding:8px 18px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;margin-bottom:24px;font-family:'Inter',sans-serif;transition:all 0.2s;" onmouseover="this.style.background='rgba(0,114,255,0.05)'" onmouseout="this.style.background='none'">← Back to Website</button>
         <div class="section-eyebrow">Admin Portal</div>
         <div class="section-rule"></div>
         <h2 class="section-title">Invoice Management</h2>
@@ -794,7 +797,7 @@
           <div class="card" style="padding: 40px; text-align: center; background: white; border: 1px solid rgba(0,114,255,0.15); border-radius: 12px;">
             <div style="font-size: 18px; font-weight: 700; margin-bottom: 12px; color: #0c1630;">Enter Admin Password</div>
             <p style="font-size: 13px; color: #6a7a99; margin-bottom: 24px;">Please enter your password to access the invoice app.</p>
-            <input type="password" id="admin-pw" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccd8f0; margin-bottom: 16px; text-align: center; font-family: 'Inter', sans-serif;">
+            <input type="password" id="admin-pw" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccd8f0; margin-bottom: 16px; text-align: center; font-family: 'Inter', sans-serif;" placeholder="Enter password">
             <button id="admin-unlock-btn" class="btn-primary" style="width: 100%; cursor: pointer;">Unlock Portal</button>
             <div id="admin-error" style="color: #ef4444; font-size: 12px; margin-top: 12px; display: none;">Incorrect password.</div>
           </div>
@@ -829,17 +832,51 @@
 
 <script>
   function showAdminPage() {
-    // Hide all other sections if needed, though we only have a few.
-    // For this simple single-page site, we'll just show the admin page.
-    document.getElementById('admin-page').style.display = 'block';
-    window.scrollTo(0, 0);
+    // Hide main website content
+    const mainContent = document.getElementById('main-site-content');
+    const adminPage = document.getElementById('admin-page');
+    const footer = document.querySelector('footer');
 
-    // If the user has already unlocked the admin app in this session,
-    // we can show the app immediately.
+    if (mainContent) mainContent.style.display = 'none';
+    if (footer) footer.style.display = 'none';
+    if (adminPage) adminPage.style.display = 'block';
+
+    // Force instant scroll to top (override smooth scroll)
+    document.documentElement.style.scrollBehavior = 'auto';
+    window.scrollTo(0, 0);
+    document.body.scrollTop = 0;
+    document.documentElement.scrollTop = 0;
+    requestAnimationFrame(() => {
+      window.scrollTo(0, 0);
+      document.documentElement.style.scrollBehavior = '';
+    });
+
+    // If already unlocked, skip password
     if (sessionStorage.getItem('dizdaz_unlocked') === 'true') {
       document.getElementById('admin-auth-container').style.display = 'none';
       document.getElementById('admin-app-container').style.display = 'block';
     }
+  }
+
+  function hideAdminPage() {
+    // Show main website content, hide admin
+    const mainContent = document.getElementById('main-site-content');
+    const adminPage = document.getElementById('admin-page');
+    const footer = document.querySelector('footer');
+
+    if (adminPage) adminPage.style.display = 'none';
+    if (mainContent) mainContent.style.display = '';
+    if (footer) footer.style.display = '';
+
+    // Force instant scroll to top
+    document.documentElement.style.scrollBehavior = 'auto';
+    window.scrollTo(0, 0);
+    document.body.scrollTop = 0;
+    document.documentElement.scrollTop = 0;
+    requestAnimationFrame(() => {
+      window.scrollTo(0, 0);
+      document.documentElement.style.scrollBehavior = '';
+    });
   }
 
   document.addEventListener('DOMContentLoaded', () => {
@@ -859,6 +896,7 @@
         } else {
           errorDiv.style.display = 'block';
           pwInput.value = '';
+          pwInput.focus();
         }
       });
 
