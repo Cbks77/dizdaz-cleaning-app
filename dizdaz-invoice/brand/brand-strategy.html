@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DizDaz Cleaning — Brand Strategy Document</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+  :root {
+    --navy:   #030810;
+    --blue:   #0072FF;
+    --cyan:   #00C6FF;
+    --white:  #FFFFFF;
+    --grey:   #8A9BB8;
+    --light:  #F0F4FF;
+    --border: rgba(0,114,255,0.2);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', Arial, sans-serif;
+    background: #F7F9FC;
+    color: #1a2035;
+    line-height: 1.6;
+  }
+
+  /* ── COVER PAGE ─────────────────────────────── */
+  .cover {
+    background: var(--navy);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    page-break-after: always;
+  }
+  .cover::before {
+    content: '';
+    position: absolute;
+    top: -200px; left: 50%;
+    transform: translateX(-50%);
+    width: 900px; height: 600px;
+    background: radial-gradient(ellipse, rgba(0,114,255,0.3) 0%, transparent 65%);
+    pointer-events: none;
+  }
+  .cover::after {
+    content: '';
+    position: absolute;
+    bottom: -150px; right: -100px;
+    width: 600px; height: 600px;
+    background: radial-gradient(ellipse, rgba(0,198,255,0.15) 0%, transparent 65%);
+    pointer-events: none;
+  }
+  .cover-bar-top {
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 5px;
+    background: linear-gradient(90deg, var(--blue), var(--cyan), var(--blue));
+  }
+  .cover-bar-bottom {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    height: 5px;
+    background: linear-gradient(90deg, var(--blue), var(--cyan), var(--blue));
+  }
+  .cover-content {
+    position: relative; z-index: 2;
+    text-align: center;
+    padding: 60px 40px;
+  }
+  .logo-wrap {
+    width: 110px; height: 110px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin: 0 auto 32px;
+    box-shadow: 0 0 50px rgba(0,114,255,0.6), 0 0 100px rgba(0,198,255,0.2);
+    border: 2px solid rgba(0,198,255,0.4);
+  }
+  .logo-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .cover-eyebrow {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 16px;
+  }
+  .cover-title {
+    font-size: 52px;
+    font-weight: 900;
+    color: var(--white);
+    line-height: 1.05;
+    margin-bottom: 12px;
+  }
+  .cover-title span {
+    background: linear-gradient(90deg, var(--blue), var(--cyan));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .cover-sub {
+    font-size: 18px;
+    color: rgba(255,255,255,0.55);
+    font-weight: 400;
+    margin-bottom: 48px;
+  }
+  .cover-meta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+  }
+  .meta-pill {
+    background: rgba(0,114,255,0.12);
+    border: 1px solid rgba(0,114,255,0.3);
+    border-radius: 40px;
+    padding: 8px 20px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.7);
+    font-weight: 500;
+  }
+  .meta-pill strong { color: var(--white); }
+
+  /* ── DOCUMENT BODY ───────────────────────────── */
+  .doc {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 60px 40px;
+  }
+
+  /* Section header */
+  .section {
+    margin-bottom: 60px;
+  }
+  .section-number {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin-bottom: 6px;
+  }
+  .section-title {
+    font-size: 30px;
+    font-weight: 800;
+    color: #0c1630;
+    margin-bottom: 6px;
+  }
+  .section-rule {
+    width: 48px; height: 3px;
+    background: linear-gradient(90deg, var(--blue), var(--cyan));
+    border-radius: 2px;
+    margin-bottom: 28px;
+  }
+
+  /* Cards */
+  .card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px 32px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  }
+  .card-title {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin-bottom: 12px;
+  }
+  .card p { font-size: 15px; color: #2c3e60; line-height: 1.7; }
+
+  /* Positioning statement */
+  .positioning {
+    background: var(--navy);
+    border-radius: 14px;
+    padding: 36px 40px;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+  .positioning::before {
+    content: '';
+    position: absolute;
+    top: -80px; right: -80px;
+    width: 280px; height: 280px;
+    background: radial-gradient(ellipse, rgba(0,114,255,0.25) 0%, transparent 70%);
+  }
+  .positioning p {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--white);
+    line-height: 1.6;
+    position: relative; z-index: 1;
+  }
+  .positioning p em {
+    font-style: normal;
+    background: linear-gradient(90deg, var(--blue), var(--cyan));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Advantages grid */
+  .advantages {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .adv-item {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 24px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  .adv-num {
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, var(--blue), var(--cyan));
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 800; color: var(--white);
+    flex-shrink: 0;
+  }
+  .adv-text h4 { font-size: 14px; font-weight: 700; color: #0c1630; margin-bottom: 4px; }
+  .adv-text p { font-size: 13px; color: #6a7a99; line-height: 1.5; }
+
+  /* Clients grid */
+  .client-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .client-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 24px;
+  }
+  .client-card h4 { font-size: 14px; font-weight: 700; color: #0c1630; margin-bottom: 6px; }
+  .client-card p { font-size: 13px; color: #6a7a99; line-height: 1.5; }
+
+  /* Pricing table */
+  .pricing-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--white);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    margin-bottom: 20px;
+  }
+  .pricing-table thead tr {
+    background: var(--navy);
+  }
+  .pricing-table thead th {
+    padding: 14px 20px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--cyan);
+    text-align: left;
+  }
+  .pricing-table tbody tr {
+    border-bottom: 1px solid #eef2fb;
+  }
+  .pricing-table tbody tr:last-child { border-bottom: none; }
+  .pricing-table tbody tr:hover { background: #f5f8ff; }
+  .pricing-table tbody td {
+    padding: 14px 20px;
+    font-size: 14px;
+    color: #2c3e60;
+  }
+  .pricing-table tbody td:last-child {
+    font-weight: 700;
+    color: var(--blue);
+  }
+
+  /* Tone section */
+  .tone-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .tone-card {
+    border-radius: 10px;
+    padding: 22px 26px;
+    border: 1px solid var(--border);
+  }
+  .tone-card.do { background: #f0f9f0; border-color: #b6e0b6; }
+  .tone-card.dont { background: #fff4f4; border-color: #f0bbbb; }
+  .tone-card h4 {
+    font-size: 13px; font-weight: 700; letter-spacing: 1px;
+    text-transform: uppercase; margin-bottom: 12px;
+  }
+  .tone-card.do h4 { color: #2a7a2a; }
+  .tone-card.dont h4 { color: #cc3333; }
+  .tone-card ul { list-style: none; }
+  .tone-card ul li {
+    font-size: 13px; color: #3a4a60; padding: 4px 0;
+    padding-left: 18px; position: relative;
+    line-height: 1.5;
+  }
+  .tone-card.do ul li::before { content: '✓'; position: absolute; left: 0; color: #2a7a2a; font-weight: 700; }
+  .tone-card.dont ul li::before { content: '✗'; position: absolute; left: 0; color: #cc3333; font-weight: 700; }
+
+  /* Colour swatches */
+  .colour-system {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+  .swatch {
+    flex: 1;
+    min-width: 140px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .swatch-color { height: 80px; }
+  .swatch-info {
+    background: var(--white);
+    padding: 14px 16px;
+  }
+  .swatch-info h4 { font-size: 13px; font-weight: 700; color: #0c1630; }
+  .swatch-info p { font-size: 12px; color: #8a9bb8; font-family: monospace; }
+
+  /* Typography */
+  .type-sample {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 22px 26px;
+    margin-bottom: 12px;
+  }
+  .type-label { font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--blue); margin-bottom: 8px; }
+
+  /* Logo rules */
+  .logo-rules {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .logo-rule {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 22px;
+  }
+  .logo-rule h4 { font-size: 13px; font-weight: 700; color: #0c1630; margin-bottom: 8px; }
+  .logo-rule ul { list-style: none; }
+  .logo-rule ul li { font-size: 13px; color: #6a7a99; padding: 3px 0 3px 16px; position: relative; }
+  .logo-rule ul li::before { content: '—'; position: absolute; left: 0; color: #bbc; }
+
+  /* Footer */
+  .doc-footer {
+    border-top: 1px solid var(--border);
+    padding-top: 24px;
+    margin-top: 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: #8a9bb8;
+  }
+  .doc-footer strong { color: #0c1630; }
+
+  @media print {
+    body { background: white; }
+    .cover { min-height: 100vh; }
+    .doc { padding: 40px 30px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════ COVER ═══════════ -->
+<div class="cover">
+  <div class="cover-bar-top"></div>
+  <div class="cover-bar-bottom"></div>
+  <div class="cover-content">
+    <div class="logo-wrap">
+      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOYAAADmCAYAAADBavm7AAAACXBIWXMAAAsSAAALEgHS3X78AAAgAElEQVR4nO19C3gUVZr2qc61k3Q6F0IIt4Q4AQWEQEARjAQDyjhjDAo43mFYcXZmVyM7++POrjvMP7v76z+7TJxndnd0hwF2dOYXGMHM7opCJIjoKCJBEbkJCfeQa6dz7U66/udrvhMrlapTp7qru6uTep8nD6S7qqu6ct7z3b9PEEWRWDAXhHXVJXhDhYSQNPx/iewm8wghuRo3fpQQ0ib5Hf5fi/+vw582cWNprcr5FiIEi5gRgrCuuhDJVSgh4MII3pILSUsJWwP/ihtL6yL6oEYoLGKGAUhC6U8kCagXlLA1+G+tRdbQwyJmCIBELJH8OIfZV6xHovp/LKIaD4uYBkBYVw1qaDkSsXwYElELQNRdSNJd5r7V6IBFzAAhrKvOQxKWR5lqGmq4KEnhX3FjaVtkbyc6YRFTBySSsYIQMjPMl69HpwyF1MOqBrkntzAC0vxNQsgWS5Lqg0VMDgjrqoGMqwgh94XwMvslZAt5KEMhJFOC/4Zqw6GStNIKz2jDIqYKUFVdhT9a8UI9qKfeTbOGJGShnJIQSFqIr1Zaqq46LGLKgJIEyPiEQR95VOLBjNpQgyTkQ73NRmxWIEW3oBS1PLsSWMRECOuqqXQM1pFDQwnUSzksJQJqFCUSb3SwEnUr2qLw7EY8RjwxkZAbgpQAR5GIu0aq/YR2eLkB0hRs7Q0jnaAjlpgGELIe1bAtlho2GKj2VgQZ0x3RBB1xxMSdvTJAQlqeRZ0wwKMNBF011NrbBp+X5Pg2l8kL48M1PkU7z8P9K17J32a7EajL4xb1BzHQ86XuomToqaluv3VduBOXJY63OHgYVBx3YJpIlSnSTOLiJerHhq+ECQixuRCrC+gqaTmFqUEIzWNTZx7tQ0N0YEoTx37axM7WCE4kxRNQ2bNeRozI6I4mFdXwKVo5sMq+mslbK5cFUwJvpkPp4iEcpSkMISibGXbYWkMq5AoR1LIFc5DIUAdqJ+R1bUBaC0x9TNkVgXJZ4VWVzW0dLv5PkuVhyKQxRKkeMAAAAASUVORK5CYII=" alt="DizDaz logo">
+    </div>
+    <div class="cover-eyebrow">Brand Strategy Document</div>
+    <div class="cover-title">DizDaz <span>Cleaning</span></div>
+    <div class="cover-sub">Bristol's Short-Let Specialist — Brand Reference Guide</div>
+    <div class="cover-meta">
+      <span class="meta-pill"><strong>Owner:</strong> Jodie Francis</span>
+      <span class="meta-pill"><strong>Developer:</strong> Curtis Brooks</span>
+      <span class="meta-pill"><strong>Version:</strong> 1.0 — March 2026</span>
+      <span class="meta-pill"><strong>Status:</strong> Approved for Implementation</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ DOCUMENT BODY ═══════════ -->
+<div class="doc">
+
+  <!-- 01 — POSITIONING -->
+  <div class="section">
+    <div class="section-number">01</div>
+    <div class="section-title">Brand Positioning</div>
+    <div class="section-rule"></div>
+
+    <div class="positioning">
+      <p>
+        <em>DizDaz</em> is Bristol's specialist cleaning company for
+        <em>Airbnb hosts and short-let property operators</em> —
+        delivering <em>guest-ready standards</em>, on time, every time.
+      </p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">What This Means in Practice</div>
+      <p>DizDaz is not a general cleaning company that also does short-lets. DizDaz <em>is</em> the short-let specialist. Every message, every piece of marketing, and every client interaction should reinforce this. We are the expert choice for property managers who need consistent, reliable, guest-ready cleans between checkout and check-in.</p>
+    </div>
+  </div>
+
+  <!-- 02 — COMPETITIVE ADVANTAGES -->
+  <div class="section">
+    <div class="section-number">02</div>
+    <div class="section-title">Competitive Advantages</div>
+    <div class="section-rule"></div>
+
+    <div class="advantages">
+      <div class="adv-item">
+        <div class="adv-num">1</div>
+        <div class="adv-text">
+          <h4>Short-Let Specialist</h4>
+          <p>Not a general cleaner. Purpose-built for Airbnb and serviced apartment turnovers — this is all we do.</p>
+        </div>
+      </div>
+      <div class="adv-item">
+        <div class="adv-num">2</div>
+        <div class="adv-text">
+          <h4>Reliable &amp; Consistent</h4>
+          <p>Same team, same standard every time. Clients don't have to re-brief. It just happens.</p>
+        </div>
+      </div>
+      <div class="adv-item">
+        <div class="adv-num">3</div>
+        <div class="adv-text">
+          <h4>Flexible Hours</h4>
+          <p>10am–3pm operation fits perfectly within the checkout/check-in window. No disruption to guests.</p>
+        </div>
+      </div>
+      <div class="adv-item">
+        <div class="adv-num">4</div>
+        <div class="adv-text">
+          <h4>Trusted Track Record</h4>
+          <p>Existing 5-year contract with YourApartment — one of Bristol's established serviced apartment operators.</p>
+        </div>
+      </div>
+      <div class="adv-item">
+        <div class="adv-num">5</div>
+        <div class="adv-text">
+          <h4>Local Bristol Team</h4>
+          <p>We know Bristol. Fast response, local knowledge, no long-distance logistics to manage.</p>
+        </div>
+      </div>
+      <div class="adv-item">
+        <div class="adv-num">6</div>
+        <div class="adv-text">
+          <h4>Tech-Enabled Operations</h4>
+          <p>Custom invoicing app, AI-powered room tracking, digital logs, and Google Drive backups. Professionally run.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 03 — TARGET CLIENTS -->
+  <div class="section">
+    <div class="section-number">03</div>
+    <div class="section-title">Target Clients</div>
+    <div class="section-rule"></div>
+
+    <div class="client-grid">
+      <div class="client-card">
+        <h4>Serviced Apartment Operators</h4>
+        <p>Companies like YourApartment managing multiple properties in Bristol. High volume, consistent work, B2B relationship.</p>
+      </div>
+      <div class="client-card">
+        <h4>Airbnb Management Companies</h4>
+        <p>Agencies managing multiple Airbnb listings on behalf of hosts. Consistent, high-frequency cleaning contracts.</p>
+      </div>
+      <div class="client-card">
+        <h4>Multi-Property Airbnb Hosts</h4>
+        <p>Individual hosts running 2+ properties in Bristol who need a reliable, professional cleaning partner.</p>
+      </div>
+      <div class="client-card">
+        <h4>Short-Let Portfolio Managers</h4>
+        <p>Property managers overseeing short-let portfolios for landlords or investors. Seeking operational reliability.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Who We're NOT Targeting</div>
+      <p>Residential weekly cleans, office cleaning, commercial deep-clean contracts, or one-off domestic bookings. Staying specialist is our strength. If a prospect doesn't fit the short-let/Airbnb profile, politely decline or refer out.</p>
+    </div>
+  </div>
+
+  <!-- 04 — BRAND TONE -->
+  <div class="section">
+    <div class="section-number">04</div>
+    <div class="section-title">Brand Tone of Voice</div>
+    <div class="section-rule"></div>
+
+    <div class="card">
+      <div class="card-title">The Principle</div>
+      <p><strong>Friendly &amp; Confident.</strong> Warm enough to build trust. Professional enough to win B2B contracts. Think of a highly competent local business owner who genuinely loves their work and knows their stuff — not a corporate cleaning chain, and not someone who needs to be chased.</p>
+    </div>
+
+    <div class="tone-grid">
+      <div class="tone-card do">
+        <h4>✓ Do</h4>
+        <ul>
+          <li>Be warm, personal, and direct</li>
+          <li>Use "we" — DizDaz is a team</li>
+          <li>Lead with what you can do for the client</li>
+          <li>Reference Bristol and local knowledge</li>
+          <li>Acknowledge the client relationship</li>
+          <li>Be specific — room counts, rates, turnaround times</li>
+          <li>Sound like a specialist, not a generalist</li>
+          <li>Keep sentences short and clear</li>
+        </ul>
+      </div>
+      <div class="tone-card dont">
+        <h4>✗ Don't</h4>
+        <ul>
+          <li>Sound corporate, cold, or distant</li>
+          <li>Use cleaning-industry clichés ("sparkling clean")</li>
+          <li>Over-apologise or be overly deferential</li>
+          <li>Use jargon or technical cleaning terminology</li>
+          <li>Oversell — let the track record do the talking</li>
+          <li>Be vague about pricing or availability</li>
+          <li>Use ALLCAPS for emphasis</li>
+          <li>Use more than two exclamation marks per communication</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Example — Correct Tone</div>
+      <p style="font-style: italic; color: #2c3e60;">"We've been working with YourApartment for five years, and every room we clean is prepared to the same guest-ready standard. If you're managing properties in Bristol and need a reliable cleaning team that knows short-let work, we'd love to talk."</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Example — Wrong Tone</div>
+      <p style="font-style: italic; color: #cc3333; text-decoration: line-through;">"AMAZING CLEANING SERVICES!!! We offer sparkling clean results at competitive prices!! Contact us TODAY for a FREE quote!!!"</p>
+    </div>
+  </div>
+
+  <!-- 05 — VISUAL IDENTITY -->
+  <div class="section">
+    <div class="section-number">05</div>
+    <div class="section-title">Visual Identity</div>
+    <div class="section-rule"></div>
+
+    <div class="card" style="margin-bottom: 24px;">
+      <div class="card-title">Colour Palette</div>
+    </div>
+    <div class="colour-system">
+      <div class="swatch">
+        <div class="swatch-color" style="background:#030810;"></div>
+        <div class="swatch-info"><h4>Navy</h4><p>#030810</p><p>Primary background</p></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#0072FF;"></div>
+        <div class="swatch-info"><h4>Electric Blue</h4><p>#0072FF</p><p>Primary brand colour</p></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#00C6FF;"></div>
+        <div class="swatch-info"><h4>Cyan</h4><p>#00C6FF</p><p>Accent / gradient end</p></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#FFFFFF; border: 1px solid #dde;"></div>
+        <div class="swatch-info"><h4>White</h4><p>#FFFFFF</p><p>Text / light backgrounds</p></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: 28px; margin-bottom: 24px;">
+      <div class="card-title">Typography</div>
+    </div>
+    <div class="type-sample">
+      <div class="type-label">Primary — Inter (Google Fonts)</div>
+      <p style="font-size: 28px; font-weight: 800; color: #0c1630; margin-bottom: 4px;">Heading — Bold 800</p>
+      <p style="font-size: 16px; font-weight: 400; color: #2c3e60; margin-bottom: 4px;">Body copy — Regular 400. Used for all standard paragraphs, descriptions, and supporting content.</p>
+      <p style="font-size: 13px; font-weight: 500; color: #8a9bb8;">Label / Eyebrow — Medium 500 · ALL CAPS · Tracked at 3–4px</p>
+    </div>
+    <div class="type-sample">
+      <div class="type-label">Fallback — Arial / Helvetica (System)</div>
+      <p style="font-family: Arial, sans-serif; font-size: 28px; font-weight: 800; color: #0c1630; margin-bottom: 4px;">Heading — Bold</p>
+      <p style="font-family: Arial, sans-serif; font-size: 16px; color: #2c3e60;">Body — Regular. Used in environments where Google Fonts cannot be loaded.</p>
+    </div>
+
+    <div class="card" style="margin-top: 28px; margin-bottom: 24px;">
+      <div class="card-title">Logo Usage Rules</div>
+    </div>
+    <div class="logo-rules">
+      <div class="logo-rule">
+        <h4>Always</h4>
+        <ul>
+          <li>Use the circular badge form only</li>
+          <li>Maintain clear space equal to logo radius on all sides</li>
+          <li>Use on dark (navy) or white backgrounds</li>
+          <li>Apply the glowing blue box-shadow on dark backgrounds</li>
+          <li>Keep the gradient D letterform intact</li>
+        </ul>
+      </div>
+      <div class="logo-rule">
+        <h4>Never</h4>
+        <ul>
+          <li>Stretch or squash the logo</li>
+          <li>Change the logo colours</li>
+          <li>Remove the circular crop</li>
+          <li>Place on mid-tone or patterned backgrounds</li>
+          <li>Add drop shadows other than the brand glow</li>
+          <li>Recreate or redraw the logo</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- 06 — CONTACT & ACCOUNTS -->
+  <div class="section">
+    <div class="section-number">06</div>
+    <div class="section-title">Contact &amp; Digital Accounts</div>
+    <div class="section-rule"></div>
+
+    <div class="card">
+      <div class="card-title">Official Contact Details</div>
+      <p>
+        <strong>Phone:</strong> 07914 101113<br>
+        <strong>Email:</strong> dizdazcleaning@gmail.com<br>
+        <strong>Instagram:</strong> @dizdazcleaning<br>
+        <strong>Invoice App:</strong> dizdaz-invoice.vercel.app<br>
+        <strong>Website (in build):</strong> www.dizdazcleaning.com<br>
+        <strong>Address:</strong> Abbottsford Road, Bristol BS6 6EF
+      </p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">YourApartment — Primary Client</div>
+      <p>
+        <strong>Properties:</strong> 4 Berkeley Square (15 rooms) + Brunel Loft (3 rooms)<br>
+        <strong>Address:</strong> 24-26 Regent St, Clifton, Bristol BS8 4HG<br>
+        <strong>Contacts (ops):</strong> Attila, Jorge<br>
+        <strong>Contacts (team):</strong> Joe, Marta, Thoko, Syed<br>
+        <strong>Relationship:</strong> ~5 years<br>
+        <strong>Communication:</strong> WhatsApp (daily logs), Email (invoicing)
+      </p>
+    </div>
+  </div>
+
+  <!-- 07 — SIGN-OFF RULES -->
+  <div class="section">
+    <div class="section-number">07</div>
+    <div class="section-title">Sign-Off Rules</div>
+    <div class="section-rule"></div>
+
+    <div class="card">
+      <div class="card-title">Mandatory Sign-Off Requirement</div>
+      <p><strong>Jodie Francis must approve every client-facing or publicly visible deliverable before it is sent or published.</strong> CB's role is to build and present. Jodie's role is to approve and activate. Nothing goes live without Jodie's explicit sign-off. This applies to: the price increase letter, the service sheet, the landing page, the Instagram plan, and any future client communications.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">CB's Role</div>
+      <p>Curtis Brooks is the developer and brand builder for DizDaz. CB builds, designs, and maintains all digital assets. CB does not own the brand and does not communicate directly with DizDaz clients on DizDaz's behalf. All client-facing communications are Jodie's to send.</p>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="doc-footer">
+    <span><strong>DizDaz Cleaning</strong> — Brand Strategy v1.0</span>
+    <span>Prepared by Curtis Brooks · March 2026</span>
+    <span>Confidential — Internal Use Only</span>
+  </div>
+
+</div>
+</body>
+</html>

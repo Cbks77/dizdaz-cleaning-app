@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DizDaz – Job Posting – Indeed / Copy Text</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #f5f5f5;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #111;
+    min-height: 100vh;
+    padding: 40px 20px;
+  }
+  .container {
+    max-width: 760px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.10);
+    overflow: hidden;
+  }
+
+  /* Header */
+  .top-bar {
+    background: #030810;
+    height: 5px;
+  }
+  .header {
+    padding: 32px 40px 28px;
+    border-bottom: 2px solid #0072FF;
+  }
+  .header-brand {
+    color: #0072FF;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .header-title {
+    color: #030810;
+    font-size: 30px;
+    font-weight: 900;
+    line-height: 1.15;
+    margin-bottom: 8px;
+  }
+  .header-meta {
+    color: #555;
+    font-size: 15px;
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .header-meta span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .meta-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #0072FF;
+    display: inline-block;
+  }
+
+  /* Copy button */
+  .copy-section {
+    padding: 20px 40px;
+    background: #f8fbff;
+    border-bottom: 1px solid #e0eaff;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .copy-btn {
+    background: linear-gradient(135deg, #0072FF, #00C6FF);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+    padding: 12px 28px;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    letter-spacing: 0.3px;
+    box-shadow: 0 2px 12px rgba(0,114,255,0.35);
+    transition: opacity 0.15s;
+  }
+  .copy-btn:hover { opacity: 0.88; }
+  .copy-btn:active { opacity: 0.75; }
+  .copy-hint {
+    color: #888;
+    font-size: 13px;
+  }
+  .copy-success {
+    color: #0072FF;
+    font-size: 13px;
+    font-weight: 700;
+    display: none;
+  }
+
+  /* Body */
+  .body {
+    padding: 36px 40px 40px;
+  }
+
+  .section {
+    margin-bottom: 28px;
+  }
+  .section-heading {
+    color: #0072FF;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #e0eaff;
+  }
+  .section-text {
+    font-size: 15px;
+    color: #333;
+    line-height: 1.7;
+  }
+
+  .detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 4px;
+  }
+  .detail-item {
+    background: #f0f4ff;
+    border-radius: 8px;
+    padding: 12px 16px;
+  }
+  .detail-item-label {
+    color: #0072FF;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 3px;
+  }
+  .detail-item-value {
+    color: #030810;
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  ul.req-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  ul.req-list li {
+    font-size: 15px;
+    color: #333;
+    line-height: 1.5;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  ul.req-list li::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #0072FF;
+    flex-shrink: 0;
+    margin-top: 7px;
+  }
+
+  .apply-box {
+    background: #030810;
+    border-radius: 10px;
+    padding: 24px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .apply-title {
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .apply-contact {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .apply-label {
+    color: rgba(255,255,255,0.45);
+    font-size: 12px;
+    width: 80px;
+    flex-shrink: 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .apply-value {
+    color: #00C6FF;
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  /* Footer */
+  .footer {
+    padding: 16px 40px;
+    background: #f8fbff;
+    border-top: 1px solid #e0eaff;
+    font-size: 12px;
+    color: #aaa;
+    display: flex;
+    justify-content: space-between;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="top-bar"></div>
+
+  <div class="header">
+    <div class="header-brand">DizDaz Cleaning Company</div>
+    <div class="header-title">Airbnb &amp; Serviced Apartment Cleaner</div>
+    <div class="header-meta">
+      <span><span class="meta-dot"></span> Bristol, BS6</span>
+      <span><span class="meta-dot"></span> Part-time / Full-time</span>
+      <span><span class="meta-dot"></span> 10am – 3pm</span>
+    </div>
+  </div>
+
+  <div class="copy-section">
+    <button class="copy-btn" onclick="copyText()">Copy Text</button>
+    <span class="copy-hint">Copy the plain-text job posting for Indeed / job boards</span>
+    <span class="copy-success" id="copySuccess">Copied to clipboard!</span>
+  </div>
+
+  <div class="body">
+
+    <div class="section">
+      <div class="section-heading">Job Details</div>
+      <div class="detail-grid">
+        <div class="detail-item">
+          <div class="detail-item-label">Location</div>
+          <div class="detail-item-value">Bristol, BS6</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-item-label">Hours</div>
+          <div class="detail-item-value">10am – 3pm · Flexible days</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-item-label">Contract</div>
+          <div class="detail-item-value">Part-time &amp; full-time considered</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-item-label">Pay</div>
+          <div class="detail-item-value">Competitive (discussed at interview)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">About Us</div>
+      <div class="section-text">
+        DizDaz Cleaning Company is a professional cleaning service based in Bristol, specialising in
+        Airbnb and serviced apartment turnovers. We work with leading short-let operators across the
+        city and are known for our reliability, attention to detail, and friendly team culture.
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">The Role</div>
+      <div class="section-text">
+        You will be responsible for preparing apartments to a high standard between guest stays.
+        This includes cleaning, linen changes, restocking amenities, and reporting any maintenance issues.
+        No two days are exactly the same, and you'll be part of a supportive, professional team.
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">Requirements</div>
+      <ul class="req-list">
+        <li>Reliable and punctual</li>
+        <li>Attention to detail</li>
+        <li>Friendly and professional</li>
+        <li>Previous cleaning experience preferred but not essential</li>
+        <li>Own transport helpful</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <div class="section-heading">How to Apply</div>
+      <div class="apply-box">
+        <div class="apply-title">Apply Now</div>
+        <div class="apply-contact">
+          <span class="apply-label">Email</span>
+          <span class="apply-value">dizdazcleaning@gmail.com</span>
+        </div>
+        <div class="apply-contact">
+          <span class="apply-label">WhatsApp</span>
+          <span class="apply-value">07914 101113</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    <span>DizDaz Cleaning Company</span>
+    <span>@dizdazcleaning &nbsp;·&nbsp; Bristol</span>
+  </div>
+</div>
+
+<!-- Hidden plain text for clipboard copy -->
+<textarea id="plainText" style="position:absolute;left:-9999px;top:0;opacity:0;" readonly>JOB TITLE: Airbnb & Serviced Apartment Cleaner
+LOCATION: Bristol, BS6
+HOURS: 10am – 3pm (flexible days, part-time and full-time considered)
+PAY: Competitive (discussed at interview)
+
+ABOUT US:
+DizDaz Cleaning Company is a professional cleaning service based in Bristol, specialising in Airbnb and serviced apartment turnovers. We work with leading short-let operators across the city.
+
+THE ROLE:
+You will be responsible for preparing apartments to a high standard between guest stays. This includes cleaning, linen changes, restocking amenities, and reporting any maintenance issues.
+
+REQUIREMENTS:
+- Reliable and punctual
+- Attention to detail
+- Friendly and professional
+- Previous cleaning experience preferred but not essential
+- Own transport helpful
+
+APPLY:
+Email: dizdazcleaning@gmail.com
+WhatsApp: 07914 101113
+
+DizDaz Cleaning Company | @dizdazcleaning | Bristol</textarea>
+
+<script>
+function copyText() {
+  var ta = document.getElementById('plainText');
+  var btn = document.querySelector('.copy-btn');
+  var success = document.getElementById('copySuccess');
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(ta.value).then(function() {
+      showSuccess(btn, success);
+    }).catch(function() {
+      fallbackCopy(ta, btn, success);
+    });
+  } else {
+    fallbackCopy(ta, btn, success);
+  }
+}
+
+function fallbackCopy(ta, btn, success) {
+  ta.style.position = 'fixed';
+  ta.style.left = '0';
+  ta.style.top = '0';
+  ta.style.opacity = '1';
+  ta.select();
+  ta.setSelectionRange(0, 99999);
+  try { document.execCommand('copy'); } catch(e) {}
+  ta.style.position = 'absolute';
+  ta.style.left = '-9999px';
+  ta.style.opacity = '0';
+  showSuccess(btn, success);
+}
+
+function showSuccess(btn, success) {
+  btn.textContent = 'Copied!';
+  success.style.display = 'inline';
+  setTimeout(function() {
+    btn.textContent = 'Copy Text';
+    success.style.display = 'none';
+  }, 2500);
+}
+</script>
+</body>
+</html>

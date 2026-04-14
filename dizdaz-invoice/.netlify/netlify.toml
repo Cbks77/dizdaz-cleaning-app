@@ -1,0 +1,27 @@
+plugins = []
+headers = []
+redirects = []
+
+[functions]
+
+[functions."*"]
+
+[build]
+publish = "/Users/curtisbrooks/Developer/dizdaz-brand/dizdaz-invoice"
+publishOrigin = "config"
+commandOrigin = "ui"
+base = "/Users/curtisbrooks/Developer/dizdaz-brand/dizdaz-invoice"
+
+[build.environment]
+
+[build.processing]
+
+[build.processing.css]
+
+[build.processing.html]
+
+[build.processing.images]
+
+[build.processing.js]
+
+[build.services]

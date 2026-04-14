@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DizDaz — 30-Day Instagram Content Plan</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+  :root {
+    --navy:#030810; --blue:#0072FF; --cyan:#00C6FF;
+    --white:#FFFFFF; --grad:linear-gradient(90deg,#0072FF,#00C6FF);
+    --border:rgba(0,114,255,0.15);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Inter',Arial,sans-serif; background:#F0F4FF; color:#1a2035; }
+
+  /* Header */
+  .header {
+    background:var(--navy); padding:40px 48px;
+    position:relative; overflow:hidden;
+  }
+  .header::before {
+    content:''; position:absolute; top:-100px; right:-80px;
+    width:400px; height:400px;
+    background:radial-gradient(ellipse,rgba(0,114,255,0.25) 0%,transparent 65%);
+  }
+  .top-bar { position:absolute; top:0; left:0; right:0; height:4px; background:var(--grad); }
+  .header-inner { position:relative; z-index:2; display:flex; align-items:center; justify-content:space-between; }
+  .h-brand { display:flex; align-items:center; gap:16px; }
+  .logo-wrap { width:64px; height:64px; border-radius:50%; overflow:hidden; border:2px solid rgba(0,198,255,0.4); box-shadow:0 0 30px rgba(0,114,255,0.6); }
+  .logo-wrap img { width:100%; height:100%; object-fit:cover; }
+  .h-text h1 { font-size:22px; font-weight:900; color:var(--white); }
+  .h-text p { font-size:12px; color:rgba(255,255,255,0.45); margin-top:2px; }
+  .h-badge { background:rgba(0,114,255,0.15); border:1px solid rgba(0,198,255,0.3); border-radius:8px; padding:10px 18px; text-align:right; }
+  .h-badge p { font-size:11px; color:rgba(255,255,255,0.45); }
+  .h-badge strong { font-size:14px; color:var(--cyan); display:block; margin-top:2px; }
+
+  /* Doc body */
+  .doc { max-width:1000px; margin:0 auto; padding:40px 24px; }
+
+  /* Strategy overview */
+  .overview { background:var(--white); border:1px solid var(--border); border-radius:14px; padding:32px; margin-bottom:32px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px; }
+  .ov-item { }
+  .ov-label { font-size:10px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:var(--blue); margin-bottom:8px; }
+  .ov-value { font-size:15px; font-weight:700; color:#0c1630; margin-bottom:4px; }
+  .ov-note { font-size:12px; color:#8a9bb8; line-height:1.5; }
+
+  /* Content mix legend */
+  .legend { background:var(--white); border:1px solid var(--border); border-radius:14px; padding:28px 32px; margin-bottom:32px; }
+  .legend-title { font-size:11px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:var(--blue); margin-bottom:18px; }
+  .legend-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:12px; }
+  .legend-item { display:flex; align-items:center; gap:8px; }
+  .tag { display:inline-block; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:700; }
+  .tag.ba  { background:#e6f4ea; color:#2a7a2a; }
+  .tag.tea { background:#fff0e6; color:#c06020; }
+  .tag.tip { background:#e8f0fe; color:#1a56b8; }
+  .tag.svc { background:#f3e8ff; color:#7c3aed; }
+  .tag.soc { background:#fce8f3; color:#b83a7a; }
+  .legend-item span { font-size:12px; color:#6a7a99; }
+
+  /* Hashtags */
+  .hashtags { background:var(--navy); border-radius:12px; padding:22px 28px; margin-bottom:32px; }
+  .hashtags-title { font-size:10px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:var(--cyan); margin-bottom:12px; }
+  .hashtag-cloud { display:flex; flex-wrap:wrap; gap:8px; }
+  .htag { background:rgba(0,114,255,0.12); border:1px solid rgba(0,114,255,0.25); border-radius:20px; padding:5px 12px; font-size:12px; color:rgba(255,255,255,0.7); }
+
+  /* Calendar grid */
+  .calendar-title { font-size:11px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:var(--blue); margin-bottom:16px; }
+  .week { background:var(--white); border:1px solid var(--border); border-radius:12px; margin-bottom:16px; overflow:hidden; }
+  .week-header { background:var(--navy); padding:12px 20px; display:flex; align-items:center; gap:12px; }
+  .week-num { width:28px; height:28px; background:var(--grad); border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800; color:var(--white); flex-shrink:0; }
+  .week-header h3 { font-size:13px; font-weight:700; color:var(--white); }
+  .week-header p { font-size:11px; color:rgba(255,255,255,0.45); }
+  .week-days { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; }
+  .day { padding:18px 18px; border-right:1px solid var(--border); }
+  .day:last-child { border-right:none; }
+  .day-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+  .day-name { font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:#aab; }
+  .day-date { font-size:11px; color:#ccd; }
+  .post-type { margin-bottom:6px; }
+  .post-title { font-size:13px; font-weight:700; color:#0c1630; margin-bottom:4px; line-height:1.3; }
+  .post-caption { font-size:11px; color:#6a7a99; line-height:1.5; margin-bottom:6px; }
+  .post-note { font-size:10px; color:#aab; font-style:italic; }
+  .rest-day { opacity:0.3; display:flex; align-items:center; justify-content:center; min-height:80px; font-size:11px; color:#aab; font-style:italic; }
+
+  /* Tips block */
+  .tips { background:var(--white); border:1px solid var(--border); border-radius:12px; padding:28px 32px; margin-top:32px; }
+  .tips-title { font-size:11px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:var(--blue); margin-bottom:18px; }
+  .tips-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .tip-item { padding:16px 18px; background:#f5f8ff; border-radius:8px; border:1px solid var(--border); }
+  .tip-item h4 { font-size:13px; font-weight:700; color:#0c1630; margin-bottom:5px; }
+  .tip-item p { font-size:12px; color:#6a7a99; line-height:1.5; }
+
+  /* Print */
+  .print-bar { text-align:center; padding:24px; }
+  .btn-print { background:var(--grad); border:none; border-radius:40px; padding:11px 28px; font-size:13px; font-weight:700; color:var(--white); cursor:pointer; font-family:'Inter',Arial,sans-serif; }
+  @media print { body { background:white; } .print-bar { display:none; } }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="top-bar"></div>
+  <div class="header-inner">
+    <div class="h-brand">
+      <div class="logo-wrap">
+        <img src="../assets/DizDaz.png" onerror="this.style.background='linear-gradient(135deg,#0072FF,#00C6FF)'" alt="DizDaz">
+      </div>
+      <div class="h-text">
+        <h1>@dizdazcleaning</h1>
+        <p>30-Day Instagram Content Plan — April 2026</p>
+      </div>
+    </div>
+    <div class="h-badge">
+      <p>Posting rhythm</p>
+      <strong>4× per week</strong>
+    </div>
+  </div>
+</div>
+
+<div class="doc">
+
+  <!-- Strategy overview -->
+  <div class="overview">
+    <div class="ov-item">
+      <div class="ov-label">Strategy</div>
+      <div class="ov-value">Soft relaunch</div>
+      <div class="ov-note">@dizdazcleaning exists but is in early stage. This is a structured relaunch, not a new account.</div>
+    </div>
+    <div class="ov-item">
+      <div class="ov-label">Posting Days</div>
+      <div class="ov-value">Mon · Wed · Fri · Sun</div>
+      <div class="ov-note">4 posts per week. Consistent schedule builds audience habit. Rest days: Tue, Thu, Sat.</div>
+    </div>
+    <div class="ov-item">
+      <div class="ov-label">Goal</div>
+      <div class="ov-value">Awareness + DMs</div>
+      <div class="ov-note">Build local credibility with Bristol property managers and Airbnb hosts. Drive enquiries via DM and link in bio.</div>
+    </div>
+  </div>
+
+  <!-- Content mix legend -->
+  <div class="legend">
+    <div class="legend-title">Content Types</div>
+    <div class="legend-grid">
+      <div class="legend-item"><span class="tag ba">B/A</span><span>Before &amp; After</span></div>
+      <div class="legend-item"><span class="tag tea">Team</span><span>Team in action</span></div>
+      <div class="legend-item"><span class="tag tip">Tip</span><span>Airbnb host tips</span></div>
+      <div class="legend-item"><span class="tag svc">Svc</span><span>Service highlight</span></div>
+      <div class="legend-item"><span class="tag soc">Soc</span><span>Social proof</span></div>
+    </div>
+  </div>
+
+  <!-- 30-Day Calendar -->
+  <div class="calendar-title">30-Day Posting Schedule — April 2026</div>
+
+  <!-- Week 1 -->
+  <div class="week">
+    <div class="week-header">
+      <div class="week-num">1</div>
+      <div>
+        <h3>Week 1 — Relaunch Week</h3>
+        <p>Apr 1–7 · Focus: Introduce DizDaz to the world properly</p>
+      </div>
+    </div>
+    <div class="week-days">
+      <div class="day">
+        <div class="day-header"><span class="day-name">Mon</span><span class="day-date">Apr 1</span></div>
+        <div class="post-type"><span class="tag svc">Svc</span></div>
+        <div class="post-title">This is DizDaz 👋</div>
+        <div class="post-caption">Reintroduction post. Who we are, what we do, who we work with. Logo graphic or team photo. Strong brand first impression.</div>
+        <div class="post-note">Caption: "5 years of guest-ready cleans in Bristol. Here's what we do 🧹" · Link in bio to website</div>
+      </div>
+      <div class="day">
+        <div class="day-header"><span class="day-name">Wed</span><span class="day-date">Apr 3</span></div>
+        <div class="post-type"><span class="tag ba">B/A</span></div>
+        <div class="post-title">The Before &amp; After</div>
+        <div class="post-caption">Side-by-side room transformation. Carousel format. Real room at Berkeley Square or Brunel Loft.</div>
+        <div class="post-note">Caption: "Checkout to check-in in under 3 hours 🏠" · Most engaging format — drives saves and shares</div>
+      </div>
+      <div class="day">
+        <div class="day-header"><span class="day-name">Fri</span><span class="day-date">Apr 5</span></div>
+        <div class="post-type"><span class="tag tip">Tip</span></div>
+        <div class="post-title">5 Signs Your Airbnb Needs a Professional Clean</div>
+        <div class="post-caption">Carousel or list graphic. Positions DizDaz as the expert. Drives saves from hosts.</div>
+        <div class="post-note">Caption: "Swipe to see if your property makes the list 👀" · Tag relevant Bristol hashtags</div>
+      </div>
+      <div class="day">
+        <div class="day-header"><span class="day-name">Sun</span><span class="day-date">Apr 7</span></div>
+        <div class="post-type"><span class="tag team">Team</span></div>
+        <div class="post-title">The DizDaz Team</div>
+        <div class="post-caption">Photo or video of the team in action. Builds trust and humanity. Jodie in her element.</div>
+        <div class="post-note">Caption: "Sunday clean done ✅ Every room, guest-ready" · Real, authentic shot</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Week 2 -->
+  <div class="week">
+    <div class="week-header">
+      <div class="week-num">2</div>
+      <div>
+        <h3>Week 2 — Service Education</h3>
+        <p>Apr 8–14 · Focus: Show the work and position DizDaz as the expert</p>
+      </div>
+    </div>
+    <div class="week-days">
+      <div class="day">
+        <div class="day-header"><span class="day-name">Mon</span><span class="day-date">Apr 8</span></div>
+        <div class="post-type"><span class="tag ba">B/A</span></div>
+        <div class="post-title">Bathroom Transformation</div>
+        <div class="post-caption">Before and after carousel focused on bathroom detail. Guest bathrooms are where standards are judged first.</div>
+        <div class="post-note">Caption: "The bathroom makes or breaks the review 🚿" · Drives saves from property managers</div>
+      </div>
+      <div class="day">
+        <div class="day-header"><span class="day-name">Wed</span><span class="day-date">Apr 10</span></div>
+        <div class="post-type"><span class="tag tip">Tip</span></div>
+        <div class="post-title">What 'Guest-Ready' Actually Means</div>
+        <div class="post-caption">Educational post. Break down the checklist. Position DizDaz as the standard-setter, not just a cleaner.</div>
+        <div class="post-note">Caption: "If a guest would notice it, we've already taken care of it 🏡"</div>
+      </div>
+      <div class="day">
+        <div class="day-header"><span class="day-name">Fri</span><span class="day-date">Apr 12</span></div>
+        <div class="post-type"><span class="tag svc">Svc</span></div>
+        <div class="post-title">We Work Around Your Check-In</div>
+        <div class="post-caption">Highlight the 10am–3pm window. Show the operational benefit for property managers. Graphic or short reel.</div>
+        <div class="post-note">Caption: "Checkout at 11, check-in at 3 — we've got the window covered ⏰"</div>
+      </div>
+      <div class="day">
+        <div class="day-header"><span class="day-name">Sun</span><span class="day-date">Apr 14</span></div>
+        <div class="post-type"><span class="tag team">Team</span></div>
+        <div class="post-title">Behind the Scenes: A Full Clean</div>
+        <div class="post-caption">Short video (Reel) showing a full room clean from start to guest-ready. Most shareable format.</div>
+        <div class="post-note">Caption: "This is what a DizDaz clean looks like 🎥" · Tag @dizdazcleaning</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Week 3 -->
+  <div class="week">
+    <div class="week-header">
+      <div class="week-num">3</div>
+      <div>
+        <h3>Week 3 — Trust &amp; Social Proof</h3>
+        <p>Apr 15–21 · Focus: Build credibility with proof and client results</p>
+      </div>
+    </div>
+    <div class="week-days">
+      <div class="day">
+        <div class="day-header"><span class="day-name">Mon</span><span class="day-date">Apr 15</span></div>
+        <div class="post-type"><span class="tag soc">Soc</span></div>
+        <div class="post-title">5 Years With YourApartment</div>
+        <div class="post-caption">Milestone post. DizDaz's proven track record. Quote from YourApartment (with permission). Credibility builder.</div>
+        <div class="post-note">Caption: "Five years. Same standard. Every time 🤝" · Needs Jodie's sign-off + YourApartment permission</div>
+      </div>
+      <div class="day">
+        <div class="day-header"><span class="day-name">Wed</span><span class="day-date">Apr 17</span></div>
+        <div class="post-type"><span class="tag ba">B/A</span></div>
+        <div class="post-title">Kitchen Before &amp; After</div>
+        <div class="post-caption">Carousel. Kitchen is second most-reviewed area after bathroom. Guest-ready kitchen = good review.</div>
+        <div class="post-note">Caption: "From post-checkout chaos to guest-ready in 90 minutes 🍳"</div>
+      </div>
+      <div class="day">
+        <div class="day-header"><span class="day-name">Fri</span><span class="day-date">Apr 19</span></div>
+        <div class="post-type"><span class="tag tip">Tip</span></div>
+        <div class="post-title">How to Get 5-Star Cleanliness Reviews</div>
+        <div class="post-caption">Tips carousel for Airbnb hosts. Viral-friendly content that positions DizDaz as the expert partner.</div>
+        <div class="post-note">Caption: "Save this for your next guest review briefing ⭐⭐⭐⭐⭐"</div>
+      </div>
+      <div class="day">
+        <div class="day-header"><span class="day-name">Sun</span><span class="day-date">Apr 21</span></div>
+        <div class="post-type"><span class="tag svc">Svc</span></div>
+        <div class="post-title">We're Hiring: Join the Team</div>
+        <div class="post-caption">Worker recruitment post. Links to existing recruitment ad. Builds brand and fills team pipeline.</div>
+        <div class="post-note">Caption: "Love cleaning? We're always looking for reliable team members 🧹 DM us!"</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Week 4 -->
+  <div class="week">
+    <div class="week-header">
+      <div class="week-num">4</div>
+      <div>
+        <h3>Week 4 — New Client Push</h3>
+        <p>Apr 22–28 · Focus: Convert followers into enquiries and outreach</p>
+      </div>
+    </div>
+    <div class="week-days">
+      <div class="day">
+        <div class="day-header"><span class="day-name">Mon</span><span class="day-date">Apr 22</span></div>
+        <div class="post-type"><span class="tag svc">Svc</span></div>
+        <div class="post-title">Managing Multiple Properties?</div>
+        <div class="post-caption">Targeted at Airbnb management companies and portfolio managers. Pain-point led. CTA to DM or link in bio.</div>
+        <div class="post-note">Caption: "We work with portfolio managers across Bristol — one invoice, consistent standards 📋"</div>
+      </div>
+      <div class="day">
+        <div class="day-header"><span class="day-name">Wed</span><span class="day-date">Apr 24</span></div>
+        <div class="post-type"><span class="tag ba">B/A</span></div>
+        <div class="post-title">Full Room Reset</div>
+        <div class="post-caption">Full room transformation carousel. Best-performing format again to close the month strong.</div>
+        <div class="post-note">Caption: "This is what ready looks like 🔑" · Use your best B/A shots from the month</div>
+      </div>
+      <div class="day">
+        <div class="day-header"><span class="day-name">Fri</span><span class="day-date">Apr 26</span></div>
+        <div class="post-type"><span class="tag tip">Tip</span></div>
+        <div class="post-title">Bristol Airbnb Hosts: What to Look For in a Cleaning Team</div>
+        <div class="post-caption">SEO-friendly content. Educational. Every point is something DizDaz delivers. Soft sell.</div>
+        <div class="post-note">Caption: "If your cleaner doesn't do all of this, we need to talk 👇"</div>
+      </div>
+      <div class="day">
+        <div class="day-header"><span class="day-name">Sun</span><span class="day-date">Apr 28</span></div>
+        <div class="post-type"><span class="tag soc">Soc</span></div>
+        <div class="post-title">Month 1 Wrap — Thank You Bristol</div>
+        <div class="post-caption">Gratitude and momentum post. Recap the month, invite new clients to DM. Sets up Month 2.</div>
+        <div class="post-note">Caption: "Month 1 done. If you manage properties in Bristol and need a cleaning team you can count on — DM us 🏠"</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hashtag set -->
+  <div class="hashtags">
+    <div class="hashtags-title">Bristol + Niche Hashtag Set (use 8–12 per post)</div>
+    <div class="hashtag-cloud">
+      <span class="htag">#BristolAirbnb</span>
+      <span class="htag">#BristolCleaning</span>
+      <span class="htag">#BristolShortLet</span>
+      <span class="htag">#AirbnbCleaning</span>
+      <span class="htag">#ShortLetCleaning</span>
+      <span class="htag">#ServicedApartment</span>
+      <span class="htag">#BristolPropertyManagement</span>
+      <span class="htag">#AirbnbHost</span>
+      <span class="htag">#PropertyManager</span>
+      <span class="htag">#BristolBS</span>
+      <span class="htag">#GuestReady</span>
+      <span class="htag">#CleaningBristol</span>
+      <span class="htag">#DizDazCleaning</span>
+      <span class="htag">#AirbnbTips</span>
+      <span class="htag">#ShortLetHost</span>
+      <span class="htag">#BristolBusiness</span>
+      <span class="htag">#CleaningService</span>
+      <span class="htag">#BristolHospitality</span>
+    </div>
+  </div>
+
+  <!-- Tips -->
+  <div class="tips">
+    <div class="tips-title">Posting Tips for Jodie</div>
+    <div class="tips-grid">
+      <div class="tip-item">
+        <h4>📸 Photography</h4>
+        <p>Natural light is best. Film before and after at the same angle. Wide shots for rooms, close-ups for detail. Landscape for Reels, portrait (4:5) for feed posts.</p>
+      </div>
+      <div class="tip-item">
+        <h4>🕐 Best Posting Times</h4>
+        <p>Mondays 9–11am, Wednesdays 12–2pm, Fridays 8–10am, Sundays 7–9pm. Post when your target audience (property managers) is checking their phone.</p>
+      </div>
+      <div class="tip-item">
+        <h4>💬 Reply to Every Comment</h4>
+        <p>In the first hour after posting, reply to every comment. Instagram rewards engagement. Even "Thanks 🙏" is enough. Ask a follow-up question to keep the thread going.</p>
+      </div>
+      <div class="tip-item">
+        <h4>📱 Stories Daily</h4>
+        <p>Even on non-posting days, add a Story. Behind the scenes, a quick room shot, a poll ("Do you manage short-lets in Bristol?"). Stories keep you visible between posts.</p>
+      </div>
+      <div class="tip-item">
+        <h4>🔗 Link in Bio</h4>
+        <p>Keep the link in bio pointing to the website (www.dizdazcleaning.com). Mention it in captions once or twice a week to drive traffic.</p>
+      </div>
+      <div class="tip-item">
+        <h4>✅ Sign-Off Reminder</h4>
+        <p>Any post mentioning YourApartment by name, quoting a client, or making a specific claim needs Jodie's sign-off before publishing. When in doubt, check with CB first.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="print-bar">
+  <button class="btn-print" onclick="window.print()">🖨 Print / Save as PDF</button>
+</div>
+
+</body>
+</html>

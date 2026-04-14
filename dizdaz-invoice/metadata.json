@@ -1,0 +1,5 @@
+{
+  "name": "DIZDAZ Cleaning Tracker",
+  "description": "Professional Airbnb cleaning management with automated invoicing and photo verification.",
+  "requestFramePermissions": ["camera"]
+}

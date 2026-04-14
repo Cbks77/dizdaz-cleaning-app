@@ -1,0 +1,2061 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DizDaz Cleaning — Invoice App</title>
+
+
+  <!-- Password Gateway -->
+  <div id="password-gateway" style="position:fixed; top:0; left:0; width:100%; height:100%; background:var(--b900); z-index:9999; display:flex; align-items:center; justify-content:center; color:#fff; font-family:'Inter',sans-serif;">
+    <div style="text-align:center; max-width:320px; padding:24px;">
+      <div style="font-size:24px; font-weight:800; margin-bottom:16px;">Admin Access</div>
+      <div style="font-size:13px; opacity:.6; margin-bottom:24px;">Please enter the admin password to continue.</div>
+      <input type="password" id="gateway-pw" style="width:100%; padding:12px; border-radius:8px; border:none; margin-bottom:16px; text-align:center; font-size:16px;" placeholder="Password">
+      <button id="gateway-btn" style="width:100%; padding:12px; background:var(--b500); color:#fff; border:none; border-radius:8px; font-weight:700; cursor:pointer;">Unlock App</button>
+      <div id="gateway-error" style="color:var(--red); font-size:12px; margin-top:12px; display:none;">Incorrect password. Please try again.</div>
+    </div>
+  </div>
+
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1e3a5f">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="DizDaz Invoice">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+
+  <!-- Description for sharing / installed app info -->
+  <meta name="description" content="Invoice management app for DizDaz Cleaning Services">
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --b900:#1e3a5f; --b800:#1e40af; --b700:#1d4ed8; --b600:#2563eb;
+      --b500:#3b82f6; --b200:#bfdbfe; --b100:#dbeafe; --b50:#eff6ff;
+      --g900:#0f172a; --g700:#334155; --g600:#475569; --g500:#64748b;
+      --g400:#94a3b8; --g300:#cbd5e1; --g200:#e2e8f0; --g100:#f1f5f9;
+      --g50:#f8fafc; --white:#fff;
+      --green:#10b981; --gd:#059669;
+      --red:#ef4444; --red-l:#fee2e2;
+      --amber:#f59e0b; --amber-l:#fef3c7;
+    }
+
+    body { font-family:'Inter',sans-serif; background:var(--g50); color:var(--g900); min-height:100vh; }
+
+    /* ── HEADER ── */
+    .hdr {
+      background:linear-gradient(135deg,var(--b900),var(--b700));
+      color:#fff; padding:13px 26px;
+      display:flex; align-items:center; justify-content:space-between;
+      box-shadow:0 2px 16px rgba(0,0,0,.18);
+      position:sticky; top:0; z-index:100;
+    }
+    .hdr-brand { display:flex; align-items:center; gap:11px; }
+    .hdr-icon {
+      width:38px; height:38px; background:rgba(255,255,255,.18);
+      border-radius:9px; display:flex; align-items:center;
+      justify-content:center; font-size:18px;
+    }
+    .hdr h1 { font-size:17px; font-weight:700; letter-spacing:-.3px; }
+    .hdr .sub { font-size:10px; opacity:.6; margin-top:1px; }
+    .hdr-pills { display:flex; gap:8px; }
+    .pill {
+      background:rgba(255,255,255,.15); border:1px solid rgba(255,255,255,.28);
+      color:#fff; padding:4px 12px; border-radius:20px;
+      font-size:11px; font-weight:600;
+    }
+
+    /* ── LAYOUT ── */
+    .layout { display:grid; grid-template-columns:1fr 460px; min-height:calc(100vh - 65px); }
+
+    /* ── BUILDER ── */
+    .builder { padding:22px 26px; overflow-y:auto; }
+
+    .card {
+      background:var(--white); border-radius:13px;
+      border:1px solid var(--g200); padding:20px 22px;
+      margin-bottom:16px; box-shadow:0 1px 4px rgba(0,0,0,.04);
+    }
+    .card-title {
+      font-size:11px; font-weight:700; color:var(--b700);
+      text-transform:uppercase; letter-spacing:1px;
+      margin-bottom:15px; display:flex; align-items:center; gap:7px;
+    }
+    .dot { width:7px; height:7px; background:var(--b500); border-radius:50%; flex-shrink:0; }
+
+    label { display:block; font-size:11px; font-weight:600; color:var(--g600); letter-spacing:.3px; margin-bottom:4px; }
+    input[type=text],input[type=email],input[type=tel],input[type=date],input[type=number],textarea,select {
+      width:100%; padding:8px 12px; border:1.5px solid var(--g200); border-radius:8px;
+      font-family:'Inter',sans-serif; font-size:13px; color:var(--g900); background:var(--white);
+      outline:none; transition:border-color .2s,box-shadow .2s;
+    }
+    input:focus,textarea:focus,select:focus {
+      border-color:var(--b500); box-shadow:0 0 0 3px rgba(59,130,246,.12);
+    }
+    textarea { resize:vertical; line-height:1.5; }
+    .g2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .g3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
+    .mb { margin-bottom:11px; }
+
+    /* ── BAKED LOGO MARK ── */
+    /* On blue backgrounds (header, invoice header) */
+    .logo-mark {
+      display:flex; align-items:center; gap:11px;
+    }
+    .logo-emblem {
+      width:52px; height:52px; flex-shrink:0;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .logo-emblem svg { width:52px; height:52px; }
+    .logo-wordmark { line-height:1; }
+    .logo-name {
+      font-family:'Playfair Display',serif;
+      font-size:20px; font-weight:700;
+      color:#fff; letter-spacing:-.2px;
+    }
+    .logo-name em { font-style:normal; opacity:.75; font-weight:400; }
+    .logo-tagline {
+      font-size:9px; font-weight:700;
+      color:rgba(255,255,255,.55);
+      text-transform:uppercase; letter-spacing:2px; margin-top:2px;
+    }
+
+    /* Invoice paper logo (slightly larger, on blue inv header) */
+    .inv-logo-mark { display:flex; align-items:center; gap:10px; }
+    .inv-logo-emblem {
+      width:70px; height:70px; flex-shrink:0;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .inv-logo-emblem svg { width:70px; height:70px; }
+    .inv-logo-name {
+      font-family:'Playfair Display',serif;
+      font-size:22px; font-weight:700; color:#fff; letter-spacing:-.2px;
+    }
+    .inv-logo-name em { font-style:normal; opacity:.7; font-weight:400; }
+    .inv-logo-tag {
+      font-size:9px; font-weight:700; color:rgba(255,255,255,.5);
+      text-transform:uppercase; letter-spacing:2px; margin-top:2px;
+    }
+
+    /* Month selector */
+    .month-bar {
+      display:flex; align-items:center; justify-content:space-between;
+      background:var(--b50); border:1px solid var(--b200);
+      border-radius:10px; padding:10px 16px; margin-bottom:14px;
+    }
+    .month-nav { background:none; border:none; font-size:18px; cursor:pointer; color:var(--b700); padding:2px 6px; border-radius:6px; transition:background .15s; }
+    .month-nav:hover { background:var(--b100); }
+    .month-label { font-size:15px; font-weight:700; color:var(--b800); }
+    .month-cleans { font-size:11px; color:var(--g500); margin-top:1px; text-align:center; }
+
+    /* AI */
+    .ai-badge {
+      display:inline-flex; align-items:center; gap:4px;
+      background:linear-gradient(135deg,#7c3aed,#2563eb);
+      color:#fff; padding:3px 9px; border-radius:11px; font-size:10px; font-weight:700;
+    }
+    .ai-wrap { position:relative; }
+    .ai-ta { min-height:70px !important; background:#f5f0ff !important; border-color:#c4b5fd !important; padding-right:105px !important; }
+    .ai-btn {
+      position:absolute; bottom:9px; right:9px;
+      background:linear-gradient(135deg,#7c3aed,#2563eb); color:#fff;
+      border:none; border-radius:7px; padding:6px 13px;
+      font-size:11px; font-weight:700; cursor:pointer;
+      display:flex; align-items:center; gap:4px;
+      box-shadow:0 2px 8px rgba(124,58,237,.3); transition:all .2s;
+      font-family:'Inter',sans-serif;
+    }
+    .ai-btn:hover { transform:translateY(-1px); }
+    .ai-hint { font-size:10.5px; color:var(--b600); margin-top:5px; }
+    .ai-toast {
+      display:none; margin-top:9px;
+      background:linear-gradient(135deg,#7c3aed,#2563eb);
+      color:#fff; padding:9px 13px; border-radius:9px; font-size:12px;
+      animation:pop .3s ease;
+    }
+    @keyframes pop { from{opacity:0;transform:translateY(-5px)} to{opacity:1;transform:translateY(0)} }
+
+    /* Room tiles */
+    .block-hd { display:flex; align-items:center; justify-content:space-between; margin-bottom:9px; }
+    .block-nm { font-size:13px; font-weight:700; display:flex; align-items:center; gap:7px; }
+    .blk-chip { font-size:9px; background:var(--b100); color:var(--b800); padding:2px 7px; border-radius:5px; font-weight:700; }
+    .blk-acts { display:flex; gap:5px; }
+    .tbtn { font-size:11px; color:var(--b600); background:none; border:1px solid var(--b200); border-radius:5px; padding:3px 8px; cursor:pointer; font-weight:600; transition:background .15s; font-family:'Inter',sans-serif; }
+    .tbtn:hover { background:var(--b50); }
+    .tbtn.gr { color:var(--g500); border-color:var(--g200); }
+    .tbtn.gr:hover { background:var(--g100); }
+
+    .rg5 { display:grid; grid-template-columns:repeat(5,1fr); gap:7px; }
+    .rg3 { display:grid; grid-template-columns:repeat(3,1fr); gap:7px; max-width:195px; }
+
+    .rt {
+      border:2px solid var(--g200); border-radius:9px; padding:9px 4px;
+      text-align:center; cursor:pointer; transition:all .18s;
+      background:var(--white); user-select:none;
+    }
+    .rt:hover { transform:translateY(-1px); box-shadow:0 2px 6px rgba(0,0,0,.1); }
+    .rt.on { color:#fff; box-shadow:0 3px 10px rgba(0,0,0,.22); transform:translateY(-1px); }
+    .rn { font-size:15px; font-weight:800; display:block; }
+    .rp { font-size:9.5px; font-weight:700; margin-top:1px; display:block; }
+    .rt.on .rp { color:rgba(255,255,255,.8); }
+
+    /* ── Price tier colours ── */
+    /* £12.50 — green (budget) */
+    .rt.tier-lo { border-color:#6ee7b7; background:#f0fdf4; }
+    .rt.tier-lo .rp { color:#059669; }
+    .rt.tier-lo:hover { border-color:#34d399; }
+    .rt.tier-lo.on { background:linear-gradient(135deg,#10b981,#059669); border-color:#059669; }
+    /* £15.00 — blue (standard) */
+    .rt.tier-mid { border-color:#93c5fd; background:#eff6ff; }
+    .rt.tier-mid .rp { color:#2563eb; }
+    .rt.tier-mid:hover { border-color:#60a5fa; }
+    .rt.tier-mid.on { background:linear-gradient(135deg,var(--b600),var(--b800)); border-color:var(--b800); }
+    /* £22.50 — amber (premium) */
+    .rt.tier-hi { border-color:#fcd34d; background:#fffbeb; }
+    .rt.tier-hi .rp { color:#d97706; }
+    .rt.tier-hi:hover { border-color:#fbbf24; }
+    .rt.tier-hi.on { background:linear-gradient(135deg,#f59e0b,#b45309); border-color:#b45309; }
+
+    /* Tier legend pill */
+    .tier-legend { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+    .tl-pill { display:flex; align-items:center; gap:5px; font-size:10px; font-weight:600; color:var(--g600); }
+    .tl-swatch { width:11px; height:11px; border-radius:3px; flex-shrink:0; }
+
+    /* Add clean button */
+    .add-clean-btn {
+      width:100%; padding:12px; margin-top:14px;
+      background:linear-gradient(135deg,var(--gd),var(--green));
+      color:#fff; border:none; border-radius:10px;
+      font-size:14px; font-weight:700; cursor:pointer;
+      display:flex; align-items:center; justify-content:center; gap:7px;
+      box-shadow:0 2px 10px rgba(16,185,129,.3); transition:all .2s;
+      font-family:'Inter',sans-serif;
+    }
+    .add-clean-btn:hover { transform:translateY(-2px); box-shadow:0 5px 16px rgba(16,185,129,.35); }
+    .add-clean-btn:disabled { opacity:.5; cursor:not-allowed; transform:none; }
+
+    /* Clean Log */
+    .log-empty {
+      text-align:center; padding:24px 16px;
+      color:var(--g400); font-size:13px; font-style:italic;
+    }
+    .log-empty .ico { font-size:32px; margin-bottom:8px; }
+
+    .log-entry {
+      background:var(--g50); border:1px solid var(--g200); border-radius:10px;
+      padding:12px 14px; margin-bottom:8px;
+      display:flex; align-items:flex-start; justify-content:space-between;
+      gap:10px; transition:border-color .15s;
+    }
+    .log-entry:hover { border-color:var(--b300); }
+    .log-date { font-size:12.5px; font-weight:700; color:var(--b800); margin-bottom:5px; }
+    .log-rooms { font-size:11.5px; color:var(--g600); line-height:1.5; }
+    .log-rooms span { font-weight:600; color:var(--g700); }
+    .log-total { font-size:14px; font-weight:800; color:var(--b700); white-space:nowrap; }
+    .log-del {
+      background:none; border:none; color:var(--g400); cursor:pointer;
+      font-size:15px; padding:2px 4px; border-radius:5px;
+      transition:color .15s,background .15s; line-height:1;
+    }
+    .log-del:hover { color:var(--red); background:var(--red-l); }
+    .log-right { display:flex; flex-direction:column; align-items:flex-end; gap:6px; }
+
+    /* Monthly summary bar */
+    .summary-bar {
+      background:linear-gradient(135deg,var(--b900),var(--b700));
+      color:#fff; border-radius:11px; padding:14px 20px;
+      display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;
+    }
+    .summary-bar .lbl { font-size:12px; opacity:.75; }
+    .summary-bar .cnt { font-size:11px; opacity:.55; margin-top:1px; }
+    .summary-bar .amt { font-size:30px; font-weight:800; font-family:'Playfair Display',serif; }
+
+    /* Buttons */
+    .btn {
+      display:inline-flex; align-items:center; gap:7px;
+      padding:10px 18px; border-radius:9px; font-size:13px;
+      font-weight:600; cursor:pointer; border:none;
+      font-family:'Inter',sans-serif; transition:all .2s;
+    }
+    .btn-green { background:linear-gradient(135deg,var(--gd),var(--green)); color:#fff; box-shadow:0 2px 10px rgba(16,185,129,.3); }
+    .btn-green:hover { transform:translateY(-2px); }
+    .btn-blue { background:linear-gradient(135deg,var(--b600),var(--b700)); color:#fff; box-shadow:0 2px 10px rgba(37,99,235,.25); }
+    .btn-blue:hover { transform:translateY(-2px); }
+    .btn-ghost { background:#fff; color:var(--g600); border:1.5px solid var(--g200); }
+    .btn-ghost:hover { background:var(--g100); }
+    .btn-drive { background:linear-gradient(135deg,#4285f4,#1a73e8); color:#fff; box-shadow:0 2px 10px rgba(66,133,244,.3); }
+    .btn-drive:hover { transform:translateY(-2px); }
+    .btn-row { display:flex; gap:8px; flex-wrap:wrap; }
+
+    /* ── PREVIEW PANEL ── */
+    .preview {
+      background:#eef2f7; border-left:1px solid var(--g200);
+      padding:20px 18px; overflow-y:auto;
+      height:calc(100vh - 65px); position:sticky; top:65px;
+    }
+    .prev-lbl { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--g500); margin-bottom:12px; }
+
+    /* ── INVOICE PAPER ── */
+    .paper { background:#fff; border-radius:13px; box-shadow:0 6px 30px rgba(0,0,0,.12); overflow:hidden; font-size:11.5px; }
+
+    .inv-hd {
+      background:linear-gradient(135deg,var(--b900),var(--b700));
+      padding:22px 24px 16px; color:#fff;
+    }
+    .inv-hd-row { display:flex; justify-content:space-between; align-items:flex-start; }
+    .inv-logo { width:68px; height:48px; display:flex; align-items:center; }
+    .inv-logo img { max-width:68px; max-height:48px; object-fit:contain; border-radius:4px; }
+    .inv-co { font-family:'Playfair Display',serif; font-size:19px; font-weight:600; margin-top:7px; }
+    .inv-co-sub { font-size:9.5px; opacity:.65; margin-top:1px; }
+    .inv-badge { background:rgba(255,255,255,.15); border:1px solid rgba(255,255,255,.28); padding:4px 12px; border-radius:18px; font-size:10px; font-weight:700; letter-spacing:1px; }
+    .inv-n-lbl { font-size:8px; opacity:.65; text-transform:uppercase; letter-spacing:.5px; text-align:right; margin-top:9px; }
+    .inv-n-val { font-size:16px; font-weight:700; text-align:right; }
+    .inv-meta { display:flex; justify-content:space-between; margin-top:12px; }
+    .im .ml { font-size:8.5px; opacity:.6; text-transform:uppercase; letter-spacing:.5px; }
+    .im .mv { font-size:11px; font-weight:700; margin-top:1px; }
+    .im.r { text-align:right; }
+
+    .inv-body { padding:18px 24px; }
+
+    .parties { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px; }
+    .party { background:var(--g50); border-radius:7px; padding:10px 12px; }
+    .p-lbl { font-size:8.5px; text-transform:uppercase; letter-spacing:.9px; color:var(--b600); font-weight:700; margin-bottom:5px; }
+    .p-nm { font-size:12px; font-weight:700; color:var(--g900); }
+    .p-dt { font-size:10.5px; color:var(--g500); margin-top:2px; line-height:1.5; }
+
+    /* Table */
+    .itbl { width:100%; border-collapse:collapse; margin-bottom:12px; }
+    .itbl thead tr { background:var(--b900); color:#fff; }
+    .itbl th { padding:7px 10px; font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; }
+    .itbl th:last-child { text-align:right; }
+    .itbl td { padding:7px 10px; border-bottom:1px solid var(--g100); font-size:10.5px; color:var(--g700); }
+    .itbl td:last-child { text-align:right; font-weight:600; color:var(--g900); }
+    .itbl .dg-row td { background:linear-gradient(135deg,#f0f7ff,var(--b50)); font-weight:700; font-size:9.5px; color:var(--b800); padding:5px 10px; border-bottom:none; }
+    .itbl .empty td { text-align:center; color:var(--g300); padding:20px; font-style:italic; }
+    .itbl tbody tr:not(.dg-row):hover { background:var(--g50); }
+
+    .tot-row { display:flex; justify-content:flex-end; margin-bottom:14px; }
+    .tot-box { background:linear-gradient(135deg,var(--b900),var(--b700)); color:#fff; padding:11px 16px; border-radius:9px; text-align:right; min-width:160px; }
+    .tot-lbl { font-size:8.5px; opacity:.7; text-transform:uppercase; letter-spacing:.5px; }
+    .tot-amt { font-size:22px; font-weight:800; font-family:'Playfair Display',serif; }
+
+    .notes-box { background:var(--b50); border:1px solid var(--b100); border-radius:7px; padding:10px 13px; margin-bottom:13px; font-size:11px; color:var(--g700); }
+    .notes-box .nl { font-weight:700; font-size:8.5px; text-transform:uppercase; letter-spacing:.5px; color:var(--b700); margin-bottom:3px; }
+
+    .pay-box { background:var(--g50); border:1px solid var(--g200); border-radius:9px; padding:11px 13px; }
+    .pay-tl { font-size:8.5px; font-weight:700; text-transform:uppercase; letter-spacing:.8px; color:var(--b700); margin-bottom:9px; }
+    .pay-g { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+    .pay-l { font-size:9.5px; color:var(--g500); }
+    .pay-v { font-size:11.5px; font-weight:700; color:var(--g900); margin-top:1px; }
+
+    .inv-ft { border-top:1px solid var(--g200); padding:11px 24px; display:flex; align-items:center; justify-content:space-between; background:var(--g50); }
+    .ft-note { font-size:10px; color:var(--g500); }
+    .ft-brand { font-size:9.5px; color:var(--g400); font-style:italic; }
+
+    .prev-btns { display:flex; gap:7px; margin-top:13px; }
+    .prev-btns .btn { flex:1; justify-content:center; font-size:12px; }
+
+    /* ── GEMINI SETTINGS ── */
+    .ai-settings-toggle {
+      display:flex; align-items:center; gap:6px;
+      font-size:11px; font-weight:600; color:var(--g500);
+      background:none; border:1px solid var(--g200);
+      border-radius:7px; padding:4px 10px; cursor:pointer;
+      font-family:'Inter',sans-serif; transition:all .15s; margin-bottom:10px;
+    }
+    .ai-settings-toggle:hover { background:var(--g100); color:var(--g700); }
+    .ai-settings-toggle.active { color:var(--b700); border-color:var(--b200); background:var(--b50); }
+    .ai-settings-panel {
+      display:none; background:var(--g50); border:1px solid var(--g200);
+      border-radius:9px; padding:13px 14px; margin-bottom:12px;
+    }
+    .ai-settings-panel.open { display:block; }
+    .gemini-status {
+      display:inline-flex; align-items:center; gap:5px;
+      font-size:10px; font-weight:700; padding:2px 8px;
+      border-radius:10px; margin-left:8px;
+    }
+    .gemini-status.on  { background:#dcfce7; color:#14532d; }
+    .gemini-status.off { background:var(--g100); color:var(--g500); }
+    .ai-btn.gemini-active {
+      background:linear-gradient(135deg,#0f9d58,#34a853) !important;
+      box-shadow:0 2px 8px rgba(15,157,88,.3) !important;
+    }
+    .key-row { display:flex; gap:8px; align-items:center; }
+    .key-row input { flex:1; font-family:monospace; font-size:12px; }
+    .save-key-btn {
+      background:var(--b600); color:#fff; border:none;
+      border-radius:7px; padding:8px 14px; font-size:12px;
+      font-weight:700; cursor:pointer; font-family:'Inter',sans-serif;
+      white-space:nowrap; transition:background .15s;
+    }
+    .save-key-btn:hover { background:var(--b700); }
+    .clear-key-btn {
+      background:none; color:var(--red); border:1px solid #fecaca;
+      border-radius:7px; padding:7px 10px; font-size:12px;
+      font-weight:600; cursor:pointer; font-family:'Inter',sans-serif;
+      transition:background .15s;
+    }
+    .clear-key-btn:hover { background:var(--red-l); }
+
+    /* ── PWA INSTALL BANNER ── */
+    #installBanner {
+      display:none; align-items:center; justify-content:space-between; gap:12px;
+      background:linear-gradient(135deg,#0f172a,#1e3a5f);
+      border-bottom:1px solid rgba(255,255,255,.1);
+      padding:10px 20px; font-size:12.5px; color:#fff;
+    }
+    #installBanner.show { display:flex; }
+    .ib-left { display:flex; align-items:center; gap:10px; }
+    .ib-icon { width:32px; height:32px; border-radius:8px; object-fit:contain; }
+    .ib-text { font-weight:500; opacity:.9; }
+    .ib-text strong { font-weight:700; opacity:1; }
+    .ib-actions { display:flex; gap:7px; flex-shrink:0; }
+    .ib-install {
+      background:#fff; color:#1e3a5f; border:none; border-radius:7px;
+      padding:6px 14px; font-size:12px; font-weight:700; cursor:pointer;
+      font-family:'Inter',sans-serif; transition:opacity .15s;
+    }
+    .ib-install:hover { opacity:.88; }
+    .ib-dismiss {
+      background:rgba(255,255,255,.15); color:#fff; border:1px solid rgba(255,255,255,.3);
+      border-radius:7px; padding:6px 10px; font-size:12px; font-weight:600;
+      cursor:pointer; font-family:'Inter',sans-serif; transition:background .15s;
+    }
+    .ib-dismiss:hover { background:rgba(255,255,255,.25); }
+
+    /* ── FIXED TOAST ── */
+    #fixedToast {
+      position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px);
+      background:#1e3a5f; color:#fff; padding:11px 18px; border-radius:11px;
+      font-size:13px; font-weight:500; box-shadow:0 6px 24px rgba(0,0,0,.22);
+      z-index:9999; opacity:0; pointer-events:none;
+      transition:opacity .2s ease, transform .2s ease;
+      max-width:90vw; text-align:center; line-height:1.4;
+    }
+    #fixedToast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+    /* ── ADDITIONAL CHARGES ── */
+    .charge-row { display:flex; gap:9px; align-items:flex-end; margin-bottom:8px; }
+    .charge-row .cw-label { flex:2; }
+    .charge-row .cw-amount { flex:1; min-width:90px; }
+    .charge-add-btn {
+      background:var(--b600); color:#fff; border:none;
+      border-radius:8px; padding:8px 14px; font-size:12px;
+      font-weight:700; cursor:pointer; font-family:'Inter',sans-serif;
+      white-space:nowrap; transition:background .15s; align-self:flex-end; height:36px;
+    }
+    .charge-add-btn:hover { background:var(--b700); }
+    .charge-entry {
+      display:flex; align-items:center; gap:8px;
+      background:var(--g50); border:1px solid var(--g200);
+      border-radius:8px; padding:8px 11px; margin-bottom:6px;
+      transition:border-color .15s;
+    }
+    .charge-entry:hover { border-color:var(--b200); }
+    .charge-entry .ce-label { flex:1; font-size:12.5px; font-weight:500; color:var(--g700); }
+    .charge-entry .ce-amt { font-size:13px; font-weight:700; color:var(--b700); white-space:nowrap; }
+    .charge-entry .ce-amt.neg { color:var(--green); }
+    .charges-empty { font-size:12px; color:var(--g400); font-style:italic; padding:4px 0 8px; }
+    .charge-hint { font-size:10.5px; color:var(--g400); margin-top:3px; }
+
+    /* ── EDIT MODE ── */
+    .edit-mode-banner {
+      display:none; margin-bottom:12px;
+      background:linear-gradient(135deg,#fef3c7,#fffbeb);
+      border:1.5px solid var(--amber); border-radius:10px;
+      padding:11px 14px;
+    }
+    .edit-mode-banner.show { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+    .emb-text { font-size:12px; font-weight:600; color:#92400e; line-height:1.4; }
+    .emb-cancel {
+      background:none; border:1.5px solid var(--amber); border-radius:7px;
+      color:#92400e; font-size:11px; font-weight:700; padding:5px 11px;
+      cursor:pointer; white-space:nowrap; font-family:'Inter',sans-serif;
+      transition:background .15s;
+    }
+    .emb-cancel:hover { background:var(--amber-l); }
+    .add-clean-btn.edit-mode {
+      background:linear-gradient(135deg,var(--b600),var(--b800));
+      box-shadow:0 2px 10px rgba(37,99,235,.3);
+    }
+    .log-edit {
+      background:none; border:none; color:var(--b500); cursor:pointer;
+      font-size:14px; padding:2px 5px; border-radius:5px;
+      transition:color .15s, background .15s; line-height:1;
+    }
+    .log-edit:hover { color:var(--b700); background:var(--b50); }
+
+    /* ── AUTO-SAVE STATUS ── */
+    .pill.as-pill { cursor:pointer; transition:background .15s; }
+    .pill.as-pill:hover { background:rgba(255,255,255,.25); }
+    .as-dot { display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--g400); margin-right:4px; vertical-align:middle; }
+    .as-dot.live { background:var(--green); box-shadow:0 0 0 2px rgba(16,185,129,.3); }
+
+    /* ── PRINT ── */
+    @media print {
+      body { background:#fff; }
+      .hdr,.builder,.prev-lbl,.prev-btns { display:none !important; }
+      .layout { display:block; }
+      .preview { position:static; height:auto; border:none; padding:0; background:#fff; overflow:visible; }
+      .paper { box-shadow:none; border-radius:0; }
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width:1024px) {
+      .layout { grid-template-columns:1fr; }
+      .preview { position:static; height:auto; border-left:none; border-top:1px solid var(--g200); }
+    }
+    @media (max-width:600px) {
+      .rg5 { grid-template-columns:repeat(4,1fr); }
+      .g2,.g3 { grid-template-columns:1fr; }
+      .builder { padding:13px; }
+    }
+  </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+
+<!-- ═══ PWA INSTALL BANNER ═══ -->
+<div id="installBanner">
+  <div class="ib-left">
+    <img src="icon.png" class="ib-icon" alt="DizDaz logo">
+    <div class="ib-text"><strong>Install DizDaz Invoice</strong> — works offline, lives in your Dock</div>
+  </div>
+  <div class="ib-actions">
+    <button class="ib-install" id="installBtn">Install App</button>
+    <button class="ib-dismiss" onclick="dismissInstall()">Not now</button>
+  </div>
+</div>
+
+<!-- ═══ HEADER ═══ -->
+<header class="hdr">
+  <div class="hdr-brand">
+    <div class="logo-mark">
+      <div class="logo-emblem">
+        <img src="icon.png" alt="DizDaz Cleaning logo" style="width:44px;height:44px;object-fit:contain;border-radius:50%;">
+      </div>
+      <div class="logo-wordmark">
+        <div class="logo-name">Diz<em>Daz</em></div>
+        <div class="logo-tagline">Cleaning Services</div>
+      </div>
+    </div>
+  </div>
+  <div class="hdr-pills">
+    <div class="pill">✨ AI-Powered</div>
+    <div class="pill" id="monthPill">—</div>
+    <div class="pill as-pill" id="autoSavePill" onclick="setAutoSaveFolder()" title="Click to set auto-save folder">
+      <span class="as-dot" id="asDot"></span><span id="autoSaveStatus">Auto-save off</span>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+
+  <!-- ═══════════════ BUILDER ═══════════════ -->
+  <div class="builder">
+
+    <!-- ── INVOICE DETAILS ── -->
+    <div class="card">
+      <div class="card-title"><span class="dot"></span>Invoice Details</div>
+      <div class="g3 mb">
+        <div>
+          <label>Invoice #</label>
+          <div style="display:flex;gap:5px;align-items:center">
+            <input type="text" id="invNum" readonly style="flex:1;background:var(--g50);font-weight:700;color:var(--b800);cursor:default;letter-spacing:.5px">
+            <button onclick="bumpInvNum()" title="Generate a new invoice number for this date"
+              style="background:var(--b600);color:#fff;border:none;border-radius:7px;padding:8px 10px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;font-family:'Inter',sans-serif;flex-shrink:0">↻</button>
+          </div>
+        </div>
+        <div><label>Issue Date</label><input type="date" id="invIssued" oninput="onIssuedChange()"></div>
+        <div><label>Due Date</label><input type="date" id="invDue" oninput="rp()"></div>
+      </div>
+      <div><label>Notes / Reference</label><textarea id="invNotes" rows="2" placeholder="e.g. Monthly cleaning service — March 2026" oninput="rp()"></textarea></div>
+    </div>
+
+
+    <!-- ── LOG A CLEAN ── -->
+    <div class="card">
+      <div class="card-title"><span class="dot"></span>Log a Daily Clean</div>
+
+      <!-- Month nav -->
+      <div class="month-bar">
+        <button class="month-nav" onclick="shiftMonth(-1)">‹</button>
+        <div style="text-align:center">
+          <div class="month-label" id="monthLabel">—</div>
+          <div class="month-cleans" id="monthCleans">0 cleans logged</div>
+        </div>
+        <button class="month-nav" onclick="shiftMonth(1)">›</button>
+      </div>
+
+      <!-- Date for this clean -->
+      <div class="mb">
+        <label>Clean Date</label>
+        <input type="date" id="cleanDate">
+      </div>
+
+      <!-- Room grids (PRIMARY) -->
+      <div style="margin-bottom:10px;">
+        <div class="block-hd">
+          <div class="block-nm">🏢 Berkeley Square <span class="blk-chip">15 Rooms</span></div>
+          <div class="blk-acts">
+            <button class="tbtn" onclick="sa('berk')">All</button>
+            <button class="tbtn gr" onclick="ca('berk')">Clear</button>
+          </div>
+        </div>
+        <div class="rg5" id="berkGrid"></div>
+        <div class="tier-legend">
+          <div class="tl-pill"><div class="tl-swatch" style="background:#10b981;"></div>£12.50 — Rooms 6, 9</div>
+          <div class="tl-pill"><div class="tl-swatch" style="background:#3b82f6;"></div>£15.00 — Rooms 2,3,8,10,12–15</div>
+          <div class="tl-pill"><div class="tl-swatch" style="background:#f59e0b;"></div>£22.50 — Rooms 1,4,5,7,11</div>
+        </div>
+      </div>
+      <div style="margin-bottom:14px;">
+        <div class="block-hd">
+          <div class="block-nm">🏠 Brunel Loft <span class="blk-chip">3 Rooms</span></div>
+          <div class="blk-acts">
+            <button class="tbtn" onclick="sa('brun')">All</button>
+            <button class="tbtn gr" onclick="ca('brun')">Clear</button>
+          </div>
+        </div>
+        <div class="rg3" id="brunGrid"></div>
+      </div>
+
+      <div class="edit-mode-banner" id="editBanner">
+        <div class="emb-text">✏️ Edit mode — adjust the date and rooms, then save</div>
+        <button class="emb-cancel" onclick="cancelEdit()">✕ Cancel</button>
+      </div>
+      <button class="add-clean-btn" id="addBtn" onclick="addClean()">
+        ＋ Add to Invoice Log
+      </button>
+
+      <!-- AI Fill (always visible) -->
+      <div style="margin-top:14px;border-top:1px solid var(--g200);padding-top:12px;">
+        <div style="display:flex;align-items:center;gap:7px;margin-bottom:10px;">
+          <span class="ai-badge">✦ AI Fill</span>
+          <span id="geminiStatus" class="gemini-status off">● Basic</span>
+        </div>
+        <div id="aiPanel" style="margin-top:0;">
+          <div style="display:flex;justify-content:flex-end;margin-bottom:6px;">
+            <button class="ai-settings-toggle" id="settingsToggle" onclick="toggleSettings()">⚙ AI Settings</button>
+          </div>
+          <div class="ai-settings-panel" id="settingsPanel">
+            <div style="font-size:11.5px;font-weight:700;color:var(--g700);margin-bottom:4px;">Google Gemini API Key</div>
+            <div style="font-size:11px;color:var(--g500);margin-bottom:10px;">
+              Paste room descriptions and Gemini will extract the exact rooms accurately.
+              Get a free key at <a href="https://aistudio.google.com/apikey" target="_blank" style="color:var(--b600)">aistudio.google.com</a>
+            </div>
+            <div class="key-row">
+              <input type="password" id="geminiKey" placeholder="AIza...">
+              <button class="save-key-btn" onclick="saveGeminiKey()">Save</button>
+              <button class="clear-key-btn" onclick="clearGeminiKey()">✕</button>
+            </div>
+          </div>
+          <div class="ai-wrap">
+            <textarea class="ai-ta" id="aiInput" rows="4" placeholder="Paste the team message exactly — e.g.&#10;4 Berkeley #8, 2pax&#10;4 Berkeley #6, not booked&#10;Brunel Loft #2, 2pax&#10;Only the #number is used — everything else is ignored"></textarea>
+            <button class="ai-btn" id="parseBtn" onclick="parseAI()">✦ Parse</button>
+          </div>
+          <div class="ai-hint" id="aiHint">Connect Gemini above for accurate parsing of any pasted notes</div>
+        </div>
+        <div class="ai-toast" id="aiToast"></div>
+      </div>
+    </div>
+
+    <!-- ── ADDITIONAL CHARGES & SURPLUS ── -->
+    <div class="card">
+      <div class="card-title"><span class="dot" style="background:var(--amber)"></span>Additional Charges &amp; Surplus</div>
+      <div id="chargesList"></div>
+      <div class="charge-row">
+        <div class="cw-label">
+          <label>Description</label>
+          <input type="text" id="chargeLabel" placeholder="e.g. Deep clean surcharge, Materials, Discount…">
+        </div>
+        <div class="cw-amount">
+          <label>Amount (£)</label>
+          <input type="number" id="chargeAmount" step="0.01" placeholder="0.00" oninput="" onkeydown="if(event.key==='Enter')addCharge()">
+        </div>
+        <button class="charge-add-btn" onclick="addCharge()">＋ Add</button>
+      </div>
+      <div class="charge-hint">Use a negative value for discounts — e.g. <strong>−5.00</strong></div>
+    </div>
+
+    <!-- ── MONTHLY CLEAN LOG ── -->
+    <div class="card">
+      <div class="card-title"><span class="dot"></span>Monthly Clean Log <span id="logCount" style="font-size:10px;color:var(--g400);font-weight:500;margin-left:4px;text-transform:none;letter-spacing:0"></span></div>
+      <div id="logList">
+        <div class="log-empty"><div class="ico">📋</div>No cleans logged yet for this month.</div>
+      </div>
+    </div>
+
+    <!-- ── TOTAL & ACTIONS ── -->
+    <!-- ── GOOGLE DRIVE SETTINGS ── -->
+    <div class="card" style="margin-bottom:10px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <div class="card-title" style="margin-bottom:0"><span class="dot" style="background:#4285f4"></span>Google Drive Save</div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span id="userBadge" style="font-size:10px;color:var(--gd);font-weight:600;"></span>
+          <button class="ai-settings-toggle" onclick="toggleDrivePanel()">⚙ Setup</button>
+        </div>
+      </div>
+      <div id="drivePanel" style="display:none;margin-top:12px;background:var(--g50);border-radius:9px;padding:12px;border:1px solid var(--g200);">
+        <div style="font-size:11.5px;font-weight:700;color:var(--g700);margin-bottom:3px;">Google OAuth Client ID</div>
+        <div style="font-size:11px;color:var(--g500);margin-bottom:10px;line-height:1.5;">
+          Invoices save to a <strong>DizDaz Invoices</strong> folder in your Google Drive.<br>
+          <a href="https://console.cloud.google.com/apis/credentials" target="_blank" style="color:var(--b600);">Get a Client ID →</a>
+          &nbsp;Cloud Console → Credentials → Create → OAuth 2.0 → Web app → add <code style="background:var(--g200);padding:1px 4px;border-radius:3px;">http://localhost</code> as authorised origin.
+        </div>
+        <div class="key-row">
+          <input type="password" id="driveClientId" placeholder="XXXXXXXX.apps.googleusercontent.com">
+          <button class="save-key-btn" onclick="saveDriveClientId()">Save</button>
+          <button class="clear-key-btn" onclick="clearDriveClientId()">✕</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="summary-bar">
+      <div>
+        <div class="lbl">Monthly Invoice Total</div>
+        <div class="cnt" id="sumCnt">0 cleans · 0 rooms</div>
+      </div>
+      <div class="amt" id="sumAmt">£0.00</div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-green" id="downloadBtn" onclick="downloadPDF()">⬇️ Download PDF</button>
+      <button class="btn btn-drive" id="driveBtn" onclick="saveToDrive()">☁️ Backup to Drive</button>
+      <button class="btn btn-blue" onclick="shareInv()">📤 Share Invoice</button>
+      <button class="btn btn-ghost" id="autoSaveFolderBtn" onclick="setAutoSaveFolder()" title="Pick a folder — invoice JSON + PDF auto-save here on every change">📁 Set Save Folder</button>
+      <button class="btn btn-ghost" onclick="clearMonth()">🗑️ Clear Month</button>
+    </div>
+
+  </div><!-- /builder -->
+
+
+  <!-- ═══════════════ PREVIEW ═══════════════ -->
+  <div class="preview">
+    <div class="prev-lbl">📄 Live Invoice Preview</div>
+
+    <div class="paper" id="paper">
+
+      <div class="inv-hd">
+        <div class="inv-hd-row">
+          <div>
+            <div class="inv-logo-mark">
+              <div class="inv-logo-emblem">
+                <img src="icon.png" alt="DizDaz Cleaning logo" style="width:70px;height:70px;object-fit:contain;border-radius:50%;background:rgba(255,255,255,.08);padding:2px;">
+              </div>
+              <div>
+                <div class="inv-logo-name">Diz<em>Daz</em></div>
+                <div class="inv-logo-tag">Cleaning Services</div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="inv-badge">INVOICE</div>
+            <div class="inv-n-lbl">Invoice Number</div>
+            <div class="inv-n-val" id="pNum">INV-001</div>
+          </div>
+        </div>
+        <div class="inv-meta">
+          <div class="im"><div class="ml">Billing Period</div><div class="mv" id="pPeriod">—</div></div>
+          <div class="im"><div class="ml">Issue Date</div><div class="mv" id="pIssued">—</div></div>
+          <div class="im r"><div class="ml">Payment Due</div><div class="mv" id="pDue">—</div></div>
+        </div>
+      </div>
+
+      <div class="inv-body">
+
+        <div class="parties">
+          <div class="party">
+            <div class="p-lbl">From</div>
+            <div class="p-nm">DizDaz Cleaning</div>
+            <div class="p-dt">Abbottsford Road<br>Bristol<br>BS6 6EF</div>
+          </div>
+          <div class="party">
+            <div class="p-lbl">Bill To</div>
+            <div class="p-nm">YourApartment</div>
+            <div class="p-dt">24-26 Regent St, Clifton<br>Bristol BS8 4HG</div>
+            <div class="p-dt" style="margin-top:3px;font-size:10.5px;color:var(--b600)">yourapartment.com/contact-us</div>
+          </div>
+        </div>
+
+        <table class="itbl">
+          <thead>
+            <tr>
+              <th>Date Cleaned</th>
+              <th>Room</th>
+              <th style="text-align:center">Qty</th>
+              <th style="text-align:right">Amount</th>
+            </tr>
+          </thead>
+          <tbody id="itblBody">
+            <tr class="empty"><td colspan="4">Log cleans above to generate invoice…</td></tr>
+          </tbody>
+        </table>
+
+        <div class="tot-row">
+          <div class="tot-box">
+            <div class="tot-lbl">Total Amount Due</div>
+            <div class="tot-amt" id="pTotal">£0.00</div>
+          </div>
+        </div>
+
+        <div class="notes-box" id="pNotesBox" style="display:none">
+          <div class="nl">Notes</div>
+          <div id="pNotesText"></div>
+        </div>
+
+        <div class="pay-box">
+          <div class="pay-tl">💳 Payment Details</div>
+          <div class="pay-g">
+            <div><div class="pay-l">Account Name</div><div class="pay-v">Jodie Francis</div></div>
+            <div><div class="pay-l">Bank</div><div class="pay-v">Starling Bank</div></div>
+            <div><div class="pay-l">Account No.</div><div class="pay-v">12138365</div></div>
+            <div><div class="pay-l">Sort Code</div><div class="pay-v">60-83-71</div></div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="inv-ft">
+        <div class="ft-note">Thank you for your business! 🧹</div>
+        <div class="ft-brand">DizDaz Cleaning Services</div>
+      </div>
+
+    </div><!-- /paper -->
+
+    <div class="prev-btns">
+      <button class="btn btn-green" onclick="downloadPDF()">⬇️ Download PDF</button>
+      <button class="btn btn-blue" onclick="shareInv()">📤 Share</button>
+    </div>
+  </div><!-- /preview -->
+
+</div><!-- /layout -->
+
+<!-- Fixed toast notification -->
+<div id="fixedToast"></div>
+
+<script>
+// ══════════════════════════════════════════════
+//  ROOM DATA
+// ══════════════════════════════════════════════
+const BLOCKS = {
+  berk: {
+    label:'Berkeley Square',
+    rooms:{
+       1:22.50,  2:15.00,  3:15.00,  4:22.50,  5:22.50,
+       6:12.50,  7:22.50,  8:15.00,  9:12.50, 10:15.00,
+      11:22.50, 12:15.00, 13:15.00, 14:15.00, 15:15.00
+    }
+  },
+  brun:{
+    label:'Brunel Loft',
+    rooms:{ 1:25.00, 2:25.00, 3:25.00 }
+  }
+};
+
+// Current tile selection (for the "Log a Clean" form)
+const sel = { berk:new Set(), brun:new Set() };
+
+// Active month (as {year, month} where month=0-indexed)
+let activeYear, activeMonth;
+
+// Currently editing entry id (null = add mode)
+let editingEntryId = null;
+
+// Storage key prefix
+const SK = 'dizdaz_';
+
+// ══════════════════════════════════════════════
+//  STORAGE HELPERS
+// ══════════════════════════════════════════════
+function storageKey(y, m) {
+  return `${SK}${y}_${String(m+1).padStart(2,'0')}`;
+}
+
+function loadLogs(y, m) {
+  try { return JSON.parse(localStorage.getItem(storageKey(y,m)) || '[]'); }
+  catch { return []; }
+}
+
+function saveLogs(y, m, logs) {
+  localStorage.setItem(storageKey(y,m), JSON.stringify(logs));
+}
+
+function loadSettings() {
+  try { return JSON.parse(localStorage.getItem(SK+'settings') || '{}'); }
+  catch { return {}; }
+}
+
+function saveSettings(s) {
+  localStorage.setItem(SK+'settings', JSON.stringify(s));
+}
+
+// ══════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════
+function init() {
+  const now = new Date();
+  activeYear  = now.getFullYear();
+  activeMonth = now.getMonth();
+
+  // Pre-seed Google Drive OAuth Client ID if not already set
+  if (!localStorage.getItem('dizdaz_gdrive_client')) {
+    localStorage.setItem('dizdaz_gdrive_client', '235612184693-06c7kq63j5ujfmbgn9p1nbv4hkfje9cr.apps.googleusercontent.com');
+  }
+
+  buildGrids();
+  setDefaultDates();
+  restoreSettings();
+  updateGeminiStatus();
+  updateUserBadge();
+  renderCharges();
+  renderMonth();
+  initAutoSave();
+}
+
+function setDefaultDates() {
+  const now = new Date();
+  document.getElementById('cleanDate').value = toISO(now);
+  document.getElementById('invIssued').value = toISO(now);
+  const due = new Date(); due.setDate(now.getDate()+7);
+  document.getElementById('invDue').value = toISO(due);
+}
+
+function restoreSettings() {
+  const s = loadSettings();
+  if (s.invIssued) document.getElementById('invIssued').value = s.invIssued;
+  if (s.invDue)    document.getElementById('invDue').value    = s.invDue;
+  if (s.invNotes)  document.getElementById('invNotes').value  = s.invNotes;
+  // Auto invoice number based on issue date
+  const dateStr = document.getElementById('invIssued').value || toISO(new Date());
+  document.getElementById('invNum').value = s.invNum || genInvNum(dateStr);
+}
+
+// ── Auto invoice number (DDMMYY-NN) ──────────
+function genInvNum(dateStr) {
+  const d  = parseISO(dateStr || toISO(new Date()));
+  const dd = String(d.getDate()).padStart(2,'0');
+  const mm = String(d.getMonth()+1).padStart(2,'0');
+  const yy = String(d.getFullYear()).slice(-2);
+  const code = `${dd}${mm}${yy}`;
+  const key  = `dizdaz_ctr_${code}`;
+  let seq = parseInt(localStorage.getItem(key) || '0');
+  if (seq < 1) { seq = 1; localStorage.setItem(key, '1'); }
+  return `${code}-${String(seq).padStart(2,'0')}`;
+}
+
+function bumpInvNum() {
+  const dateStr = document.getElementById('invIssued').value || toISO(new Date());
+  const d  = parseISO(dateStr);
+  const dd = String(d.getDate()).padStart(2,'0');
+  const mm = String(d.getMonth()+1).padStart(2,'0');
+  const yy = String(d.getFullYear()).slice(-2);
+  const code = `${dd}${mm}${yy}`;
+  const key  = `dizdaz_ctr_${code}`;
+  const seq  = parseInt(localStorage.getItem(key) || '0') + 1;
+  localStorage.setItem(key, String(seq));
+  document.getElementById('invNum').value = `${code}-${String(seq).padStart(2,'0')}`;
+  rp();
+  autosaveSettings();
+}
+
+function onIssuedChange() {
+  const dateStr = document.getElementById('invIssued').value;
+  document.getElementById('invNum').value = genInvNum(dateStr);
+  rp();
+  autosaveSettings();
+}
+
+function autosaveSettings() {
+  saveSettings({
+    invNum:    document.getElementById('invNum').value,
+    invIssued: document.getElementById('invIssued').value,
+    invDue:    document.getElementById('invDue').value,
+    invNotes:  document.getElementById('invNotes').value
+  });
+}
+
+// ══════════════════════════════════════════════
+//  MONTH NAVIGATION
+// ══════════════════════════════════════════════
+function shiftMonth(d) {
+  activeMonth += d;
+  if (activeMonth > 11) { activeMonth = 0;  activeYear++; }
+  if (activeMonth < 0)  { activeMonth = 11; activeYear--; }
+  renderMonth();
+}
+
+function fmtMonthLabel(y, m) {
+  return new Date(y, m, 1).toLocaleDateString('en-GB',{month:'long',year:'numeric'});
+}
+
+// ══════════════════════════════════════════════
+//  RENDER MONTH (log list + preview)
+// ══════════════════════════════════════════════
+function renderMonth() {
+  const label = fmtMonthLabel(activeYear, activeMonth);
+  document.getElementById('monthLabel').textContent = label;
+  document.getElementById('monthPill').textContent  = label;
+
+  // Sync clean date to active month if it's out of range
+  const cd = document.getElementById('cleanDate');
+  if (cd.value) {
+    const dp = parseISO(cd.value);
+    if (dp.getFullYear() !== activeYear || dp.getMonth() !== activeMonth) {
+      const d = new Date(activeYear, activeMonth, 1);
+      cd.value = toISO(d);
+    }
+  }
+
+  renderLog();
+  rp();
+}
+
+function renderLog() {
+  const logs = loadLogs(activeYear, activeMonth);
+  const listEl = document.getElementById('logList');
+  const cntEl  = document.getElementById('logCount');
+  const mCl    = document.getElementById('monthCleans');
+
+  mCl.textContent = `${logs.length} clean${logs.length!==1?'s':''} logged`;
+  cntEl.textContent = logs.length ? `(${logs.length})` : '';
+
+  if (!logs.length) {
+    listEl.innerHTML = `<div class="log-empty"><div class="ico">📋</div>No cleans logged yet for ${fmtMonthLabel(activeYear,activeMonth)}.</div>`;
+    return;
+  }
+
+  // Sort by date
+  const sorted = [...logs].sort((a,b) => a.date.localeCompare(b.date));
+  listEl.innerHTML = sorted.map(e => {
+    const berkRooms = (e.berk||[]).sort((a,b)=>a-b);
+    const brunRooms = (e.brun||[]).sort((a,b)=>a-b);
+    const parts = [];
+    if (berkRooms.length) parts.push(`<span>Berkeley Sq:</span> Rooms ${berkRooms.join(', ')}`);
+    if (brunRooms.length) parts.push(`<span>Brunel Loft:</span> Rooms ${brunRooms.join(', ')}`);
+    return `<div class="log-entry">
+      <div style="flex:1">
+        <div class="log-date">📅 ${fmtDateDisplay(e.date)}</div>
+        <div class="log-rooms">${parts.join(' &nbsp;·&nbsp; ')}</div>
+      </div>
+      <div class="log-right">
+        <div class="log-total">£${e.total.toFixed(2)}</div>
+        <div style="display:flex;gap:4px">
+          <button class="log-edit" onclick="editEntry('${e.id}')" title="Edit">✏️</button>
+          <button class="log-del" onclick="deleteEntry('${e.id}')" title="Remove">✕</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════
+//  ADD CLEAN ENTRY
+// ══════════════════════════════════════════════
+function addClean() {
+  const dateVal = document.getElementById('cleanDate').value;
+  if (!dateVal) { fixedToast('⚠️ Please select a date for this clean.'); return; }
+
+  const berk = [...sel.berk].sort((a,b)=>a-b);
+  const brun = [...sel.brun].sort((a,b)=>a-b);
+
+  if (!berk.length && !brun.length) {
+    fixedToast('⚠️ Please select at least one room before saving.'); return;
+  }
+
+  // Validate date is in active month
+  const dp = parseISO(dateVal);
+  if (dp.getFullYear() !== activeYear || dp.getMonth() !== activeMonth) {
+    if (!confirm(`This date (${fmtDateDisplay(dateVal)}) is not in ${fmtMonthLabel(activeYear,activeMonth)}. Save anyway?`)) return;
+  }
+
+  let logs = loadLogs(activeYear, activeMonth);
+
+  // ── Duplicate-per-day check — exclude the entry being edited ──
+  const sameDayEntries = logs.filter(e => e.date === dateVal && e.id !== editingEntryId);
+  const takenBerk = new Set(sameDayEntries.flatMap(e => e.berk || []));
+  const takenBrun = new Set(sameDayEntries.flatMap(e => e.brun || []));
+  const dupBerk = berk.filter(n => takenBerk.has(n));
+  const dupBrun = brun.filter(n => takenBrun.has(n));
+  if (dupBerk.length || dupBrun.length) {
+    const names = [
+      ...dupBerk.map(n => `Berkeley Square — Room ${n}`),
+      ...dupBrun.map(n => `Brunel Loft — Room ${n}`)
+    ];
+    fixedToast(`⚠️ Already logged for ${fmtDateDisplay(dateVal)}: ${names.join(', ')}`);
+    return;
+  }
+
+  let total = 0;
+  berk.forEach(n => total += BLOCKS.berk.rooms[n]);
+  brun.forEach(n => total += BLOCKS.brun.rooms[n]);
+
+  if (editingEntryId) {
+    // Update existing entry in place, preserving its original id
+    logs = logs.map(e => e.id === editingEntryId
+      ? { ...e, date: dateVal, berk, brun, total }
+      : e
+    );
+    saveLogs(activeYear, activeMonth, logs);
+    const msg = `✅ Entry updated — ${fmtDateDisplay(dateVal)}, £${total.toFixed(2)}`;
+    cancelEdit();
+    fixedToast(msg);
+  } else {
+    logs.push({ id: Date.now().toString(), date: dateVal, berk, brun, total });
+    saveLogs(activeYear, activeMonth, logs);
+    // Clear selection only in add mode
+    sel.berk.clear(); sel.brun.clear();
+    syncTiles();
+    document.getElementById('aiInput').value = '';
+    fixedToast(`✅ Clean logged for ${fmtDateDisplay(dateVal)} — £${total.toFixed(2)} added to invoice`);
+  }
+
+  renderLog();
+  rp();
+  autoBackup(activeYear, activeMonth);
+  autoSaveToFolder();
+}
+
+function editEntry(id) {
+  const logs = loadLogs(activeYear, activeMonth);
+  const entry = logs.find(e => e.id === id);
+  if (!entry) return;
+
+  editingEntryId = id;
+
+  // Load date
+  document.getElementById('cleanDate').value = entry.date;
+
+  // Load room selection
+  sel.berk.clear(); sel.brun.clear();
+  (entry.berk || []).forEach(n => sel.berk.add(n));
+  (entry.brun || []).forEach(n => sel.brun.add(n));
+  syncTiles();
+
+  // Show edit mode UI
+  document.getElementById('editBanner').classList.add('show');
+  const btn = document.getElementById('addBtn');
+  btn.textContent = '✅ Save Changes';
+  btn.classList.add('edit-mode');
+
+  // Scroll form into view
+  document.getElementById('cleanDate').closest('.card').scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+function cancelEdit() {
+  editingEntryId = null;
+  sel.berk.clear(); sel.brun.clear();
+  syncTiles();
+  document.getElementById('editBanner').classList.remove('show');
+  const btn = document.getElementById('addBtn');
+  btn.textContent = '＋ Add to Invoice Log';
+  btn.classList.remove('edit-mode');
+  // Reset date to today
+  document.getElementById('cleanDate').value = toISO(new Date());
+}
+
+function deleteEntry(id) {
+  const logs = loadLogs(activeYear, activeMonth).filter(e => e.id !== id);
+  saveLogs(activeYear, activeMonth, logs);
+  renderLog();
+  rp();
+  autoBackup(activeYear, activeMonth);
+  autoSaveToFolder();
+}
+
+function clearMonth() {
+  if (!confirm(`Clear all logged cleans for ${fmtMonthLabel(activeYear,activeMonth)}? This cannot be undone.`)) return;
+  saveLogs(activeYear, activeMonth, []);
+  renderLog();
+  rp();
+}
+
+// ══════════════════════════════════════════════
+//  ROOM GRIDS
+// ══════════════════════════════════════════════
+function buildGrids() {
+  buildGrid('berk', document.getElementById('berkGrid'));
+  buildGrid('brun', document.getElementById('brunGrid'));
+}
+
+function buildGrid(block, el) {
+  el.innerHTML = '';
+  for (const [n, p] of Object.entries(BLOCKS[block].rooms)) {
+    const num  = parseInt(n);
+    const tier = block === 'berk'
+      ? (p <= 12.50 ? 'tier-lo' : p <= 15.00 ? 'tier-mid' : 'tier-hi')
+      : '';                           // Brunel uses default styling
+    const t = document.createElement('div');
+    t.className = `rt${tier ? ' '+tier : ''}`;
+    t.id = `rt-${block}-${num}`;
+    t.innerHTML = `<span class="rn">${num}</span><span class="rp">£${p.toFixed(2)}</span>`;
+    t.onclick = () => toggleRoom(block, num);
+    el.appendChild(t);
+  }
+}
+
+function toggleRoom(block, num) {
+  sel[block].has(num) ? sel[block].delete(num) : sel[block].add(num);
+  syncTiles();
+}
+
+function syncTiles() {
+  for (const block of ['berk','brun']) {
+    for (const n of Object.keys(BLOCKS[block].rooms)) {
+      const t = document.getElementById(`rt-${block}-${n}`);
+      if (t) t.classList.toggle('on', sel[block].has(parseInt(n)));
+    }
+  }
+}
+
+function sa(block) { sel[block] = new Set(Object.keys(BLOCKS[block].rooms).map(Number)); syncTiles(); }
+function ca(block) { sel[block].clear(); syncTiles(); }
+
+
+// ══════════════════════════════════════════════
+//  GEMINI SETTINGS
+// ══════════════════════════════════════════════
+function toggleSettings() {
+  const panel  = document.getElementById('settingsPanel');
+  const toggle = document.getElementById('settingsToggle');
+  const isOpen = panel.classList.toggle('open');
+  toggle.classList.toggle('active', isOpen);
+  if (isOpen) {
+    const saved = localStorage.getItem('dizdaz_gemini_key') || '';
+    document.getElementById('geminiKey').value = saved ? '••••••••••••••••' : '';
+  }
+}
+
+function saveGeminiKey() {
+  const val = document.getElementById('geminiKey').value.trim();
+  if (!val || val.startsWith('•')) { toast('⚠️ Enter a valid Gemini API key'); return; }
+  localStorage.setItem('dizdaz_gemini_key', val);
+  document.getElementById('geminiKey').value = '••••••••••••••••';
+  updateGeminiStatus();
+  document.getElementById('settingsPanel').classList.remove('open');
+  document.getElementById('settingsToggle').classList.remove('active');
+  toast('✅ Gemini API key saved! AI parsing is now active.');
+}
+
+function clearGeminiKey() {
+  localStorage.removeItem('dizdaz_gemini_key');
+  document.getElementById('geminiKey').value = '';
+  updateGeminiStatus();
+  toast('🗑️ Gemini key removed. Falling back to basic parser.');
+}
+
+function updateGeminiStatus() {
+  const hasKey = !!localStorage.getItem('dizdaz_gemini_key');
+  const status = document.getElementById('geminiStatus');
+  const btn    = document.getElementById('parseBtn');
+  const hint   = document.getElementById('aiHint');
+  if (hasKey) {
+    status.textContent = '● Gemini';
+    status.className   = 'gemini-status on';
+    btn.classList.add('gemini-active');
+    hint.textContent   = 'Gemini AI active — paste any cleaning notes and it will extract the rooms accurately';
+  } else {
+    status.textContent = '● Basic';
+    status.className   = 'gemini-status off';
+    btn.classList.remove('gemini-active');
+    hint.textContent   = 'Connect Gemini above for accurate parsing of any pasted notes';
+  }
+}
+
+// ══════════════════════════════════════════════
+//  AI PARSER — Gemini or fallback
+// ══════════════════════════════════════════════
+async function parseAI() {
+  const raw = document.getElementById('aiInput').value;
+  if (!raw.trim()) { toast('⚠️ Type something first!'); return; }
+
+  const apiKey = localStorage.getItem('dizdaz_gemini_key');
+  const btn    = document.getElementById('parseBtn');
+
+  parseBasic(raw);
+}
+
+async function callGemini(text, apiKey) {
+  const prompt = `You are a data extractor for DizDaz Cleaning's invoice system.
+
+PROPERTY IDENTIFIERS (memorise these exactly):
+- "4 Berkeley" or "Berkeley Square" or "Berkeley" → property key "berk" (valid rooms: 1–15)
+- "Brunel Loft" or "Brunel" → property key "brun" (valid rooms: 1, 2, 3)
+
+ROOM NUMBER FORMAT — THIS IS LAW:
+- Room numbers are ALWAYS and ONLY written as "#X" (e.g. "#8" = room 8, "#12" = room 12)
+- ALL other numbers in the text — pax counts ("2pax"), block identifiers ("4 Berkeley"), dates, any other digits — must be COMPLETELY AND SILENTLY IGNORED
+- NEVER extract a number that is not preceded by "#"
+
+ANNOTATIONS — IGNORE ALL OF THEM:
+- "not booked", "empty", "vacant", "no guest", "2pax", "sofa bed linen", or ANY other annotation NEVER affects whether a room is included
+- If a line has a #number, that room WAS cleaned — include it regardless of any annotation on that line
+- Annotations are context only. They do not add or remove rooms. Ever.
+- EXAMPLE: "4 Berkeley #6, not booked" → room 6 IS included. "not booked" is irrelevant noise.
+- EXAMPLE: "4 Berkeley #9, 2pax" → room 9 IS included. "2pax" is irrelevant noise.
+- YOUR ONLY JOB: find #numbers and map them to the correct property. Nothing else.
+
+
+Cleaning note:
+"${text.replace(/"/g,'\\"')}"
+
+Return ONLY a valid JSON object, no explanation, no markdown, no code fences:
+{"berk": [integers of rooms cleaned at Berkeley Square], "brun": [integers of rooms cleaned at Brunel Loft]}
+
+If a property has no confirmed rooms, return an empty array [].`;
+
+  const res = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { temperature: 0, maxOutputTokens: 200 }
+      })
+    }
+  );
+
+  if (!res.ok) {
+    const e = await res.json().catch(() => ({}));
+    throw new Error(e.error?.message || `HTTP ${res.status}`);
+  }
+
+  const data = await res.json();
+  const raw  = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+  const match = raw.match(/\{[\s\S]*?\}/);
+  if (!match) throw new Error('No valid JSON in Gemini response');
+  return JSON.parse(match[0]);
+}
+
+function applyRooms(berkRooms, brunRooms) {
+  sel.berk.clear(); sel.brun.clear();
+  berkRooms.forEach(n => { const i = parseInt(n); if (BLOCKS.berk.rooms[i]) sel.berk.add(i); });
+  brunRooms.forEach(n => { const i = parseInt(n); if (BLOCKS.brun.rooms[i]) sel.brun.add(i); });
+  syncTiles();
+  let t = 0;
+  for (const n of sel.berk) t += BLOCKS.berk.rooms[n];
+  for (const n of sel.brun) t += BLOCKS.brun.rooms[n];
+  toast(`✅ <strong>${sel.berk.size}</strong> Berkeley Square + <strong>${sel.brun.size}</strong> Brunel Loft rooms → <strong>£${t.toFixed(2)}</strong> &nbsp;— Press ＋ to log`);
+}
+
+// Basic regex fallback
+function parseBasic(raw) {
+  // Line-by-line parser trained on real team message patterns
+  sel.berk.clear(); sel.brun.clear();
+
+  const lines = raw.split('\n');
+  for (const line of lines) {
+    const l = line.trim();
+    if (!l) continue;
+
+    // Identify block — handles all real-world variations seen in team messages:
+    // "4 Berkeley Sq.", "4 Berk.", "4 Berk-", "Berk#10", "Berkeley Square"
+    // "Brunel Loft No.1", "Brunel Loft - No.2", "Brunel #2", "Brunel loft"
+    let block = null;
+    if (/4\s*berk|berkeley/i.test(l)) block = 'berk';
+    else if (/brunel/i.test(l))       block = 'brun';
+
+    // Extract room numbers via #X format
+    const hashNums = [...l.matchAll(/#(\d+)/g)].map(m => parseInt(m[1]));
+
+    // Also handle "No.X" / "No X" and bare number after Brunel e.g. "Brunel loft 1"
+    const noNums = block === 'brun'
+      ? [
+          ...[...l.matchAll(/\bNo[.\s]*(\d+)/gi)].map(m => parseInt(m[1])),
+          ...[...l.matchAll(/brunel\s*(?:loft)?\s*(?:-\s*)?(?:no[.\s]*)?\s*(\d+)/gi)].map(m => parseInt(m[1]))
+        ]
+      : [];
+
+    const allNums = [...new Set([...hashNums, ...noNums])];
+
+    if (block) {
+      // Property identified — add matching rooms
+      for (const n of allNums) {
+        if (BLOCKS[block].rooms[n]) sel[block].add(n);
+      }
+    } else if (hashNums.length > 0) {
+      // No property name in line — default to Berkeley Square
+      // (team regularly sends bare "#7", "#11" etc. which are always Berkeley)
+      for (const n of hashNums) {
+        if (BLOCKS.berk.rooms[n]) sel.berk.add(n);
+      }
+    }
+  }
+  syncTiles();
+  applyRooms([...sel.berk], [...sel.brun]);
+}
+
+function extractNums(txt, maxR) {
+  const nums = new Set();
+  const rg = /(\d+)\s*(?:-|to)\s*(\d+)/g;
+  let m;
+  while ((m = rg.exec(txt)) !== null) {
+    for (let i = Math.min(+m[1],+m[2]); i <= Math.max(+m[1],+m[2]); i++)
+      if (i >= 1 && i <= maxR) nums.add(i);
+  }
+  const cl = txt.replace(/\d+\s*(?:-|to)\s*\d+/g,'');
+  const nr = /\b(\d+)\b/g;
+  while ((m = nr.exec(cl)) !== null) {
+    const n = parseInt(m[1]); if (n >= 1 && n <= maxR) nums.add(n);
+  }
+  return nums;
+}
+
+
+// ══════════════════════════════════════════════
+//  UPDATE INVOICE PREVIEW  (rp = render preview)
+// ══════════════════════════════════════════════
+function rp() {
+  autosaveSettings();
+
+  const logs = loadLogs(activeYear, activeMonth);
+  const sorted = [...logs].sort((a,b) => a.date.localeCompare(b.date));
+
+  // Header fields
+  document.getElementById('pNum').textContent    = v('invNum') || '—';
+  document.getElementById('pPeriod').textContent = fmtMonthLabel(activeYear, activeMonth);
+  document.getElementById('pIssued').textContent = fmtDateDisplay(v('invIssued'));
+  document.getElementById('pDue').textContent    = fmtDateDisplay(v('invDue'));
+
+  // Notes
+  const notes = v('invNotes');
+  const nb = document.getElementById('pNotesBox');
+  if (notes) { nb.style.display='block'; document.getElementById('pNotesText').textContent=notes; }
+  else nb.style.display='none';
+
+  // Line items
+  const tbody = document.getElementById('itblBody');
+
+  const charges = loadCharges();
+
+  if (!sorted.length && !charges.length) {
+    tbody.innerHTML = '<tr class="empty"><td colspan="4">Log cleans above to generate invoice…</td></tr>';
+    document.getElementById('pTotal').textContent = '£0.00';
+    document.getElementById('sumAmt').textContent = '£0.00';
+    document.getElementById('sumCnt').textContent = '0 cleans · 0 rooms';
+    return;
+  }
+
+  let html = '';
+  let grandTotal = 0;
+  let totalRooms = 0;
+
+  for (const e of sorted) {
+    const dateStr = fmtDateDisplay(e.date);
+    const berk = (e.berk||[]).sort((a,b)=>a-b);
+    const brun = (e.brun||[]).sort((a,b)=>a-b);
+    for (const n of berk) {
+      const p = BLOCKS.berk.rooms[n];
+      html += row(dateStr, `Berkeley Square — Room ${n}`, p);
+      grandTotal += p; totalRooms++;
+    }
+    for (const n of brun) {
+      const p = BLOCKS.brun.rooms[n];
+      html += row(dateStr, `Brunel Loft — Room ${n}`, p);
+      grandTotal += p; totalRooms++;
+    }
+  }
+
+  // Additional charges section
+  if (charges.length) {
+    html += `<tr class="dg-row"><td colspan="4">Additional Charges &amp; Surplus</td></tr>`;
+    for (const c of charges) {
+      const neg = c.amount < 0;
+      const amtDisplay = neg
+        ? `<span style="color:var(--green)">−£${Math.abs(c.amount).toFixed(2)}</span>`
+        : `£${c.amount.toFixed(2)}`;
+      html += `<tr>
+        <td colspan="2" style="color:var(--g600);font-style:italic;font-size:10.5px">${c.label}</td>
+        <td style="text-align:center;color:var(--g400)">—</td>
+        <td style="font-weight:600">${amtDisplay}</td>
+      </tr>`;
+      grandTotal += c.amount;
+    }
+  }
+
+  tbody.innerHTML = html;
+  document.getElementById('pTotal').textContent = `£${grandTotal.toFixed(2)}`;
+  document.getElementById('sumAmt').textContent = `£${grandTotal.toFixed(2)}`;
+  document.getElementById('sumCnt').textContent = `${sorted.length} clean${sorted.length!==1?'s':''} · ${totalRooms} room${totalRooms!==1?'s':''}${charges.length ? ` · ${charges.length} extra charge${charges.length!==1?'s':''}` : ''}`;
+}
+
+function row(date, desc, price) {
+  return `<tr>
+    <td style="white-space:nowrap;color:var(--b800);font-weight:600">${date}</td>
+    <td>${desc}</td>
+    <td style="text-align:center">1</td>
+    <td>£${price.toFixed(2)}</td>
+  </tr>`;
+}
+
+// ══════════════════════════════════════════════
+//  SHARE
+// ══════════════════════════════════════════════
+function shareInv() {
+  const inv   = v('invNum');
+  const total = document.getElementById('pTotal').textContent;
+  const month = fmtMonthLabel(activeYear, activeMonth);
+  const text  = `DizDaz Cleaning\nInvoice: ${inv}\nPeriod: ${month}\nTotal Due: ${total}\n\nBank: Starling Bank\nName: Jodie Francis\nAcc: 12138365  Sort: 60-83-71`;
+  if (navigator.share) {
+    navigator.share({ title:`DizDaz Invoice ${inv}`, text }).catch(()=>{});
+  } else {
+    navigator.clipboard.writeText(text).then(() => alert('✅ Invoice summary copied to clipboard!'));
+  }
+}
+
+// ══════════════════════════════════════════════
+//  HELPERS
+// ══════════════════════════════════════════════
+function v(id) { return document.getElementById(id).value.trim(); }
+function toISO(d) { return d.toISOString().split('T')[0]; }
+function parseISO(s) { return new Date(s + 'T00:00:00'); }
+function fmtDateDisplay(s) {
+  if (!s) return '—';
+  return parseISO(s).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+}
+function toast(html) { fixedToast(html); }
+
+function fixedToast(html) {
+  const t = document.getElementById('fixedToast');
+  t.innerHTML = html;
+  t.classList.add('show');
+  clearTimeout(t._ft);
+  t._ft = setTimeout(() => t.classList.remove('show'), 6000);
+}
+
+// (all active fields use oninput attributes directly)
+
+// ══════════════════════════════════════════════
+//  GOOGLE DRIVE SAVE
+// ══════════════════════════════════════════════
+let gDriveToken  = null;
+let gUserEmail   = localStorage.getItem('dizdaz_user_email') || null;
+const GDRIVE_FOLDER = 'DizDaz Invoices';
+
+function loadGIS() {
+  return new Promise(resolve => {
+    if (window.google?.accounts?.oauth2) { resolve(); return; }
+    const s = document.createElement('script');
+    s.src   = 'https://accounts.google.com/gsi/client';
+    s.onload = resolve;
+    document.head.appendChild(s);
+  });
+}
+
+async function getGDriveToken() {
+  const clientId = localStorage.getItem('dizdaz_gdrive_client') || '';
+  if (!clientId) throw new Error('no_client_id');
+  await loadGIS();
+  return new Promise((resolve, reject) => {
+    google.accounts.oauth2.initTokenClient({
+      client_id: clientId,
+      scope: 'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/userinfo.email',
+      callback: async resp => {
+        if (resp.error) { reject(new Error(resp.error)); return; }
+        // Fetch and store user email on first auth
+        if (!gUserEmail) {
+          try {
+            const r = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+              headers: { Authorization: `Bearer ${resp.access_token}` }
+            });
+            const info = await r.json();
+            if (info.email) {
+              gUserEmail = info.email;
+              localStorage.setItem('dizdaz_user_email', info.email);
+              updateUserBadge();
+            }
+          } catch(e) {}
+        }
+        resolve(resp.access_token);
+      }
+    }).requestAccessToken();
+  });
+}
+
+function updateUserBadge() {
+  const badge = document.getElementById('userBadge');
+  if (badge && gUserEmail) badge.textContent = '● ' + gUserEmail;
+}
+
+async function driveReq(method, url, token, body, ctype) {
+  const opts = { method, headers: { Authorization: `Bearer ${token}` } };
+  if (body) { opts.body = body; opts.headers['Content-Type'] = ctype || 'application/json'; }
+  const res = await fetch(url, opts);
+  if (!res.ok) { const e = await res.json().catch(()=>({})); throw new Error(e?.error?.message || `HTTP ${res.status}`); }
+  return res.json().catch(()=>({}));
+}
+
+async function driveEnsureFolder(token) {
+  const q  = `name='${GDRIVE_FOLDER}' and mimeType='application/vnd.google-apps.folder' and trashed=false`;
+  const { files } = await driveReq('GET',
+    `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(q)}&fields=files(id)`, token);
+  if (files?.length) return files[0].id;
+  const { id } = await driveReq('POST', 'https://www.googleapis.com/drive/v3/files', token,
+    JSON.stringify({ name: GDRIVE_FOLDER, mimeType: 'application/vnd.google-apps.folder' }));
+  return id;
+}
+
+async function autoBackup(y, m) {
+  // Silent background backup — no UI feedback, never blocks the user
+  const clientId = localStorage.getItem('dizdaz_gdrive_client') || '';
+  if (!clientId) return; // Drive not set up, skip silently
+  try {
+    if (!gDriveToken) gDriveToken = await getGDriveToken();
+    const folderId = await driveEnsureFolder(gDriveToken);
+    const emailTag  = gUserEmail ? gUserEmail.replace(/[^a-zA-Z0-9@._-]/g, '') : 'local';
+    const monthTag  = `${y}-${String(m+1).padStart(2,'0')}`;
+    const filename  = `DizDaz-Data-${emailTag}-${monthTag}.json`;
+    const logs      = loadLogs(y, m);
+    const payload   = JSON.stringify({ email: gUserEmail, year: y, month: m+1, logs }, null, 2);
+
+    const q = `name='${filename}' and '${folderId}' in parents and trashed=false`;
+    const { files } = await driveReq('GET',
+      `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(q)}&fields=files(id)`, gDriveToken);
+
+    const bd = 'dzdz_bk';
+    const meta = files?.length
+      ? JSON.stringify({ name: filename, mimeType: 'application/json' })
+      : JSON.stringify({ name: filename, mimeType: 'application/json', parents: [folderId] });
+    const body = `--${bd}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${meta}\r\n--${bd}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${payload}\r\n--${bd}--`;
+    const url  = files?.length
+      ? `https://www.googleapis.com/upload/drive/v3/files/${files[0].id}?uploadType=multipart`
+      : `https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart`;
+    const method = files?.length ? 'PATCH' : 'POST';
+    await driveReq(method, url, gDriveToken, body, `multipart/related; boundary="${bd}"`);
+  } catch(e) {
+    // Silently fail — user sees no error, data is still safe in localStorage
+    gDriveToken = null;
+  }
+}
+
+async function downloadPDF() {
+  const btn = document.getElementById('downloadBtn');
+  if (btn) { btn.textContent = '⏳ Generating…'; btn.disabled = true; }
+  try {
+    const invNum  = document.getElementById('invNum').value || 'INV';
+    const month   = fmtMonthLabel(activeYear, activeMonth).replace(' ', '-');
+    const filename = `DizDaz-${invNum}-${month}.pdf`;
+    const paper   = document.getElementById('paper');
+    const canvas  = await html2canvas(paper, { scale: 1.5, useCORS: true, backgroundColor: '#ffffff', logging: false, imageTimeout: 0 });
+    const { jsPDF } = window.jspdf;
+    const pdf  = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const pageW = pdf.internal.pageSize.getWidth();
+    const pageH = pdf.internal.pageSize.getHeight();
+    const imgW  = pageW;
+    const imgH  = (canvas.height * pageW) / canvas.width;
+    const imgData = canvas.toDataURL('image/jpeg', 0.85);
+    if (imgH <= pageH) {
+      pdf.addImage(imgData, 'JPEG', 0, 0, imgW, imgH);
+    } else {
+      let yPos = 0;
+      while (yPos < imgH) {
+        pdf.addImage(imgData, 'JPEG', 0, -yPos, imgW, imgH);
+        yPos += pageH;
+        if (yPos < imgH) pdf.addPage();
+      }
+    }
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    if (isIOS) {
+      // iOS Safari ignores <a download> — open PDF in new tab so user can save via share sheet
+      const blobUrl = pdf.output('bloburl');
+      const win = window.open(blobUrl, '_blank');
+      if (!win) toast('⚠️ Allow pop-ups, then tap Download PDF again.');
+      else toast('✅ PDF opened — tap the share icon ↑ to save it.');
+    } else {
+      pdf.save(filename);
+      toast(`✅ Downloaded: ${filename}`);
+    }
+  } catch(err) {
+    toast(`⚠️ Download failed: ${err.message}`);
+  } finally {
+    if (btn) { btn.textContent = '⬇️ Download PDF'; btn.disabled = false; }
+  }
+}
+
+async function saveToDrive() {
+  const btn = document.getElementById('driveBtn');
+  btn.textContent = '⏳ Saving…'; btn.disabled = true;
+  try {
+    if (!gDriveToken) gDriveToken = await getGDriveToken();
+    const folderId = await driveEnsureFolder(gDriveToken);
+    const invNum   = document.getElementById('invNum').value || 'INV';
+    const month    = fmtMonthLabel(activeYear, activeMonth).replace(' ', '-');
+    const filename = `DizDaz-${invNum}-${month}.pdf`;
+
+    // Capture invoice as PDF using html2canvas + jsPDF
+    const paper = document.getElementById('paper');
+    const canvas = await html2canvas(paper, { scale: 1.5, useCORS: true, backgroundColor: '#ffffff', logging: false, imageTimeout: 0 });
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const pageW = pdf.internal.pageSize.getWidth();
+    const pageH = pdf.internal.pageSize.getHeight();
+    const imgW  = pageW;
+    const imgH  = (canvas.height * pageW) / canvas.width;
+    const imgData = canvas.toDataURL('image/jpeg', 0.85);
+    if (imgH <= pageH) {
+      pdf.addImage(imgData, 'JPEG', 0, 0, imgW, imgH);
+    } else {
+      let yPos = 0;
+      while (yPos < imgH) {
+        pdf.addImage(imgData, 'JPEG', 0, -yPos, imgW, imgH);
+        yPos += pageH;
+        if (yPos < imgH) pdf.addPage();
+      }
+    }
+    const pdfBlob = pdf.output('blob');
+
+    // Check if file already exists (update vs create)
+    const q2 = `name='${filename}' and '${folderId}' in parents and trashed=false`;
+    const { files } = await driveReq('GET',
+      `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(q2)}&fields=files(id)`, gDriveToken);
+
+    const uploadBlob = async (method, url) => {
+      const bd = 'dzdz_mp';
+      const metaJson = method === 'POST'
+        ? JSON.stringify({ name: filename, mimeType: 'application/pdf', parents: [folderId] })
+        : JSON.stringify({ name: filename, mimeType: 'application/pdf' });
+      const pdfArr = await pdfBlob.arrayBuffer();
+      const body = new Blob([
+        `--${bd}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${metaJson}\r\n`,
+        `--${bd}\r\nContent-Type: application/pdf\r\n\r\n`,
+        pdfArr,
+        `\r\n--${bd}--`
+      ]);
+      const res = await fetch(url, {
+        method,
+        headers: { Authorization: `Bearer ${gDriveToken}`, 'Content-Type': `multipart/related; boundary="${bd}"` },
+        body
+      });
+      if (!res.ok) throw new Error(`Drive upload failed: ${res.status}`);
+    };
+
+    if (files?.length) {
+      await uploadBlob('PATCH', `https://www.googleapis.com/upload/drive/v3/files/${files[0].id}?uploadType=multipart`);
+    } else {
+      await uploadBlob('POST', 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart');
+    }
+    toast(`✅ Saved as PDF → Google Drive / ${GDRIVE_FOLDER} / ${filename}`);
+  } catch(err) {
+    if (err.message === 'no_client_id') {
+      toast('⚠️ Add your Google Client ID in Drive Settings first');
+      document.getElementById('drivePanel').style.display = 'block';
+    } else if (/popup_closed|access_denied/i.test(err.message)) {
+      toast('⚠️ Google sign-in cancelled — try again');
+    } else { gDriveToken = null; toast(`⚠️ Drive error: ${err.message}`); }
+  } finally { btn.textContent = '📁 Save to Drive'; btn.disabled = false; }
+}
+
+function toggleDrivePanel() {
+  const p = document.getElementById('drivePanel');
+  const open = p.style.display === 'none';
+  p.style.display = open ? 'block' : 'none';
+  if (open) {
+    const saved = localStorage.getItem('dizdaz_gdrive_client') || '';
+    document.getElementById('driveClientId').value = saved ? '••••••••••••••••••••' : '';
+  }
+}
+
+function saveDriveClientId() {
+  const val = document.getElementById('driveClientId').value.trim();
+  if (!val || val.startsWith('•')) { toast('⚠️ Enter a valid Google Client ID'); return; }
+  localStorage.setItem('dizdaz_gdrive_client', val);
+  gDriveToken = null;
+  document.getElementById('driveClientId').value = '••••••••••••••••••••';
+  document.getElementById('drivePanel').style.display = 'none';
+  toast('✅ Client ID saved — click Save to Drive to authorise with Google');
+}
+
+function clearDriveClientId() {
+  localStorage.removeItem('dizdaz_gdrive_client');
+  gDriveToken = null;
+  document.getElementById('driveClientId').value = '';
+  toast('🗑️ Google Client ID cleared');
+}
+
+// ══════════════════════════════════════════════
+//  ADDITIONAL CHARGES & SURPLUS
+// ══════════════════════════════════════════════
+function loadCharges() {
+  try { return JSON.parse(localStorage.getItem(SK+'charges') || '[]'); }
+  catch { return []; }
+}
+
+function saveCharges(charges) {
+  localStorage.setItem(SK+'charges', JSON.stringify(charges));
+}
+
+function addCharge() {
+  const labelEl  = document.getElementById('chargeLabel');
+  const amountEl = document.getElementById('chargeAmount');
+  const label  = labelEl.value.trim();
+  const amount = parseFloat(amountEl.value);
+  if (!label)              { fixedToast('⚠️ Enter a description for the charge'); return; }
+  if (isNaN(amount))       { fixedToast('⚠️ Enter a valid amount (use negative for discounts)'); return; }
+  if (amount === 0)        { fixedToast('⚠️ Amount cannot be zero'); return; }
+
+  const charges = loadCharges();
+  charges.push({ id: Date.now().toString(), label, amount });
+  saveCharges(charges);
+
+  labelEl.value = ''; amountEl.value = '';
+  renderCharges();
+  rp();
+  autoSaveToFolder();
+  fixedToast(`${amount < 0 ? '💚' : '➕'} Charge added: ${label} — £${amount.toFixed(2)}`);
+}
+
+function removeCharge(id) {
+  saveCharges(loadCharges().filter(c => c.id !== id));
+  renderCharges();
+  rp();
+  autoSaveToFolder();
+}
+
+function renderCharges() {
+  const charges = loadCharges();
+  const el = document.getElementById('chargesList');
+  if (!el) return;
+  if (!charges.length) {
+    el.innerHTML = '<div class="charges-empty">No additional charges added yet</div>';
+    return;
+  }
+  el.innerHTML = charges.map(c => {
+    const neg = c.amount < 0;
+    return `<div class="charge-entry">
+      <span class="ce-label">${c.label}</span>
+      <span class="ce-amt${neg?' neg':''}">
+        ${neg ? '−' : ''}£${Math.abs(c.amount).toFixed(2)}
+      </span>
+      <button class="log-del" onclick="removeCharge('${c.id}')" title="Remove">✕</button>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════
+//  AUTO-SAVE TO LOCAL FOLDER (File System Access API)
+// ══════════════════════════════════════════════
+let _autoSaveDir = null;
+
+// ── IndexedDB helpers to persist the directory handle ──
+function _idb() {
+  return new Promise((res, rej) => {
+    const r = indexedDB.open('dizdaz_fs', 1);
+    r.onupgradeneeded = e => e.target.result.createObjectStore('handles');
+    r.onsuccess = e => res(e.target.result);
+    r.onerror   = rej;
+  });
+}
+async function _saveHandle(h) {
+  const db = await _idb();
+  return new Promise((res, rej) => {
+    const tx = db.transaction('handles','readwrite');
+    tx.objectStore('handles').put(h,'saveDir');
+    tx.oncomplete = res; tx.onerror = rej;
+  });
+}
+async function _loadHandle() {
+  try {
+    const db = await _idb();
+    return new Promise(res => {
+      const tx = db.transaction('handles','readonly');
+      const r  = tx.objectStore('handles').get('saveDir');
+      r.onsuccess = e => res(e.target.result || null);
+      r.onerror   = () => res(null);
+    });
+  } catch { return null; }
+}
+
+async function initAutoSave() {
+  if (!window.showDirectoryPicker) return; // API not supported in this browser
+  _autoSaveDir = await _loadHandle();
+  if (_autoSaveDir) {
+    try {
+      const perm = await _autoSaveDir.queryPermission({ mode:'readwrite' });
+      if (perm === 'prompt') await _autoSaveDir.requestPermission({ mode:'readwrite' });
+      if (await _autoSaveDir.queryPermission({ mode:'readwrite' }) !== 'granted') _autoSaveDir = null;
+    } catch { _autoSaveDir = null; }
+  }
+  updateAutoSaveUI();
+}
+
+async function setAutoSaveFolder() {
+  if (!window.showDirectoryPicker) {
+    fixedToast('⚠️ Auto-save folder not supported in this browser — use Chrome or Edge');
+    return;
+  }
+  try {
+    const dir = await window.showDirectoryPicker({ mode:'readwrite' });
+    _autoSaveDir = dir;
+    await _saveHandle(dir);
+    updateAutoSaveUI();
+    fixedToast(`✅ Auto-save folder set: "${dir.name}" — data will save here on every change`);
+    autoSaveToFolder(); // immediate first save
+  } catch(e) {
+    if (e.name !== 'AbortError') fixedToast('⚠️ Could not set folder: ' + e.message);
+  }
+}
+
+function updateAutoSaveUI() {
+  const dot    = document.getElementById('asDot');
+  const status = document.getElementById('autoSaveStatus');
+  const btn    = document.getElementById('autoSaveFolderBtn');
+  if (_autoSaveDir) {
+    if (dot)    { dot.classList.add('live'); }
+    if (status) status.textContent = _autoSaveDir.name;
+    if (btn)    btn.textContent = `📁 "${_autoSaveDir.name}"`;
+  } else {
+    if (dot)    { dot.classList.remove('live'); }
+    if (status) status.textContent = 'Auto-save off';
+    if (btn)    btn.textContent = '📁 Set Save Folder';
+  }
+}
+
+async function autoSaveToFolder() {
+  if (!_autoSaveDir) return;
+  try {
+    const perm = await _autoSaveDir.queryPermission({ mode:'readwrite' });
+    if (perm !== 'granted') return;
+
+    // Save JSON data backup
+    const monthTag = `${activeYear}-${String(activeMonth+1).padStart(2,'0')}`;
+    const logs     = loadLogs(activeYear, activeMonth);
+    const charges  = loadCharges();
+    const payload  = JSON.stringify({ year:activeYear, month:activeMonth+1, logs, charges }, null, 2);
+    const jsonName = `DizDaz-${monthTag}-data.json`;
+    const jh = await _autoSaveDir.getFileHandle(jsonName, { create:true });
+    const jw = await jh.createWritable();
+    await jw.write(payload); await jw.close();
+
+    // Save PDF snapshot
+    await _autoSavePDF();
+
+    // Update timestamp in status
+    const status = document.getElementById('autoSaveStatus');
+    if (status && _autoSaveDir) {
+      const t = new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+      status.textContent = `${_autoSaveDir.name} · ${t}`;
+    }
+  } catch(e) {
+    // Silently ignore — user still has localStorage
+  }
+}
+
+async function _autoSavePDF() {
+  if (!_autoSaveDir) return;
+  try {
+    const invNum   = document.getElementById('invNum').value || 'INV';
+    const month    = fmtMonthLabel(activeYear, activeMonth).replace(' ','-');
+    const filename = `DizDaz-${invNum}-${month}.pdf`;
+    const paper    = document.getElementById('paper');
+    const canvas   = await html2canvas(paper, { scale:1.5, useCORS:true, backgroundColor:'#ffffff', logging:false, imageTimeout:0 });
+    const { jsPDF } = window.jspdf;
+    const pdf   = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
+    const pageW = pdf.internal.pageSize.getWidth();
+    const pageH = pdf.internal.pageSize.getHeight();
+    const imgW  = pageW;
+    const imgH  = (canvas.height * pageW) / canvas.width;
+    const imgData = canvas.toDataURL('image/jpeg', 0.85);
+    if (imgH <= pageH) {
+      pdf.addImage(imgData,'JPEG',0,0,imgW,imgH);
+    } else {
+      let y = 0;
+      while (y < imgH) { pdf.addImage(imgData,'JPEG',0,-y,imgW,imgH); y += pageH; if (y < imgH) pdf.addPage(); }
+    }
+    const blob = pdf.output('blob');
+    const fh   = await _autoSaveDir.getFileHandle(filename, { create:true });
+    const fw   = await fh.createWritable();
+    await fw.write(blob); await fw.close();
+  } catch { /* silent */ }
+}
+
+
+// ══════════════════════════════════════════════
+//  PASSWORD GATEWAY
+// ════════════════════════════════════════════════
+const ADMIN_PASSWORD = 'dizdaz2026'; // Replace with secure password if needed
+
+document.addEventListener('DOMContentLoaded', () => {
+  const gateway = document.getElementById('password-gateway');
+  const pwInput = document.getElementById('gateway-pw');
+  const btn = document.getElementById('gateway-btn');
+  const error = document.getElementById('gateway-error');
+
+  if (!gateway) return;
+
+  // Check if session already unlocked
+  if (sessionStorage.getItem('dizdaz_unlocked') === 'true') {
+    gateway.style.display = 'none';
+  }
+
+  btn.addEventListener('click', () => {
+    if (pwInput.value === ADMIN_PASSWORD) {
+      sessionStorage.setItem('dizdaz_unlocked', 'true');
+      gateway.style.display = 'none';
+      error.style.display = 'none';
+    } else {
+      error.style.display = 'block';
+      pwInput.value = '';
+    }
+  });
+
+  pwInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') btn.click();
+  });
+});
+
+// ══════════════════════════════════════════════
+
+let _deferredInstall = null;
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js')
+      .then(reg => console.log('[SW] Registered, scope:', reg.scope))
+      .catch(err => console.warn('[SW] Registration failed:', err));
+  });
+}
+
+// Capture the install prompt before the browser fires it
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  _deferredInstall = e;
+  // Show banner only if user hasn't dismissed it this session
+  if (!sessionStorage.getItem('dizdaz_install_dismissed')) {
+    document.getElementById('installBanner').classList.add('show');
+  }
+});
+
+document.getElementById('installBtn').addEventListener('click', async () => {
+  if (!_deferredInstall) return;
+  _deferredInstall.prompt();
+  const { outcome } = await _deferredInstall.userChoice;
+  _deferredInstall = null;
+  document.getElementById('installBanner').classList.remove('show');
+  if (outcome === 'accepted') fixedToast('✅ DizDaz Invoice installed — check your Dock!');
+});
+
+function dismissInstall() {
+  sessionStorage.setItem('dizdaz_install_dismissed', '1');
+  document.getElementById('installBanner').classList.remove('show');
+}
+
+// Hide banner once app is running as installed PWA
+if (window.matchMedia('(display-mode: standalone)').matches) {
+  document.getElementById('installBanner').style.display = 'none';
+}
+
+// ══════════════════════════════════════════════
+//  GO
+// ══════════════════════════════════════════════
+init();
+</script>
+</body>
+</html>
