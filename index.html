@@ -905,6 +905,17 @@
       });
     }
   });
+
+  // Clean up stale service workers & caches left over from when the invoice
+  // app was served at the domain root — they serve outdated pages forever
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations()
+      .then(regs => regs.forEach(r => r.unregister()))
+      .catch(() => {});
+  }
+  if (window.caches) {
+    caches.keys().then(keys => keys.forEach(k => caches.delete(k))).catch(() => {});
+  }
 </script>
 
 </body>

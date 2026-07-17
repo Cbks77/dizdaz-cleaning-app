@@ -2013,7 +2013,9 @@ async function _autoSavePDF() {
 
 let _deferredInstall = null;
 
-if ('serviceWorker' in navigator) {
+// Only register the service worker when running standalone — inside the
+// admin iframe the site is served fresh and the relative path resolves wrong
+if ('serviceWorker' in navigator && window.self === window.top) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('sw.js')
       .then(reg => console.log('[SW] Registered, scope:', reg.scope))

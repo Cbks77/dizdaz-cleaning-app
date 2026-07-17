@@ -1,7 +1,7 @@
 // DizDaz Invoice — Service Worker
 // Caches the full app for offline use
 
-const CACHE = 'dizdaz-invoice-v1';
+const CACHE = 'dizdaz-invoice-v2';
 
 const PRECACHE = [
   '/',
@@ -52,22 +52,32 @@ self.addEventListener('fetch', e => {
     return;
   }
 
-  e.respondWith(
-    caches.match(e.request).then(cached => {
-      if (cached) return cached;
-      return fetch(e.request).then(response => {
-        // Cache successful GET responses
+  // Network-first for pages so fixes reach users immediately;
+  // the cached copy is only an offline fallback
+  if (e.request.mode === 'navigate' || e.request.destination === 'document') {
+    e.respondWith(
+      fetch(e.request).then(response => {
         if (e.request.method === 'GET' && response.status === 200) {
           const clone = response.clone();
           caches.open(CACHE).then(cache => cache.put(e.request, clone));
         }
         return response;
-      }).catch(() => {
-        // Offline fallback — return cached index.html for navigation requests
-        if (e.request.mode === 'navigate') {
-          return caches.match('/index.html');
+      }).catch(() => caches.match(e.request).then(c => c || caches.match('/index.html')))
+    );
+    return;
+  }
+
+  // Assets: serve from cache, refresh the cached copy in the background
+  e.respondWith(
+    caches.match(e.request).then(cached => {
+      const network = fetch(e.request).then(response => {
+        if (e.request.method === 'GET' && response.status === 200) {
+          const clone = response.clone();
+          caches.open(CACHE).then(cache => cache.put(e.request, clone));
         }
-      });
+        return response;
+      }).catch(() => cached);
+      return cached || network;
     })
   );
 });
