@@ -431,6 +431,7 @@
     /* ── ADDITIONAL CHARGES ── */
     .charge-row { display:flex; gap:9px; align-items:flex-end; margin-bottom:8px; }
     .charge-row .cw-label { flex:2; }
+    .charge-row .cw-date { flex:1.1; min-width:125px; }
     .charge-row .cw-amount { flex:1; min-width:90px; }
     .charge-add-btn {
       background:var(--b600); color:#fff; border:none;
@@ -447,6 +448,7 @@
     }
     .charge-entry:hover { border-color:var(--b200); }
     .charge-entry .ce-label { flex:1; font-size:12.5px; font-weight:500; color:var(--g700); }
+    .charge-entry .ce-date { font-size:11px; color:var(--g400); font-weight:500; white-space:nowrap; }
     .charge-entry .ce-amt { font-size:13px; font-weight:700; color:var(--b700); white-space:nowrap; }
     .charge-entry .ce-amt.neg { color:var(--green); }
     .charges-empty { font-size:12px; color:var(--g400); font-style:italic; padding:4px 0 8px; }
@@ -503,6 +505,9 @@
       .rg5 { grid-template-columns:repeat(4,1fr); }
       .g2,.g3 { grid-template-columns:1fr; }
       .builder { padding:13px; }
+      .charge-row { flex-wrap:wrap; }
+      .charge-row .cw-label { flex:1 1 100%; }
+      .charge-row .cw-date { flex:1 1 auto; }
     }
   </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -664,6 +669,10 @@
         <div class="cw-label">
           <label>Description</label>
           <input type="text" id="chargeLabel" placeholder="e.g. Deep clean surcharge, Materials, Discount…">
+        </div>
+        <div class="cw-date">
+          <label>Date of clean</label>
+          <input type="date" id="chargeDate">
         </div>
         <div class="cw-amount">
           <label>Amount (£)</label>
@@ -1491,7 +1500,8 @@ function rp() {
         ? `<span style="color:var(--green)">−£${Math.abs(c.amount).toFixed(2)}</span>`
         : `£${c.amount.toFixed(2)}`;
       html += `<tr>
-        <td colspan="2" style="color:var(--g600);font-style:italic;font-size:10.5px">${c.label}</td>
+        <td style="white-space:nowrap;color:var(--b800);font-weight:600">${c.date ? fmtDateDisplay(c.date) : '—'}</td>
+        <td style="color:var(--g600);font-style:italic;font-size:10.5px">${c.label}</td>
         <td style="text-align:center;color:var(--g400)">—</td>
         <td style="font-weight:600">${amtDisplay}</td>
       </tr>`;
@@ -1812,18 +1822,20 @@ function saveCharges(charges) {
 
 function addCharge() {
   const labelEl  = document.getElementById('chargeLabel');
+  const dateEl   = document.getElementById('chargeDate');
   const amountEl = document.getElementById('chargeAmount');
   const label  = labelEl.value.trim();
+  const date   = dateEl.value;
   const amount = parseFloat(amountEl.value);
   if (!label)              { fixedToast('⚠️ Enter a description for the charge'); return; }
   if (isNaN(amount))       { fixedToast('⚠️ Enter a valid amount (use negative for discounts)'); return; }
   if (amount === 0)        { fixedToast('⚠️ Amount cannot be zero'); return; }
 
   const charges = loadCharges();
-  charges.push({ id: Date.now().toString(), label, amount });
+  charges.push({ id: Date.now().toString(), label, date, amount });
   saveCharges(charges);
 
-  labelEl.value = ''; amountEl.value = '';
+  labelEl.value = ''; dateEl.value = ''; amountEl.value = '';
   renderCharges();
   rp();
   autoSaveToFolder();
@@ -1849,6 +1861,7 @@ function renderCharges() {
     const neg = c.amount < 0;
     return `<div class="charge-entry">
       <span class="ce-label">${c.label}</span>
+      ${c.date ? `<span class="ce-date">📅 ${fmtDateDisplay(c.date)}</span>` : ''}
       <span class="ce-amt${neg?' neg':''}">
         ${neg ? '−' : ''}£${Math.abs(c.amount).toFixed(2)}
       </span>
